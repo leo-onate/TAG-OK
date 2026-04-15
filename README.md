@@ -127,8 +127,6 @@ lib/
 
 👥 Equipo
 
-Grupo Sentte
-
 Jesús Aránguiz
 
 Ignacio Bravo
