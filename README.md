@@ -125,16 +125,11 @@ lib/
 
 ---
 
-👥 Equipo
-
-Jesús Aránguiz
-
-Ignacio Bravo
-
-Leonardo Oñate
-
-
-
+## 👥 Equipo de Desarrollo
+Proyecto desarrollado para la asignatura **TPY1101 (Taller Aplicado de Programación)** en Duoc UC:
+ * **Leonardo Oñate:** Líder / DevOps.
+ * **Ignacio Bravo:** Arquitecto / QA.
+ * **Jesús Aranguiz:** Especialista en Datos / Integración.
 ---
 
 📊 Factibilidad
