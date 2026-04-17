@@ -117,9 +117,13 @@ Model: Datos provenientes de Firebase y APIs externas
 
 lib/
  ├── core/
+ 
  ├── data/
+ 
  ├── domain/
+ 
  ├── presentation/
+ 
  └── main.dart
 
 
