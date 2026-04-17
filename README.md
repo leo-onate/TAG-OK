@@ -115,7 +115,8 @@ Model: Datos provenientes de Firebase y APIs externas
 
 📂 Estructura del Repositorio (Inicial)
 
-lib/
+ lib/
+
  ├── core/
  
  ├── data/
