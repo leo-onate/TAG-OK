@@ -46,3 +46,7 @@ app.*.map.json
 
 # Dotenv
 .env
+
+# Firebase credentials
+**/google-services.json
+**/GoogleService-Info.plist
