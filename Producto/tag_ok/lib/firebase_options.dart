@@ -48,12 +48,12 @@ class DefaultFirebaseOptions {
   }
 
   static FirebaseOptions get web => FirebaseOptions(
-    apiKey: dotenv.env['WEB_API_KEY'] ?? '',
-    appId: dotenv.env['WEB_APP_ID'] ?? '',
-    messagingSenderId: dotenv.env['MESSAGING_SENDER_ID'] ?? '',
-    projectId: dotenv.env['PROJECT_ID'] ?? '',
-    authDomain: '${dotenv.env['PROJECT_ID']}.firebaseapp.com',
-    storageBucket: dotenv.env['STORAGE_BUCKET'] ?? '',
+    apiKey: 'AIzaSyCSZfSgO2zIf7M_J1gKqZqZ5Z5Z5Z5Z5Z5', // Placeholder para web
+    appId: '1:15915064363:web:affee488454a62d5fbde6e',
+    messagingSenderId: '15915064363',
+    projectId: 'tag-ok',
+    authDomain: 'tag-ok.firebaseapp.com',
+    storageBucket: 'tag-ok.appspot.com',
     measurementId: 'G-22KGS61ZSB',
   );
 
