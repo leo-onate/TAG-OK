@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:geolocator/geolocator.dart';
 import 'route_setup_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -20,6 +22,80 @@ class _HomeScreenState extends State<HomeScreen> {
   final Color navBgColor = const Color(0xFF1E293B);
   final Color textMuted = const Color(0xFF94A3B8);
   final Color textMain = const Color(0xFFF8FAFC);
+
+  // Controladores y estado del mapa
+  final MapController _mapController = MapController();
+  LatLng? _currentPosition;
+  StreamSubscription<Position>? _positionStreamSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _determinePosition();
+  }
+
+  @override
+  void dispose() {
+    _positionStreamSubscription?.cancel();
+    _mapController.dispose();
+    super.dispose();
+  }
+
+  /// Pide permisos e inicia el seguimiento en tiempo real
+  Future<void> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Verifica si el GPS está activado
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      debugPrint('El servicio de ubicación está deshabilitado.');
+      return;
+    }
+
+    // Verifica permisos
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        debugPrint('Permisos de ubicación denegados.');
+        return;
+      }
+    }
+    
+    if (permission == LocationPermission.deniedForever) {
+      debugPrint('Permisos de ubicación denegados permanentemente.');
+      return;
+    }
+
+    // Si tenemos permiso, nos suscribimos a los cambios de ubicación
+    const LocationSettings locationSettings = LocationSettings(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 5, // Notificar solo si se mueve 5 metros
+    );
+
+    _positionStreamSubscription = Geolocator.getPositionStream(locationSettings: locationSettings).listen(
+      (Position position) {
+        setState(() {
+          _currentPosition = LatLng(position.latitude, position.longitude);
+        });
+        
+        // Si es la primera vez que obtenemos la ubicación, centramos el mapa ahí
+        if (_currentPosition != null && !_hasCenteredMapInitially) {
+          _centerOnUser();
+          _hasCenteredMapInitially = true;
+        }
+      }
+    );
+  }
+
+  bool _hasCenteredMapInitially = false;
+
+  void _centerOnUser() {
+    if (_currentPosition != null) {
+      _mapController.move(_currentPosition!, 15.0);
+    }
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -150,17 +226,84 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildMapTab() {
     final mapboxToken = dotenv.env['MAPBOX_ACCESS_TOKEN'] ?? '';
     
-    return FlutterMap(
-      options: const MapOptions(
-        initialCenter: LatLng(-33.4489, -70.6693), // Santiago, Chile
-        initialZoom: 12.0,
-      ),
+    return Stack(
       children: [
-        TileLayer(
-          urlTemplate: "https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/256/{z}/{x}/{y}@2x?access_token=$mapboxToken",
-          additionalOptions: const {
-            'accessToken': '',
-          },
+        // 1. El Mapa en sí
+        FlutterMap(
+          mapController: _mapController,
+          options: const MapOptions(
+            initialCenter: LatLng(-33.4489, -70.6693), // Santiago, Chile (fallback)
+            initialZoom: 12.0,
+          ),
+          children: [
+            TileLayer(
+              urlTemplate: "https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/256/{z}/{x}/{y}@2x?access_token=$mapboxToken",
+              additionalOptions: const {
+                'accessToken': '',
+              },
+            ),
+            // 2. Capa de Marcadores (Punto azul del usuario)
+            if (_currentPosition != null)
+              MarkerLayer(
+                markers: [
+                  Marker(
+                    point: _currentPosition!,
+                    width: 60,
+                    height: 60,
+                    child: _buildLocationMarker(),
+                  ),
+                ],
+              ),
+          ],
+        ),
+        
+        // 3. Botón flotante para centrar la ubicación
+        Positioned(
+          bottom: 16,
+          right: 16,
+          child: FloatingActionButton(
+            heroTag: "centerLocationBtn", // Evita conflictos de hero con el boton central
+            mini: true,
+            backgroundColor: navBgColor,
+            onPressed: _centerOnUser,
+            child: Icon(
+              Icons.my_location,
+              color: _currentPosition != null ? primaryColor : textMuted,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Diseño del punto azul con sombra/halo
+  Widget _buildLocationMarker() {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: primaryColor.withOpacity(0.3),
+          ),
+        ),
+        Container(
+          width: 20,
+          height: 20,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: primaryColor,
+            border: Border.all(color: Colors.white, width: 2),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
         ),
       ],
     );

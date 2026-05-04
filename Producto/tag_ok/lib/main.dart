@@ -4,6 +4,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart'; // Importa dotenv
 import 'firebase_options.dart'; // El archivo que generaste recién
 import 'screens/login_screen.dart'; // Importa tu nueva pantalla
 
+import 'package:flutter_riverpod/flutter_riverpod.dart'; // Importa Riverpod
+
 void main() async {
   // 1. Asegura que los widgets estén listos
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +22,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
