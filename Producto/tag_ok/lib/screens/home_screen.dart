@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'route_setup_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -30,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: bgColor,
       // Contenido principal de la pantalla según la pestaña seleccionada
       body: SafeArea(
-        child: Center(
+        child: _selectedIndex == 0 ? _buildMapTab() : Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -141,6 +144,25 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildMapTab() {
+    final mapboxToken = dotenv.env['MAPBOX_ACCESS_TOKEN'] ?? '';
+    
+    return FlutterMap(
+      options: const MapOptions(
+        initialCenter: LatLng(-33.4489, -70.6693), // Santiago, Chile
+        initialZoom: 12.0,
+      ),
+      children: [
+        TileLayer(
+          urlTemplate: "https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/256/{z}/{x}/{y}@2x?access_token=$mapboxToken",
+          additionalOptions: const {
+            'accessToken': '',
+          },
+        ),
+      ],
     );
   }
 
