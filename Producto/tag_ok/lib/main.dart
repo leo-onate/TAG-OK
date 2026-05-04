@@ -8,8 +8,12 @@ void main() async {
   // 1. Asegura que los widgets estén listos
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 2. Carga las variables de entorno
-  await dotenv.load(fileName: ".env");
+  // 2. Carga las variables de entorno (con try-catch por si falta el archivo)
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    debugPrint("Advertencia: No se encontró el archivo .env o hubo un error al cargarlo.");
+  }
 
   // 3. Inicializa Firebase con tus opciones generadas
   await Firebase.initializeApp(
