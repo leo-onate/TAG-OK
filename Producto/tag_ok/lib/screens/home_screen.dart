@@ -5,6 +5,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart';
 import 'route_setup_screen.dart';
+import '../data/models/route_model.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -27,6 +28,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final MapController _mapController = MapController();
   LatLng? _currentPosition;
   StreamSubscription<Position>? _positionStreamSubscription;
+  
+  RouteData? _currentRoute;
 
   @override
   void initState() {
@@ -147,11 +150,26 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         child: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
+          onPressed: () async {
+            final result = await Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const RouteSetupScreen()),
             );
+            
+            if (result is RouteData) {
+              setState(() {
+                _currentRoute = result;
+              });
+              
+              if (result.polyline.isNotEmpty) {
+                // Enfocar el mapa en la ruta
+                final bounds = LatLngBounds.fromPoints(result.polyline);
+                _mapController.fitCamera(CameraFit.bounds(
+                  bounds: bounds,
+                  padding: const EdgeInsets.all(50.0),
+                ));
+              }
+            }
           },
           backgroundColor: primaryColor,
           elevation: 0,
@@ -242,6 +260,45 @@ class _HomeScreenState extends State<HomeScreen> {
                 'accessToken': '',
               },
             ),
+            // Capa de la Ruta (Línea Azul)
+            if (_currentRoute != null && _currentRoute!.polyline.isNotEmpty)
+              PolylineLayer(
+                polylines: [
+                  // LÍNEA DE PRUEBA (ROJA, MUY GRUESA)
+                  Polyline(
+                    points: [
+                       _currentRoute!.polyline.first,
+                       _currentRoute!.polyline.last,
+                    ],
+                    strokeWidth: 15.0,
+                    color: Colors.redAccent,
+                  ),
+                  // LÍNEA REAL (AZUL)
+                  Polyline(
+                    points: _currentRoute!.polyline,
+                    strokeWidth: 6.0,
+                    color: const Color(0xFF3B82F6),
+                  ),
+                ],
+              ),
+              
+            // Capa de los Pórticos (Íconos)
+            if (_currentRoute != null)
+              MarkerLayer(
+                markers: _currentRoute!.tolls.map((toll) => Marker(
+                  point: toll.location,
+                  width: 32,
+                  height: 32,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.monetization_on, color: Color(0xFFF59E0B), size: 24),
+                  ),
+                )).toList(),
+              ),
+
             // 2. Capa de Marcadores (Punto azul del usuario)
             if (_currentPosition != null)
               MarkerLayer(
@@ -256,6 +313,46 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
           ],
         ),
+        
+        // Tarjeta resumen de la ruta
+        if (_currentRoute != null)
+          Positioned(
+            top: 16,
+            left: 16,
+            right: 16,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                color: navBgColor.withOpacity(0.95),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.white12),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 5)),
+                ]
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Costo Total Estimado', style: TextStyle(color: textMuted, fontSize: 12)),
+                      const SizedBox(height: 4),
+                      Text('\$${_currentRoute!.totalCost.toStringAsFixed(0)} CLP', style: const TextStyle(color: Color(0xFF10B981), fontSize: 22, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text('Distancia / Tiempo', style: TextStyle(color: textMuted, fontSize: 12)),
+                      const SizedBox(height: 4),
+                      Text('${_currentRoute!.distanceKm.toStringAsFixed(1)} km • ${_currentRoute!.durationText}', style: TextStyle(color: textMain, fontSize: 14, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
         
         // 3. Botón flotante para centrar la ubicación
         Positioned(
