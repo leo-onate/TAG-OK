@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
-import '../data/services/tollguru_service.dart';
+import '../data/services/simulated_toll_service.dart';
 import '../data/services/geocoding_service.dart';
 import '../data/models/route_model.dart';
 import '../utils/polyline_decoder.dart';
@@ -25,8 +25,8 @@ class _RouteSetupScreenState extends State<RouteSetupScreen> {
   String? _selectedVehicle = 'Vehiculo prueba';
   bool _isLoading = false;
   
-  // Servicios
-  final TollGuruService _tollGuruService = TollGuruService();
+  // Inicializamos el nuevo servicio de simulación gratuito
+  final SimulatedTollService _tollService = SimulatedTollService();
   final GeocodingService _geocodingService = GeocodingService();
 
   // Coordenadas seleccionadas
@@ -212,72 +212,17 @@ class _RouteSetupScreenState extends State<RouteSetupScreen> {
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
 
     try {
-      final resultado = await _tollGuruService.calculateToll(
+      final routeData = await _tollService.calculateRouteAndTolls(
         origin: _originLocation!,
         destination: _destinationLocation!,
       );
       
       if (!mounted) return;
-      
-      // Procesar JSON
-      Map<String, dynamic> routeObj;
-      if (resultado.containsKey('routes') && (resultado['routes'] as List).isNotEmpty) {
-        routeObj = resultado['routes'][0];
-      } else {
-        routeObj = resultado;
-      }
 
-      final polylineStr = routeObj['polyline'] as String? ?? '';
-      final costsObj = routeObj['costs'] as Map<String, dynamic>? ?? {};
-      final tollsList = routeObj['tolls'] as List? ?? [];
-      final summaryObj = routeObj['summary'] as Map<String, dynamic>? ?? {};
-
-      // Decodificar polyline
-      final decodedPolyline = PolylineDecoder.decode(polylineStr);
-
-      // Decodificar tolls
-      final List<TollData> parsedTolls = [];
-      for (var t in tollsList) {
-        if (t is Map<String, dynamic>) {
-          final lat = t['lat'];
-          final lng = t['lng'];
-          final name = t['name'] ?? 'Pórtico';
-          final cost = (t['tagCost'] ?? t['cashCost'] ?? 0).toDouble();
-          
-          if (lat != null && lng != null) {
-            parsedTolls.add(TollData(
-              location: LatLng(lat, lng),
-              name: name,
-              cost: cost,
-            ));
-          }
-        }
-      }
-
-      // Costo total
-      final totalCost = (costsObj['tagAndCash'] ?? costsObj['minimumTollCost'] ?? 0).toDouble();
-      
-      // Distancia y tiempo
-      final distanceObj = summaryObj['distance'] as Map<String, dynamic>? ?? {};
-      final durationObj = summaryObj['duration'] as Map<String, dynamic>? ?? {};
-      
-      final distanceKm = ((distanceObj['value'] ?? 0) / 1000).toDouble();
-      final durationText = durationObj['text'] ?? 'Desconocido';
-
-      final routeData = RouteData(
-        polyline: decodedPolyline,
-        tolls: parsedTolls,
-        totalCost: totalCost,
-        distanceKm: distanceKm,
-        durationText: durationText,
-      );
-
-      // Retornar datos a la pantalla anterior (HomeScreen)
+      // Retornar datos directamente ya que el servicio simulado nos entrega RouteData listo
       Navigator.pop(context, routeData);
       
     } catch (e) {

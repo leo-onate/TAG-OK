@@ -43,6 +43,7 @@ dependencies:
   flutter_riverpod: ^2.5.1
   geolocator: ^14.0.2
   http: ^1.6.0
+  syncfusion_flutter_pdf: ^33.2.5
 
 dev_dependencies:
   flutter_test:
