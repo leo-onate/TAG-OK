@@ -3,6 +3,8 @@ import 'package:latlong2/latlong.dart';
 import '../data/services/simulated_toll_service.dart';
 import '../data/services/geocoding_service.dart';
 import '../data/models/route_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../utils/polyline_decoder.dart';
 
 class RouteSetupScreen extends StatefulWidget {
@@ -22,7 +24,7 @@ class _RouteSetupScreenState extends State<RouteSetupScreen> {
   final Color surfaceBorder = const Color(0x1AFFFFFF);
   final Color navBgColor = const Color(0xFF1E293B);
 
-  String? _selectedVehicle = 'Vehiculo prueba';
+  String? _selectedVehicle;
   bool _isLoading = false;
   
   // Inicializamos el nuevo servicio de simulación gratuito
@@ -32,6 +34,30 @@ class _RouteSetupScreenState extends State<RouteSetupScreen> {
   // Coordenadas seleccionadas
   LatLng? _originLocation;
   LatLng? _destinationLocation;
+
+  @override
+  void initState() {
+    super.initState();
+    _cargarVehiculoPrincipal();
+  }
+
+  Future<void> _cargarVehiculoPrincipal() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final doc = await FirebaseFirestore.instance.collection('usuarios').doc(user.uid).get();
+    
+    if (mounted) {
+      setState(() {
+        if (doc.exists && doc.data()!.containsKey('vehiculo_principal_id')) {
+          _selectedVehicle = doc.data()!['vehiculo_principal_id'];
+          if (_selectedVehicle != null && _selectedVehicle!.isEmpty) {
+            _selectedVehicle = null;
+          }
+        }
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,9 +124,9 @@ class _RouteSetupScreenState extends State<RouteSetupScreen> {
               
               const SizedBox(height: 32),
 
-              // 3. Desplegable de Vehículo
+              // 3. Vehículo Principal
               Text(
-                '  Vehículo a utilizar',
+                '  Vehículo a utilizar (Principal)',
                 style: TextStyle(color: textMuted, fontSize: 14, fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 8),
@@ -110,29 +136,18 @@ class _RouteSetupScreenState extends State<RouteSetupScreen> {
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: surfaceBorder),
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 child: Row(
                   children: [
-                    Icon(Icons.directions_car_outlined, color: textMuted),
+                    Icon(Icons.directions_car_outlined, color: primaryColor),
                     const SizedBox(width: 16),
                     Expanded(
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                          value: _selectedVehicle,
-                          dropdownColor: bgColor,
-                          icon: Icon(Icons.keyboard_arrow_down, color: textMuted),
-                          style: TextStyle(color: textMain, fontSize: 16),
-                          items: <String>['Vehiculo prueba'].map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              _selectedVehicle = newValue;
-                            });
-                          },
+                      child: Text(
+                        _selectedVehicle ?? 'Ningún vehículo principal asignado',
+                        style: TextStyle(
+                          color: _selectedVehicle != null ? textMain : Colors.orange, 
+                          fontSize: 16,
+                          fontWeight: _selectedVehicle != null ? FontWeight.bold : FontWeight.normal,
                         ),
                       ),
                     ),
@@ -206,6 +221,16 @@ class _RouteSetupScreenState extends State<RouteSetupScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Por favor selecciona un Origen y Destino válidos.'),
+          backgroundColor: Colors.orange,
+        )
+      );
+      return;
+    }
+
+    if (_selectedVehicle == null || _selectedVehicle!.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No tienes un vehículo principal asignado. Configúralo en tu perfil.'),
           backgroundColor: Colors.orange,
         )
       );

@@ -53,7 +53,10 @@ class _VehiculosScreenState extends State<VehiculosScreen> {
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Vehículo principal actualizado a $patente')),
+          SnackBar(
+            content: Text('Vehículo principal actualizado a $patente'),
+            behavior: SnackBarBehavior.floating,
+          ),
         );
       }
     }
@@ -75,6 +78,7 @@ class _VehiculosScreenState extends State<VehiculosScreen> {
           const SnackBar(
             content: Text('Formato inválido (ej: ABCD12)'),
             backgroundColor: Colors.redAccent,
+            behavior: SnackBarBehavior.floating,
           ),
         );
       }
@@ -105,13 +109,19 @@ class _VehiculosScreenState extends State<VehiculosScreen> {
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Vehículo agregado exitosamente')),
+          const SnackBar(
+            content: Text('Vehículo agregado exitosamente'),
+            behavior: SnackBarBehavior.floating,
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al agregar vehículo: $e')),
+          SnackBar(
+            content: Text('Error al agregar vehículo: $e'),
+            behavior: SnackBarBehavior.floating,
+          ),
         );
       }
     }
