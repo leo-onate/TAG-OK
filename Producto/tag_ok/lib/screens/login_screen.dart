@@ -21,6 +21,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   
   bool _isLogin = true; // Para alternar entre Iniciar Sesión y Registrarse
 
@@ -28,6 +29,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -40,6 +42,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         const SnackBar(content: Text('Por favor, completa todos los campos.')),
       );
       return;
+    }
+
+    if (!_isLogin) {
+      final confirmPassword = _confirmPasswordController.text.trim();
+      if (confirmPassword.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Por favor, confirma tu contraseña.')),
+        );
+        return;
+      }
+      if (password != confirmPassword) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Las contraseñas no coinciden.')),
+        );
+        return;
+      }
     }
 
     final authNotifier = ref.read(authNotifierProvider.notifier);
@@ -139,6 +157,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   icon: Icons.lock_outline,
                   obscureText: true,
                 ),
+                if (!_isLogin) ...[
+                  const SizedBox(height: 16),
+                  _buildTextField(
+                    controller: _confirmPasswordController,
+                    hintText: 'Confirmar contraseña',
+                    icon: Icons.lock_outline,
+                    obscureText: true,
+                  ),
+                ],
                 const SizedBox(height: 32),
 
                 // Botón principal
