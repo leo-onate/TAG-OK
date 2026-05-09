@@ -6,6 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart';
 import 'route_setup_screen.dart';
 import 'profile_screen.dart';
+import 'vehiculos_screen.dart';
 import '../data/models/route_model.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -223,6 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildBodyTab() {
     if (_selectedIndex == 0) return _buildMapTab();
+    if (_selectedIndex == 2) return const VehiculosScreen();
     if (_selectedIndex == 3) return const ProfileScreen();
     
     return Center(
