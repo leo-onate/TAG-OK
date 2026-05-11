@@ -136,10 +136,52 @@ lib/
 
 ---
 
+## 🚀 Guía Rápida de Despliegue (Fast Track)
+
+Si deseas instalar esta aplicación en un nuevo equipo de desarrollo o dispositivo físico, sigue estos pasos en orden:
+
+### 1. Clonar y Preparar
+```bash
+git clone https://github.com/tu-usuario/TAG-OK.git
+cd TAG-OK/Producto/tag_ok
+```
+
+### 2. Configurar Secretos (Mapbox)
+Crea un archivo llamado `.env` en `Producto/tag_ok/` y pega tu token:
+```env
+MAPBOX_ACCESS_TOKEN=pk.your_mapbox_token_here
+```
+
+### 3. Vincular con Firebase
+Asegúrate de tener [Firebase CLI](https://firebase.google.com/docs/cli) instalado y logueado, luego ejecuta:
+```bash
+dart pub global activate flutterfire_cli
+flutterfire configure
+```
+*Esto generará el archivo `lib/firebase_options.dart` necesario para que la app conecte con la base de datos.*
+
+### 4. Instalar Dependencias
+```bash
+flutter clean
+flutter pub get
+```
+
+### 5. Lanzar en Dispositivo
+Conecta tu teléfono por USB (con Depuración USB activa) o abre un emulador y ejecuta:
+```bash
+# Para probar en tiempo real
+flutter run
+
+# Para generar un instalador (APK) para Android
+flutter build apk --split-per-abi
+```
+
+---
+
 ## 🛡️ Seguridad y Privacidad
-- Autenticación segura mediante Firebase.
-- Datos de navegación y gastos almacenados de forma privada por usuario.
-- Respaldo automático en la nube.
+- Autenticación segura mediante Firebase Auth.
+- Datos de navegación y gastos almacenados de forma privada por usuario en Firestore.
+- Respaldo automático en la nube con reglas de seguridad por UID.
 
 ---
 *Desarrollado con ❤️ para el ecosistema vial chileno.*
