@@ -1,8 +1,9 @@
 import 'package:latlong2/latlong.dart';
+import 'dart:math' as math;
 
 class PolylineDecoder {
   /// Decodifica un string codificado usando el algoritmo de Google Polyline
-  /// en una lista de coordenadas LatLng.
+  /// en una lista de coordenadas LatLng. (Versión 100% segura para Web)
   static List<LatLng> decode(String encoded) {
     List<LatLng> poly = [];
     int index = 0, len = encoded.length;
@@ -12,10 +13,11 @@ class PolylineDecoder {
       int b, shift = 0, result = 0;
       do {
         b = encoded.codeUnitAt(index++) - 63;
-        result |= (b & 0x1f) << shift;
+        result += (b & 0x1f) * math.pow(2, shift).toInt();
         shift += 5;
       } while (b >= 0x20);
-      int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+      
+      int dlat = (result % 2 != 0) ? -(result ~/ 2) - 1 : (result ~/ 2);
       lat += dlat;
 
       shift = 0;
@@ -23,10 +25,11 @@ class PolylineDecoder {
       do {
         if (index >= len) break;
         b = encoded.codeUnitAt(index++) - 63;
-        result |= (b & 0x1f) << shift;
+        result += (b & 0x1f) * math.pow(2, shift).toInt();
         shift += 5;
       } while (b >= 0x20);
-      int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+      
+      int dlng = (result % 2 != 0) ? -(result ~/ 2) - 1 : (result ~/ 2);
       lng += dlng;
 
       final p = LatLng((lat / 1E5).toDouble(), (lng / 1E5).toDouble());
