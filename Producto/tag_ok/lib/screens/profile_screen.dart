@@ -11,23 +11,31 @@ class ProfileScreen extends StatelessWidget {
   final Color navBgColor = const Color(0xFF1E293B);
   final Color textMuted = const Color(0xFF94A3B8);
   final Color textMain = const Color(0xFFF8FAFC);
-  final Color accentColor = const Color(0xFF10B981); // Verde para el presupuesto
+  final Color accentColor = const Color(
+    0xFF10B981,
+  ); // Verde para el presupuesto
 
   @override
   Widget build(BuildContext context) {
     // Obtenemos el usuario que inició sesión en este momento
     final user = FirebaseAuth.instance.currentUser;
-    
+
     // Si por alguna razón no hay sesión activa, evitamos errores
     if (user == null) {
       return Center(
-        child: Text("No hay un usuario logueado", style: TextStyle(color: textMain)),
+        child: Text(
+          "No hay un usuario logueado",
+          style: TextStyle(color: textMain),
+        ),
       );
     }
 
     // Usamos StreamBuilder para escuchar en tiempo real la base de datos de ESTE usuario
     return StreamBuilder<DocumentSnapshot>(
-      stream: FirebaseFirestore.instance.collection('usuarios').doc(user.uid).snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection('usuarios')
+          .doc(user.uid)
+          .snapshots(),
       builder: (context, snapshot) {
         // Mientras carga desde Firebase
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -35,7 +43,12 @@ class ProfileScreen extends StatelessWidget {
         }
 
         if (snapshot.hasError) {
-          return Center(child: Text("Error al cargar perfil", style: TextStyle(color: textMain)));
+          return Center(
+            child: Text(
+              "Error al cargar perfil",
+              style: TextStyle(color: textMain),
+            ),
+          );
         }
 
         // Datos por defecto (por si acaso el documento está vacío en algunas partes)
@@ -49,11 +62,12 @@ class ProfileScreen extends StatelessWidget {
         // Si Firebase devolvió la data exitosamente, reescribimos los valores
         if (snapshot.hasData && snapshot.data!.exists) {
           final data = snapshot.data!.data() as Map<String, dynamic>;
-          
-          if (data['nombre_mostrar'] != null && data['nombre_mostrar'].toString().isNotEmpty) {
+
+          if (data['nombre_mostrar'] != null &&
+              data['nombre_mostrar'].toString().isNotEmpty) {
             nombre = data['nombre_mostrar'];
           }
-          
+
           if (data['email'] != null) {
             email = data['email'];
           }
@@ -68,7 +82,8 @@ class ProfileScreen extends StatelessWidget {
             limitePresupuesto = '\$$limiteNum';
           }
 
-          if (data['vehiculo_principal_id'] != null && data['vehiculo_principal_id'].toString().isNotEmpty) {
+          if (data['vehiculo_principal_id'] != null &&
+              data['vehiculo_principal_id'].toString().isNotEmpty) {
             vehiculoPrincipal = data['vehiculo_principal_id'];
           }
 
@@ -76,7 +91,20 @@ class ProfileScreen extends StatelessWidget {
             final Timestamp ts = data['fecha_creacion'];
             final DateTime date = ts.toDate();
             // Formatear mes en español
-            final meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            final meses = [
+              'Ene',
+              'Feb',
+              'Mar',
+              'Abr',
+              'May',
+              'Jun',
+              'Jul',
+              'Ago',
+              'Sep',
+              'Oct',
+              'Nov',
+              'Dic',
+            ];
             miembroDesde = '${meses[date.month - 1]} ${date.year}';
           }
         }
@@ -101,7 +129,11 @@ class ProfileScreen extends StatelessWidget {
                       backgroundColor: navBgColor,
                       child: Text(
                         nombre.isNotEmpty ? nombre[0].toUpperCase() : 'U',
-                        style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: textMain),
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                          color: textMain,
+                        ),
                       ),
                     ),
                   ),
@@ -110,9 +142,9 @@ class ProfileScreen extends StatelessWidget {
                     right: 0,
                     child: GestureDetector(
                       onTap: () => _mostrarDialogoEdicion(
-                        context, 
-                        user.uid, 
-                        nombre == 'Usuario Tag OK' ? '' : nombre, 
+                        context,
+                        user.uid,
+                        nombre == 'Usuario Tag OK' ? '' : nombre,
                         limiteNum,
                       ),
                       child: Container(
@@ -120,16 +152,23 @@ class ProfileScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: primaryColor,
                           shape: BoxShape.circle,
-                          border: Border.all(color: bgColor, width: 3), // Borde para que resalte
+                          border: Border.all(
+                            color: bgColor,
+                            width: 3,
+                          ), // Borde para que resalte
                         ),
-                        child: const Icon(Icons.edit, size: 18, color: Colors.white),
+                        child: const Icon(
+                          Icons.edit,
+                          size: 18,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
-              
+
               // Nombre y Correo
               Text(
                 nombre,
@@ -140,13 +179,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              Text(
-                email,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: textMuted,
-                ),
-              ),
+              Text(email, style: TextStyle(fontSize: 14, color: textMuted)),
               const SizedBox(height: 32),
 
               // 2. Panel de Resumen (Tarjetas)
@@ -223,12 +256,14 @@ class ProfileScreen extends StatelessWidget {
                   onPressed: () async {
                     // Cerrar sesión real en Firebase
                     await FirebaseAuth.instance.signOut();
-                    
+
                     // Volver a la pantalla de inicio de sesión eliminando el historial
                     if (context.mounted) {
                       Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (context) => const LoginScreen()),
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(),
+                        ),
                         (route) => false,
                       );
                     }
@@ -236,7 +271,11 @@ class ProfileScreen extends StatelessWidget {
                   icon: const Icon(Icons.logout, color: Colors.white),
                   label: const Text(
                     'Cerrar Sesión',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFE11D48),
@@ -250,24 +289,39 @@ class ProfileScreen extends StatelessWidget {
             ],
           ),
         );
-      }
+      },
     );
   }
 
   // --- FUNCIÓN PARA MOSTRAR LA VENTANA EMERGENTE DE EDICIÓN ---
-  void _mostrarDialogoEdicion(BuildContext context, String uid, String nombreActual, int limiteActual) {
-    final TextEditingController nombreController = TextEditingController(text: nombreActual);
-    final TextEditingController limiteController = TextEditingController(text: limiteActual.toString());
+  void _mostrarDialogoEdicion(
+    BuildContext context,
+    String uid,
+    String nombreActual,
+    int limiteActual,
+  ) {
+    final TextEditingController nombreController = TextEditingController(
+      text: nombreActual,
+    );
+    final TextEditingController limiteController = TextEditingController(
+      text: limiteActual.toString(),
+    );
 
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           backgroundColor: navBgColor,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: Text('Editar Perfil', style: TextStyle(color: textMain, fontWeight: FontWeight.bold)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Text(
+            'Editar Perfil',
+            style: TextStyle(color: textMain, fontWeight: FontWeight.bold),
+          ),
           content: Column(
-            mainAxisSize: MainAxisSize.min, // Para que el cuadro no ocupe toda la pantalla
+            mainAxisSize: MainAxisSize
+                .min, // Para que el cuadro no ocupe toda la pantalla
             children: [
               TextField(
                 controller: nombreController,
@@ -275,8 +329,12 @@ class ProfileScreen extends StatelessWidget {
                 decoration: InputDecoration(
                   labelText: 'Nombre a mostrar',
                   labelStyle: TextStyle(color: textMuted),
-                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: textMuted.withOpacity(0.5))),
-                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: primaryColor)),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: textMuted.withOpacity(0.5)),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: primaryColor),
+                  ),
                   prefixIcon: Icon(Icons.person_outline, color: textMuted),
                 ),
               ),
@@ -284,12 +342,17 @@ class ProfileScreen extends StatelessWidget {
               TextField(
                 controller: limiteController,
                 style: TextStyle(color: textMain),
-                keyboardType: TextInputType.number, // Muestra el teclado numérico
+                keyboardType:
+                    TextInputType.number, // Muestra el teclado numérico
                 decoration: InputDecoration(
                   labelText: 'Límite Mensual (\$)',
                   labelStyle: TextStyle(color: textMuted),
-                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: textMuted.withOpacity(0.5))),
-                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: primaryColor)),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: textMuted.withOpacity(0.5)),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: primaryColor),
+                  ),
                   prefixIcon: Icon(Icons.attach_money, color: textMuted),
                 ),
               ),
@@ -303,23 +366,32 @@ class ProfileScreen extends StatelessWidget {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: primaryColor,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               onPressed: () async {
                 final nuevoNombre = nombreController.text.trim();
-                final nuevoLimite = int.tryParse(limiteController.text.trim()) ?? limiteActual;
+                final nuevoLimite =
+                    int.tryParse(limiteController.text.trim()) ?? limiteActual;
 
                 // Actualizar en Firebase la tabla de "usuarios"
-                await FirebaseFirestore.instance.collection('usuarios').doc(uid).update({
-                  'nombre_mostrar': nuevoNombre,
-                  'limite_presupuesto_mensual': nuevoLimite,
-                });
+                await FirebaseFirestore.instance
+                    .collection('usuarios')
+                    .doc(uid)
+                    .update({
+                      'nombre_mostrar': nuevoNombre,
+                      'limite_presupuesto_mensual': nuevoLimite,
+                    });
 
                 if (context.mounted) {
                   Navigator.pop(context); // Cerrar el diálogo cuando termine
                 }
               },
-              child: const Text('Guardar', style: TextStyle(color: Colors.white)),
+              child: const Text(
+                'Guardar',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         );

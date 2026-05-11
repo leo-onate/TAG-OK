@@ -35,6 +35,7 @@ class TripHistory {
   final List<TollRecord> tolls;
   final double distanceKm;
   final String duration;
+  final String vehicleName;
 
   TripHistory({
     required this.id,
@@ -43,6 +44,7 @@ class TripHistory {
     required this.tolls,
     required this.distanceKm,
     required this.duration,
+    required this.vehicleName,
   });
 
   Map<String, dynamic> toMap() {
@@ -52,6 +54,7 @@ class TripHistory {
       'tolls': tolls.map((t) => t.toMap()).toList(),
       'distanceKm': distanceKm,
       'duration': duration,
+      'vehicleName': vehicleName,
     };
   }
 
@@ -64,6 +67,7 @@ class TripHistory {
       tolls: (map['tolls'] as List).map((t) => TollRecord.fromMap(t)).toList(),
       distanceKm: (map['distanceKm'] as num).toDouble(),
       duration: map['duration'] ?? '',
+      vehicleName: map['vehicleName'] ?? 'Desconocido',
     );
   }
 }

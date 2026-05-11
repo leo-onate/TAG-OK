@@ -35,23 +35,46 @@ class AuditScreen extends StatelessWidget {
           }
 
           final trips = snapshot.data!;
-          final double totalSpent = trips.fold(0, (sum, trip) => sum + trip.totalCost);
-          
+          final double totalSpent = trips.fold(
+            0,
+            (sum, trip) => sum + trip.totalCost,
+          );
+
           return StreamBuilder<double>(
             stream: historyService.getMonthlyLimit(),
-            builder: (context, limitSnapshot) {
-              final double monthlyLimit = limitSnapshot.data ?? 50000.0;
-              final double progress = (totalSpent / monthlyLimit).clamp(0.0, 1.0);
+          builder: (context, limitSnapshot) {
+            // Si el límite aún no carga, no mostramos el cálculo para evitar parpadeos
+            if (!limitSnapshot.hasData) {
+              return const SizedBox.shrink();
+            }
+
+            final double monthlyLimit = limitSnapshot.data!;
+            final double progress = (monthlyLimit > 0) 
+                ? (totalSpent / monthlyLimit).clamp(0.0, 1.1) 
+                : 0.0;
 
               return Column(
                 children: [
-                  _buildTotalSpentCard(totalSpent, trips.length, progress, monthlyLimit, textMain, textMuted),
+                  _buildTotalSpentCard(
+                    totalSpent,
+                    trips.length,
+                    progress,
+                    monthlyLimit,
+                    textMain,
+                    textMuted,
+                  ),
                   Expanded(
                     child: ListView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       itemCount: trips.length,
                       itemBuilder: (context, index) {
-                        return _buildTripCard(context, trips[index], surfaceColor, textMain, textMuted);
+                        return _buildTripCard(
+                          context,
+                          trips[index],
+                          surfaceColor,
+                          textMain,
+                          textMuted,
+                        );
                       },
                     ),
                   ),
@@ -64,11 +87,24 @@ class AuditScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTotalSpentCard(double total, int count, double progress, double limit, Color textMain, Color textMuted) {
-    Color progressColor = const Color(0xFF4F46E5);
-    if (progress >= 1.0) progressColor = Colors.redAccent;
-    else if (progress >= 0.9) progressColor = Colors.orangeAccent;
-    else if (progress >= 0.75) progressColor = Colors.yellowAccent;
+  Widget _buildTotalSpentCard(
+    double total,
+    int count,
+    double progress,
+    double limit,
+    Color textMain,
+    Color textMuted,
+  ) {
+    Color progressColor = const Color(0xFF4F46E5); // Violeta (Base)
+    if (progress >= 1.0) {
+      progressColor = Colors.redAccent; // Rojo (Excedido)
+    } else if (progress >= 0.9) {
+      progressColor = Colors.orangeAccent; // Naranja (Crítico)
+    } else if (progress >= 0.75) {
+      progressColor = Colors.yellowAccent; // Amarillo (Precaución)
+    } else if (progress >= 0.5) {
+      progressColor = const Color(0xFF10B981); // Verde/Cian (Mitad)
+    }
 
     return Container(
       width: double.infinity,
@@ -91,7 +127,11 @@ class AuditScreen extends StatelessWidget {
             children: [
               Text(
                 'Gasto Mensual',
-                style: TextStyle(color: textMuted, fontSize: 14, fontWeight: FontWeight.w500),
+                style: TextStyle(
+                  color: textMuted,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
               Icon(Icons.speed, color: progressColor, size: 20),
             ],
@@ -103,7 +143,11 @@ class AuditScreen extends StatelessWidget {
             children: [
               Text(
                 '\$${total.toStringAsFixed(0)}',
-                style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(width: 8),
               Text(
@@ -125,8 +169,12 @@ class AuditScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            'Has usado el ${(progress * 100).toStringAsFixed(0)}% de tu límite',
-            style: TextStyle(color: progressColor.withValues(alpha: 0.8), fontSize: 12, fontWeight: FontWeight.w600),
+            'Has usado el ${(progress * 100).round()}% de tu límite',
+            style: TextStyle(
+              color: progressColor.withOpacity(0.9),
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),
@@ -138,17 +186,30 @@ class AuditScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.history_outlined, size: 64, color: textMuted.withValues(alpha: 0.3)),
+          Icon(
+            Icons.history_outlined,
+            size: 64,
+            color: textMuted.withValues(alpha: 0.3),
+          ),
           const SizedBox(height: 16),
-          Text('No hay viajes registrados aún', style: TextStyle(color: textMuted)),
+          Text(
+            'No hay viajes registrados aún',
+            style: TextStyle(color: textMuted),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildTripCard(BuildContext context, TripHistory trip, Color surfaceColor, Color textMain, Color textMuted) {
+  Widget _buildTripCard(
+    BuildContext context,
+    TripHistory trip,
+    Color surfaceColor,
+    Color textMain,
+    Color textMuted,
+  ) {
     final dateFormat = DateFormat('dd/MM/yyyy HH:mm');
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -162,44 +223,99 @@ class AuditScreen extends StatelessWidget {
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(dateFormat.format(trip.date), style: TextStyle(color: textMain, fontSize: 14)),
+              Text(
+                dateFormat.format(trip.date),
+                style: TextStyle(color: textMain, fontSize: 14),
+              ),
               Text(
                 '\$${trip.totalCost.toStringAsFixed(0)}',
-                style: const TextStyle(color: Color(0xFF10B981), fontWeight: FontWeight.bold, fontSize: 18),
+                style: const TextStyle(
+                  color: Color(0xFF10B981),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
               ),
             ],
           ),
-          subtitle: Text(
-            '${trip.distanceKm.toStringAsFixed(1)} km • ${trip.tolls.length} pórticos',
-            style: TextStyle(color: textMuted, fontSize: 12),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '${trip.distanceKm.toStringAsFixed(1)} km • ${trip.tolls.length} pórticos',
+                style: TextStyle(color: textMuted, fontSize: 12),
+              ),
+              const SizedBox(height: 2),
+              Row(
+                children: [
+                  Icon(Icons.directions_car_filled, color: textMuted, size: 12),
+                  const SizedBox(width: 4),
+                  Text(
+                    trip.vehicleName,
+                    style: TextStyle(
+                      color: textMuted.withValues(alpha: 0.8),
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
           children: [
             Container(
               padding: const EdgeInsets.all(16),
               decoration: const BoxDecoration(
                 color: Color(0x1A000000),
-                borderRadius: BorderRadius.only(bottomLeft: Radius.circular(16), bottomRight: Radius.circular(16)),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(16),
+                  bottomRight: Radius.circular(16),
+                ),
               ),
               child: Column(
                 children: [
-                  ...trip.tolls.map((toll) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                  ...trip.tolls
+                      .map(
+                        (toll) => Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(toll.name, style: TextStyle(color: textMain, fontSize: 13, fontWeight: FontWeight.w500)),
-                              Text(DateFormat('HH:mm').format(toll.timestamp), style: TextStyle(color: textMuted, fontSize: 11)),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      toll.name,
+                                      style: TextStyle(
+                                        color: textMain,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    Text(
+                                      DateFormat(
+                                        'HH:mm',
+                                      ).format(toll.timestamp),
+                                      style: TextStyle(
+                                        color: textMuted,
+                                        fontSize: 11,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Text(
+                                '\$${toll.cost.toStringAsFixed(0)}',
+                                style: TextStyle(
+                                  color: textMain.withValues(alpha: 0.8),
+                                  fontSize: 13,
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                        Text('\$${toll.cost.toStringAsFixed(0)}', style: TextStyle(color: textMain.withValues(alpha: 0.8), fontSize: 13)),
-                      ],
-                    ),
-                  )).toList(),
+                      )
+                      .toList(),
                 ],
               ),
             ),

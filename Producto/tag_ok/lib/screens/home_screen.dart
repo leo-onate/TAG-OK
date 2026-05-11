@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -37,11 +39,16 @@ class _HomeScreenState extends State<HomeScreen> {
   
   RouteData? _currentRoute;
   bool _isNavigating = false; // Estado de navegación activa
+  Map<String, dynamic>? _selectedVehicle; // Vehículo para el viaje actual
 
   @override
   void initState() {
     super.initState();
     _determinePosition();
+    // Verificar si el usuario tiene vehículos al iniciar
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkVehiclesAndAlert();
+    });
   }
 
   @override
@@ -345,6 +352,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         
+        // --- PANEL SUPERIOR FLOTANTE (Solo si no hay ruta activa) ---
+        if (_currentRoute == null) _buildTopFloatingHeader(),
+
+        // --- PANEL INFERIOR DE RESUMEN (Solo si no hay ruta activa) ---
+        if (_currentRoute == null) _buildBottomInfoCard(),
+
         // Tarjeta resumen de la ruta
         if (_currentRoute != null)
           Positioned(
@@ -388,12 +401,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   if (!_isNavigating) ...[
                     const SizedBox(height: 16),
                     GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _isNavigating = true;
-                        });
-                        _mapController.move(_currentPosition ?? _currentRoute!.polyline.first, 17.0);
-                      },
+                      onTap: () => _confirmVehicleAndStart(context),
                       child: Container(
                         height: 48,
                         decoration: BoxDecoration(
@@ -455,6 +463,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   totalCost: _currentRoute!.totalCost,
                                   distanceKm: _currentRoute!.distanceKm,
                                   duration: _currentRoute!.durationText,
+                                  vehicleName: _selectedVehicle != null 
+                                    ? '${_selectedVehicle!['marca']} (${_selectedVehicle!['patente']})'
+                                    : 'Vehículo Principal',
                                   tolls: _currentRoute!.tolls.map((t) => TollRecord(
                                     name: t.name,
                                     cost: t.cost, // Usamos el costo base o el que se haya aplicado
@@ -514,7 +525,7 @@ class _HomeScreenState extends State<HomeScreen> {
         
         // 3. Botón flotante para centrar la ubicación
         Positioned(
-          bottom: 16,
+          bottom: 110,
           right: 16,
           child: FloatingActionButton(
             heroTag: "centerLocationBtn", // Evita conflictos de hero con el boton central
@@ -532,46 +543,219 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Diseño del punto azul con sombra/halo
-  void _checkAndShowLimitAlert(BuildContext context, double total, double limit) {
-    final double percentage = (total / limit) * 100;
-    String? message;
-    Color alertColor = Colors.blue;
+  Future<void> _confirmVehicleAndStart(BuildContext context) async {
+    final historyService = HistoryService();
+    final principal = await historyService.getPrincipalVehicleInfo();
+    
+    if (!mounted) return;
 
-    if (percentage >= 100) {
-      message = "¡Has alcanzado el 100% de tu límite mensual!";
-      alertColor = Colors.redAccent;
-    } else if (percentage >= 90) {
-      message = "Atención: Llevas el 90% de tu límite gastado.";
-      alertColor = Colors.orangeAccent;
-    } else if (percentage >= 75) {
-      message = "Aviso: Llevas el 75% de tu presupuesto consumido.";
-      alertColor = Colors.yellowAccent;
-    } else if (percentage >= 50) {
-      message = "Informativo: Has llegado al 50% de tu presupuesto mensual.";
+    if (principal == null) {
+      // Si no tiene vehículos, iniciamos igual o avisamos
+      setState(() => _isNavigating = true);
+      _mapController.move(_currentPosition ?? _currentRoute!.polyline.first, 17.0);
+      return;
     }
 
-    if (message != null) {
+    _selectedVehicle = principal;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: navBgColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(Icons.directions_car, color: primaryColor),
+            const SizedBox(width: 10),
+            const Text("Confirmar Vehículo", style: TextStyle(color: Colors.white, fontSize: 18)),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text("¿Vas en tu vehículo principal?", style: TextStyle(color: Color(0xFF94A3B8))),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.star, color: Colors.amber, size: 20),
+                  const SizedBox(width: 10),
+                  Text(
+                    '${principal['marca']} (${principal['patente']})',
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              _showVehicleSelector(context);
+            },
+            child: Text("CAMBIAR", style: TextStyle(color: textMuted)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: primaryColor,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              setState(() => _isNavigating = true);
+              _mapController.move(_currentPosition ?? _currentRoute!.polyline.first, 17.0);
+            },
+            child: const Text("SÍ, COMENZAR", style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showVehicleSelector(BuildContext context) async {
+    final historyService = HistoryService();
+    final vehicles = await historyService.getUserVehicles();
+
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: navBgColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text("Seleccionar Vehículo", style: TextStyle(color: Colors.white)),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: vehicles.length,
+            itemBuilder: (context, index) {
+              final v = vehicles[index];
+              return ListTile(
+                leading: const Icon(Icons.directions_car, color: Colors.white70),
+                title: Text(v['patente'], style: const TextStyle(color: Colors.white)),
+                subtitle: Text(v['marca'], style: TextStyle(color: textMuted)),
+                onTap: () {
+                  setState(() {
+                    _selectedVehicle = v;
+                    _isNavigating = true;
+                  });
+                  Navigator.pop(context);
+                  _mapController.move(_currentPosition ?? _currentRoute!.polyline.first, 17.0);
+                },
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _checkVehiclesAndAlert() async {
+    final historyService = HistoryService();
+    final vehicles = await historyService.getUserVehicles();
+    
+    if (vehicles.isEmpty && mounted) {
       showDialog(
         context: context,
+        barrierDismissible: false, // Obligatorio para que no se lo salten
         builder: (context) => AlertDialog(
-          backgroundColor: const Color(0xFF1E293B),
+          backgroundColor: navBgColor,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Row(
             children: [
-              Icon(Icons.warning_amber_rounded, color: alertColor),
+              const Icon(Icons.info_outline, color: Colors.amber),
               const SizedBox(width: 10),
-              const Text("Alerta de Presupuesto", style: TextStyle(color: Colors.white, fontSize: 18)),
+              const Text("Configuración Inicial", style: TextStyle(color: Colors.white, fontSize: 18)),
             ],
           ),
-          content: Text(message!, style: const TextStyle(color: Color(0xFF94A3B8))),
+          content: const Text(
+            "¡Bienvenido! Para poder usar Tag OK y calcular tus cobros, primero debes registrar tu vehículo.",
+            style: TextStyle(color: Color(0xFF94A3B8)),
+          ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text("ENTENDIDO", style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold)),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primaryColor,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+                setState(() {
+                              _selectedIndex = 2; // Nos lleva a la pestaña de Vehículos
+                });
+              },
+              child: const Text("REGISTRAR AHORA", style: TextStyle(color: Colors.white)),
             ),
           ],
         ),
       );
+    }
+  }
+
+  void _checkAndShowLimitAlert(BuildContext context, double total, double limit) async {
+    final double percentage = (total / limit) * 100;
+    String? message;
+    Color alertColor = Colors.blue;
+    int threshold = 0;
+
+    if (percentage >= 100) {
+      message = "¡Has alcanzado el 100% de tu límite mensual!";
+      alertColor = Colors.redAccent;
+      threshold = 100;
+    } else if (percentage >= 90) {
+      message = "Atención: Llevas el 90% de tu límite gastado.";
+      alertColor = Colors.orangeAccent;
+      threshold = 90;
+    } else if (percentage >= 75) {
+      message = "Aviso: Llevas el 75% de tu presupuesto consumido.";
+      alertColor = Colors.yellowAccent;
+      threshold = 75;
+    } else if (percentage >= 50) {
+      message = "Informativo: Has llegado al 50% de tu presupuesto mensual.";
+      threshold = 50;
+    }
+
+    if (message != null && threshold > 0) {
+      final historyService = HistoryService();
+      
+      // Verificamos si ya notificamos esta alerta este mes
+      final alreadyNotified = await historyService.hasAlertBeenNotified(threshold);
+      
+      if (!alreadyNotified && context.mounted) {
+        // Marcamos como notificada antes de mostrar para evitar colisiones
+        await historyService.markAlertAsNotified(threshold);
+        
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            backgroundColor: const Color(0xFF1E293B),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: Row(
+              children: [
+                Icon(Icons.warning_amber_rounded, color: alertColor),
+                const SizedBox(width: 10),
+                const Text("Alerta de Presupuesto", style: TextStyle(color: Colors.white, fontSize: 18)),
+              ],
+            ),
+            content: Text(message!, style: const TextStyle(color: Color(0xFF94A3B8))),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text("ENTENDIDO", style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+        );
+      }
     }
   }
 
@@ -626,5 +810,153 @@ class _HomeScreenState extends State<HomeScreen> {
       case 3: return Icons.person_outline;
       default: return Icons.error;
     }
+  }
+
+  Widget _buildTopFloatingHeader() {
+    final user = FirebaseAuth.instance.currentUser;
+    return Positioned(
+      top: 20,
+      left: 16,
+      right: 16,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+            decoration: BoxDecoration(
+              color: navBgColor.withOpacity(0.7),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.white10),
+            ),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  backgroundColor: primaryColor,
+                  radius: 18,
+                  child: const Icon(Icons.person, color: Colors.white, size: 20),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "Hola, ${user?.email?.split('@')[0] ?? 'Usuario'}",
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                      ),
+                      const Text(
+                        "Protección de TAG Activa",
+                        style: TextStyle(color: Color(0xFF10B981), fontSize: 11, fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.notifications_none, color: Colors.white70, size: 22),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomInfoCard() {
+    return Positioned(
+      bottom: 20,
+      left: 16,
+      right: 16,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: navBgColor.withOpacity(0.8),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.white10),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: primaryColor.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.directions_car, color: Color(0xFF4F46E5), size: 20),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: FutureBuilder<Map<String, dynamic>?>(
+                    future: HistoryService().getPrincipalVehicleInfo(),
+                    builder: (context, snapshot) {
+                      final patente = snapshot.data?['patente'] ?? 'Sin asignar';
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text("Vehículo Principal", style: TextStyle(color: Color(0xFF94A3B8), fontSize: 10)),
+                          Text(patente, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+                _buildMiniProgressIndicator(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMiniProgressIndicator() {
+    return StreamBuilder<List<TripHistory>>(
+      stream: HistoryService().getTripHistory(),
+      builder: (context, snapshot) {
+        final List<TripHistory> trips = snapshot.data ?? [];
+        final double total = trips.fold<double>(0.0, (sum, t) => sum + t.totalCost);
+        
+        return StreamBuilder<double>(
+          stream: HistoryService().getMonthlyLimit(),
+          builder: (context, limitSnapshot) {
+            final double limit = limitSnapshot.data ?? 0.0;
+            final double progress = (limit > 0) ? (total / limit).clamp(0.0, 1.1) : 0.0;
+            
+            // Lógica de colores sincronizada
+            Color progressColor = const Color(0xFF4F46E5); // Violeta
+            if (progress >= 1.0) progressColor = Colors.redAccent;
+            else if (progress >= 0.9) progressColor = Colors.orangeAccent;
+            else if (progress >= 0.75) progressColor = Colors.yellowAccent;
+            else if (progress >= 0.5) progressColor = const Color(0xFF10B981);
+
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  height: 30,
+                  width: 30,
+                  child: CircularProgressIndicator(
+                    value: progress,
+                    strokeWidth: 3,
+                    backgroundColor: Colors.white10,
+                    valueColor: AlwaysStoppedAnimation<Color>(progressColor),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "${(progress * 100).round()}%", 
+                  style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 }
