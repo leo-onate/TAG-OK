@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../data/services/simulated_toll_service.dart';
 import '../data/services/geocoding_service.dart';
 
@@ -41,18 +43,13 @@ class _RouteSetupScreenState extends State<RouteSetupScreen> {
       _originLocation = widget.initialOrigin;
       _originController.text = 'Mi ubicación actual';
     }
+    _cargarVehiculoPrincipal();
   }
 
   @override
   void dispose() {
     _originController.dispose();
     super.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _cargarVehiculoPrincipal();
   }
 
   Future<void> _cargarVehiculoPrincipal() async {

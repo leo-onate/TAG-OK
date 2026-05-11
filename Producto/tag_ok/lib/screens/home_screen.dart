@@ -121,27 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: bgColor,
       // Contenido principal de la pantalla según la pestaña seleccionada
       body: SafeArea(
-        child: _selectedIndex == 0 ? _buildMapTab() : Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                _getIconForIndex(_selectedIndex),
-                size: 80,
-                color: textMuted.withValues(alpha: 0.3),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                _getTitleForIndex(_selectedIndex),
-                style: TextStyle(
-                  color: textMain,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
+        child: _buildBodyTab(),
       ),
       
       // El botón central flotante y grande (Iniciar Ruta / Mapa)
@@ -261,7 +241,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Icon(
             _getIconForIndex(_selectedIndex),
             size: 80,
-            color: textMuted.withOpacity(0.3),
+            color: textMuted.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 20),
           Text(
