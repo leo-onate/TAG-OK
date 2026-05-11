@@ -2,13 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import '../data/services/simulated_toll_service.dart';
 import '../data/services/geocoding_service.dart';
-import '../data/models/route_model.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import '../utils/polyline_decoder.dart';
 
 class RouteSetupScreen extends StatefulWidget {
-  const RouteSetupScreen({super.key});
+  final LatLng? initialOrigin;
+  const RouteSetupScreen({super.key, this.initialOrigin});
 
   @override
   State<RouteSetupScreen> createState() => _RouteSetupScreenState();
@@ -34,6 +31,23 @@ class _RouteSetupScreenState extends State<RouteSetupScreen> {
   // Coordenadas seleccionadas
   LatLng? _originLocation;
   LatLng? _destinationLocation;
+
+  final TextEditingController _originController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialOrigin != null) {
+      _originLocation = widget.initialOrigin;
+      _originController.text = 'Mi ubicación actual';
+    }
+  }
+
+  @override
+  void dispose() {
+    _originController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -95,6 +109,7 @@ class _RouteSetupScreenState extends State<RouteSetupScreen> {
 
               // 1. Buscador Origen
               _buildAutocompleteField(
+                controller: _originController,
                 hintText: 'Ruta Origen (Buscar dirección...)',
                 icon: Icons.my_location,
                 iconColor: primaryColor,
@@ -107,7 +122,7 @@ class _RouteSetupScreenState extends State<RouteSetupScreen> {
               
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 20),
-                child: Icon(Icons.more_vert, color: textMuted.withOpacity(0.5)),
+                child: Icon(Icons.more_vert, color: textMuted.withValues(alpha: 0.5)),
               ),
 
               // 2. Buscador Destino
@@ -170,7 +185,7 @@ class _RouteSetupScreenState extends State<RouteSetupScreen> {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: primaryColor.withOpacity(0.5),
+                      color: primaryColor.withValues(alpha: 0.5),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     ),
@@ -268,12 +283,14 @@ class _RouteSetupScreenState extends State<RouteSetupScreen> {
   }
 
   Widget _buildAutocompleteField({
+    TextEditingController? controller,
     required String hintText,
     required IconData icon,
     required Color iconColor,
     required Function(PlaceSuggestion) onSelected,
   }) {
     return Autocomplete<PlaceSuggestion>(
+      initialValue: controller != null ? TextEditingValue(text: controller.text) : null,
       optionsBuilder: (TextEditingValue textEditingValue) async {
         if (textEditingValue.text.isEmpty) {
           return const Iterable<PlaceSuggestion>.empty();
@@ -296,8 +313,19 @@ class _RouteSetupScreenState extends State<RouteSetupScreen> {
             style: TextStyle(color: textMain),
             decoration: InputDecoration(
               hintText: hintText,
-              hintStyle: TextStyle(color: textMuted.withOpacity(0.7)),
+              hintStyle: TextStyle(color: textMuted.withValues(alpha: 0.7)),
               prefixIcon: Icon(icon, color: iconColor),
+              suffixIcon: textEditingController.text.isNotEmpty 
+                ? IconButton(
+                    icon: Icon(Icons.clear, color: textMuted, size: 18),
+                    onPressed: () {
+                      textEditingController.clear();
+                      if (controller == _originController) {
+                        _originLocation = null;
+                      }
+                    },
+                  )
+                : null,
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(vertical: 16),
             ),

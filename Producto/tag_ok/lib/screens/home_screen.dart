@@ -31,7 +31,9 @@ class _HomeScreenState extends State<HomeScreen> {
   LatLng? _currentPosition;
   StreamSubscription<Position>? _positionStreamSubscription;
   
+  
   RouteData? _currentRoute;
+  bool _isNavigating = false; // Estado de navegación activa
 
   @override
   void initState() {
@@ -85,6 +87,11 @@ class _HomeScreenState extends State<HomeScreen> {
           _currentPosition = LatLng(position.latitude, position.longitude);
         });
         
+        // Si estamos navegando, el mapa sigue al usuario automáticamente
+        if (_isNavigating && _currentPosition != null) {
+          _mapController.move(_currentPosition!, 17.0);
+        }
+
         // Si es la primera vez que obtenemos la ubicación, centramos el mapa ahí
         if (_currentPosition != null && !_hasCenteredMapInitially) {
           _centerOnUser();
@@ -114,7 +121,27 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: bgColor,
       // Contenido principal de la pantalla según la pestaña seleccionada
       body: SafeArea(
-        child: _buildBodyTab(),
+        child: _selectedIndex == 0 ? _buildMapTab() : Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                _getIconForIndex(_selectedIndex),
+                size: 80,
+                color: textMuted.withValues(alpha: 0.3),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                _getTitleForIndex(_selectedIndex),
+                style: TextStyle(
+                  color: textMain,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
       
       // El botón central flotante y grande (Iniciar Ruta / Mapa)
@@ -125,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: primaryColor.withOpacity(0.5),
+              color: primaryColor.withValues(alpha: 0.5),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -135,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
           onPressed: () async {
             final result = await Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const RouteSetupScreen()),
+              MaterialPageRoute(builder: (context) => RouteSetupScreen(initialOrigin: _currentPosition)),
             );
             
             if (result is RouteData) {
@@ -264,25 +291,15 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           children: [
             TileLayer(
-              urlTemplate: "https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/256/{z}/{x}/{y}@2x?access_token=$mapboxToken",
-              additionalOptions: const {
-                'accessToken': '',
-              },
+              urlTemplate: "https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/{z}/{x}/{y}?access_token=$mapboxToken",
+              tileSize: 512,
+              zoomOffset: -1,
+              userAgentPackageName: 'com.tagok.app',
             ),
             // Capa de la Ruta (Línea Azul)
             if (_currentRoute != null && _currentRoute!.polyline.isNotEmpty)
               PolylineLayer(
                 polylines: [
-                  // LÍNEA DE PRUEBA (ROJA, MUY GRUESA)
-                  Polyline(
-                    points: [
-                       _currentRoute!.polyline.first,
-                       _currentRoute!.polyline.last,
-                    ],
-                    strokeWidth: 15.0,
-                    color: Colors.redAccent,
-                  ),
-                  // LÍNEA REAL (AZUL)
                   Polyline(
                     points: _currentRoute!.polyline,
                     strokeWidth: 6.0,
@@ -291,21 +308,42 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               
-            // Capa de los Pórticos (Íconos)
+            // Capa de los Pórticos (Íconos) y Marcadores de Inicio/Fin
             if (_currentRoute != null)
               MarkerLayer(
-                markers: _currentRoute!.tolls.map((toll) => Marker(
-                  point: toll.location,
-                  width: 32,
-                  height: 32,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
+                markers: [
+                  // Marcador de Inicio (Verde)
+                  if (_currentRoute!.polyline.isNotEmpty)
+                    Marker(
+                      point: _currentRoute!.polyline.first,
+                      width: 40,
+                      height: 40,
+                      child: const Icon(Icons.radio_button_checked, color: Color(0xFF10B981), size: 30),
                     ),
-                    child: const Icon(Icons.monetization_on, color: Color(0xFFF59E0B), size: 24),
-                  ),
-                )).toList(),
+                  
+                  // Marcador de Fin (Rojo)
+                  if (_currentRoute!.polyline.isNotEmpty)
+                    Marker(
+                      point: _currentRoute!.polyline.last,
+                      width: 40,
+                      height: 40,
+                      child: const Icon(Icons.location_on, color: Color(0xFFEF4444), size: 35),
+                    ),
+
+                  // Marcadores de Pórticos
+                  ..._currentRoute!.tolls.map((toll) => Marker(
+                    point: toll.location,
+                    width: 32,
+                    height: 32,
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.monetization_on, color: Color(0xFFF59E0B), size: 24),
+                    ),
+                  )),
+                ],
               ),
 
             // 2. Capa de Marcadores (Punto azul del usuario)
@@ -332,32 +370,125 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               decoration: BoxDecoration(
-                color: navBgColor.withOpacity(0.95),
+                color: navBgColor.withValues(alpha: 0.95),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: Colors.white12),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 5)),
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 10, offset: const Offset(0, 5)),
                 ]
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Costo Total Estimado', style: TextStyle(color: textMuted, fontSize: 12)),
-                      const SizedBox(height: 4),
-                      Text('\$${_currentRoute!.totalCost.toStringAsFixed(0)} CLP', style: const TextStyle(color: Color(0xFF10B981), fontSize: 22, fontWeight: FontWeight.bold)),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Costo Total Estimado', style: TextStyle(color: textMuted, fontSize: 12)),
+                          const SizedBox(height: 4),
+                          Text('\$${_currentRoute!.totalCost.toStringAsFixed(0)} CLP', style: const TextStyle(color: Color(0xFF10B981), fontSize: 22, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text('Distancia / Tiempo', style: TextStyle(color: textMuted, fontSize: 12)),
+                          const SizedBox(height: 4),
+                          Text('${_currentRoute!.distanceKm.toStringAsFixed(1)} km • ${_currentRoute!.durationText}', style: TextStyle(color: textMain, fontSize: 14, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
                     ],
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text('Distancia / Tiempo', style: TextStyle(color: textMuted, fontSize: 12)),
-                      const SizedBox(height: 4),
-                      Text('${_currentRoute!.distanceKm.toStringAsFixed(1)} km • ${_currentRoute!.durationText}', style: TextStyle(color: textMain, fontSize: 14, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
+                  if (!_isNavigating) ...[
+                    const SizedBox(height: 16),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _isNavigating = true;
+                        });
+                        _mapController.move(_currentPosition ?? _currentRoute!.polyline.first, 17.0);
+                      },
+                      child: Container(
+                        height: 48,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(colors: [Color(0xFF4F46E5), Color(0xFF818CF8)]),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(color: primaryColor.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 4)),
+                          ],
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.navigation, color: Colors.white, size: 20),
+                            SizedBox(width: 8),
+                            Text('IR AHORA', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ] else ...[
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        // Botón Pausar/Seguir
+                        Expanded(
+                          flex: 1,
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _isNavigating = !_isNavigating;
+                              });
+                            },
+                            child: Container(
+                              height: 48,
+                              decoration: BoxDecoration(
+                                color: primaryColor.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: primaryColor.withValues(alpha: 0.3)),
+                              ),
+                              child: Icon(
+                                _isNavigating ? Icons.pause : Icons.play_arrow, 
+                                color: primaryColor
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        // Botón Finalizar Viaje (Limpia todo)
+                        Expanded(
+                          flex: 3,
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _isNavigating = false;
+                                _currentRoute = null;
+                              });
+                              _centerOnUser();
+                            },
+                            child: Container(
+                              height: 48,
+                              decoration: BoxDecoration(
+                                color: Colors.redAccent,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(color: Colors.redAccent.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 4)),
+                                ],
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  'FINALIZAR VIAJE', 
+                                  style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -392,7 +523,7 @@ class _HomeScreenState extends State<HomeScreen> {
           height: 40,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: primaryColor.withOpacity(0.3),
+            color: primaryColor.withValues(alpha: 0.3),
           ),
         ),
         Container(
@@ -404,7 +535,7 @@ class _HomeScreenState extends State<HomeScreen> {
             border: Border.all(color: Colors.white, width: 2),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
+                color: Colors.black.withValues(alpha: 0.2),
                 blurRadius: 4,
                 offset: const Offset(0, 2),
               ),

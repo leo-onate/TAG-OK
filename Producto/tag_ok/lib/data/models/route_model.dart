@@ -6,6 +6,7 @@ class RouteData {
   final double totalCost;
   final double distanceKm;
   final String durationText;
+  final String direction; // ej: "Sentido Santiago" o "Sentido San Antonio"
 
   RouteData({
     required this.polyline,
@@ -13,17 +14,24 @@ class RouteData {
     required this.totalCost,
     required this.distanceKm,
     required this.durationText,
+    required this.direction,
   });
 }
 
 class TollData {
   final LatLng location;
   final String name;
-  final double cost;
+  final double cost; // TBFP
+  final double? costPunta; // TBP
+  final double? costSaturacion; // TS
+  final String? direction; // "N-S", "S-N", "P-O", "O-P"
 
   TollData({
     required this.location,
     required this.name,
     required this.cost,
+    this.costPunta,
+    this.costSaturacion,
+    this.direction,
   });
 }
