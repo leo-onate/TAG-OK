@@ -5,6 +5,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart';
 import 'route_setup_screen.dart';
+import 'profile_screen.dart';
+import 'vehiculos_screen.dart';
 import '../data/models/route_model.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -215,7 +217,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Helper para construir cada ícono del menú inferior
   Widget _buildNavIcon(IconData icon, int index, String label) {
     final isSelected = _selectedIndex == index;
     return GestureDetector(
@@ -244,6 +245,34 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildBodyTab() {
+    if (_selectedIndex == 0) return _buildMapTab();
+    if (_selectedIndex == 2) return const VehiculosScreen();
+    if (_selectedIndex == 3) return const ProfileScreen();
+    
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            _getIconForIndex(_selectedIndex),
+            size: 80,
+            color: textMuted.withOpacity(0.3),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            _getTitleForIndex(_selectedIndex),
+            style: TextStyle(
+              color: textMain,
+              fontSize: 24,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }
