@@ -7,7 +7,10 @@ import 'package:geolocator/geolocator.dart';
 import 'route_setup_screen.dart';
 import 'profile_screen.dart';
 import 'vehiculos_screen.dart';
+import 'audit_screen.dart';
 import '../data/models/route_model.dart';
+import '../data/models/trip_history.dart';
+import '../data/services/history_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -231,6 +234,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildBodyTab() {
     if (_selectedIndex == 0) return _buildMapTab();
+    if (_selectedIndex == 1) return const AuditScreen();
     if (_selectedIndex == 2) return const VehiculosScreen();
     if (_selectedIndex == 3) return const ProfileScreen();
     
@@ -437,11 +441,45 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         const SizedBox(width: 12),
-                        // Botón Finalizar Viaje (Limpia todo)
+                        // Botón Finalizar Viaje (Limpia todo y guarda historial)
                         Expanded(
                           flex: 3,
                           child: GestureDetector(
-                            onTap: () {
+                            onTap: () async {
+                              // Guardar en el historial antes de limpiar
+                              if (_currentRoute != null) {
+                                final historyService = HistoryService();
+                                final trip = TripHistory(
+                                  id: '', // Se genera en Firestore
+                                  date: DateTime.now(),
+                                  totalCost: _currentRoute!.totalCost,
+                                  distanceKm: _currentRoute!.distanceKm,
+                                  duration: _currentRoute!.durationText,
+                                  tolls: _currentRoute!.tolls.map((t) => TollRecord(
+                                    name: t.name,
+                                    cost: t.cost, // Usamos el costo base o el que se haya aplicado
+                                    timestamp: DateTime.now(),
+                                  )).toList(),
+                                );
+                                await historyService.saveTrip(trip);
+                                
+                                // Lógica de Notificación de Límite
+                                final allTrips = await historyService.getTripHistory().first;
+                                final double newTotal = allTrips.fold(0, (sum, t) => sum + t.totalCost);
+                                final double limit = await historyService.getMonthlyLimit().first;
+                                
+                                if (mounted) {
+                                  _checkAndShowLimitAlert(context, newTotal, limit);
+                                  
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Viaje guardado en el historial'),
+                                      backgroundColor: Color(0xFF10B981),
+                                    ),
+                                  );
+                                }
+                              }
+
                               setState(() {
                                 _isNavigating = false;
                                 _currentRoute = null;
@@ -494,6 +532,49 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Diseño del punto azul con sombra/halo
+  void _checkAndShowLimitAlert(BuildContext context, double total, double limit) {
+    final double percentage = (total / limit) * 100;
+    String? message;
+    Color alertColor = Colors.blue;
+
+    if (percentage >= 100) {
+      message = "¡Has alcanzado el 100% de tu límite mensual!";
+      alertColor = Colors.redAccent;
+    } else if (percentage >= 90) {
+      message = "Atención: Llevas el 90% de tu límite gastado.";
+      alertColor = Colors.orangeAccent;
+    } else if (percentage >= 75) {
+      message = "Aviso: Llevas el 75% de tu presupuesto consumido.";
+      alertColor = Colors.yellowAccent;
+    } else if (percentage >= 50) {
+      message = "Informativo: Has llegado al 50% de tu presupuesto mensual.";
+    }
+
+    if (message != null) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          backgroundColor: const Color(0xFF1E293B),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Row(
+            children: [
+              Icon(Icons.warning_amber_rounded, color: alertColor),
+              const SizedBox(width: 10),
+              const Text("Alerta de Presupuesto", style: TextStyle(color: Colors.white, fontSize: 18)),
+            ],
+          ),
+          content: Text(message!, style: const TextStyle(color: Color(0xFF94A3B8))),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("ENTENDIDO", style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
   Widget _buildLocationMarker() {
     return Stack(
       alignment: Alignment.center,
