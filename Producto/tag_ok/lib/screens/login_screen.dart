@@ -98,7 +98,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   color: primaryColor,
                   shadows: [
                     Shadow(
-                      color: primaryColor.withOpacity(0.5),
+                      color: primaryColor.withValues(alpha: 0.5),
                       blurRadius: 20,
                     )
                   ],
@@ -153,7 +153,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: primaryColor.withOpacity(0.5),
+                        color: primaryColor.withValues(alpha: 0.5),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),
@@ -241,7 +241,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         keyboardType: obscureText ? TextInputType.text : TextInputType.emailAddress,
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: TextStyle(color: textMuted.withOpacity(0.7)),
+          hintStyle: TextStyle(color: textMuted.withValues(alpha: 0.7)),
           prefixIcon: Icon(icon, color: textMuted),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 16),
