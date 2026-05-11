@@ -1,163 +1,145 @@
----
+# Tag OK 🚗💨
 
-🚗 TAG OK
+**Tu copiloto inteligente para el control de gastos de TAG y navegación en tiempo real.**
 
-Un copiloto financiero para tus viajes en autopistas
+> Optimiza tus rutas, gestiona tu presupuesto mensual y nunca más te sorprendas con la cuenta del TAG.
 
-TAG OK es una aplicación móvil desarrollada por el Grupo Sentte que permite a los conductores anticipar, visualizar y controlar los costos asociados al uso de autopistas con sistema TAG en la Región Metropolitana de Santiago.
-
-
----
-
-📌 Descripción del Proyecto
-
-Actualmente, los conductores no cuentan con herramientas que les permitan conocer el costo de un trayecto antes de realizarlo. La información se encuentra fragmentada entre distintas concesionarias y se presenta de forma posterior, lo que dificulta la toma de decisiones.
-
-TAG OK busca resolver este problema mediante una solución que integra simulación de rutas, estimación de costos y visualización del gasto, permitiendo al usuario tomar decisiones informadas antes de viajar.
-
+[![Flutter](https://img.shields.io/badge/Flutter-3.41.9-blue.svg)](https://flutter.dev/)
+[![Dart](https://img.shields.io/badge/Dart-3.11.5-blue.svg)](https://dart.dev/)
+[![Firebase](https://img.shields.io/badge/Firebase-Cloud%20Firestore-orange.svg)](https://firebase.google.com/)
+[![Mapbox](https://img.shields.io/badge/Mapbox-GL%20Maps-000000.svg)](https://www.mapbox.com/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ---
 
-🎯 Objetivo
+## 📋 Tabla de Contenidos
 
-Desarrollar una aplicación móvil que permita a los usuarios anticipar y gestionar el gasto en autopistas, mejorando la planificación de sus desplazamientos.
-
-
----
-
-⚙️ Tecnologías Utilizadas
-
-Frontend: Flutter (Dart)
-
-Arquitectura: MVVM
-
-Backend: Firebase (Firestore, Auth, Cloud Messaging)
-
-APIs externas:
-
-TollGuru → Cálculo de peajes
-
-Mapbox → Mapas y rutas
-
-
-Networking: Dio
-
-Gestión de estado: Riverpod
-
-
+- [Descripción](#descripción)
+- [Características Principales](#características-principales)
+- [Dashboard & Visualización](#dashboard--visualización)
+- [Gestión de Vehículos](#gestión-de-vehículos)
+- [Control de Presupuesto](#control-de-presupuesto)
+- [Stack Tecnológico](#stack-tecnológico)
+- [Instalación y Configuración](#instalación-y-configuración)
+- [Estructura del Proyecto](#estructura-del-proyecto)
 
 ---
 
-🧩 Funcionalidades (MVP)
+## 📝 Descripción
 
-Registro y gestión de vehículos
+**Tag OK** es una aplicación móvil diseñada para el conductor moderno que transita por las autopistas urbanas concesionadas de Chile. A diferencia de un GPS convencional, Tag OK integra un motor de cálculo de tarifas actualizado al año **2026**, permitiendo conocer el costo exacto de cada viaje antes de encender el motor.
 
-Simulación de viajes (origen/destino)
-
-Estimación de costos de TAG
-
-Visualización de rutas en mapa
-
-Dashboard con gasto acumulado
-
-Historial de viajes
-
-Alertas básicas de presupuesto
-
-
+Con una interfaz **Glassmorphism** premium y notificaciones inteligentes de presupuesto, la app te ayuda a mantener tus finanzas bajo control mientras navegas con precisión.
 
 ---
 
-📱 Alcance del Proyecto
+## ✨ Características Principales
 
-El proyecto corresponde al desarrollo de un Producto Mínimo Viable (MVP) que permite:
+### 🛰️ Navegación Inteligente
+- Cálculo de rutas óptimas utilizando la API de Mapbox.
+- Detección automática de pórticos de TAG en el trayecto.
+- Visualización de tarifas dinámicas: TBFP (Base), TBP (Punta) y TS (Saturación).
 
-Simular trayectos dentro de Santiago
+### 📊 Auditoría y Historial
+- Registro detallado de cada viaje: hora, distancia, duración y costo exacto.
+- Desglose de cada pórtico atravesado con su respectiva tarifa y hora de paso.
+- Historial vinculado a la **patente específica** del vehículo utilizado.
 
-Estimar costos de autopistas antes del viaje
-
-Visualizar el gasto del usuario
-
-
-⚠️ No incluye:
-
-Integración directa con concesionarias
-
-Pagos o recargas de TAG
-
-Conexión con dispositivos físicos
-
-
+### 🚗 Gestión de Flotas
+- Registro ilimitado de vehículos (Marca, Modelo, Patente).
+- Confirmación obligatoria del vehículo antes de iniciar cada navegación para asegurar la trazabilidad del gasto.
+- Identificación visual de vehículos mediante badges de patentes.
 
 ---
 
-🏗️ Arquitectura
+## 🖼️ Dashboard & Visualización
 
-El sistema sigue una arquitectura modular tipo MVVM, permitiendo escalabilidad y mantenimiento eficiente.
-
-View: Interfaz en Flutter
-
-ViewModel: Lógica de presentación (Riverpod)
-
-Model: Datos provenientes de Firebase y APIs externas
-
-
+El nuevo **Centro de Control** utiliza un diseño de vanguardia con:
+- **Glassmorphism**: Paneles flotantes con desenfoque de fondo (`BackdropFilter`) para una estética premium.
+- **Widgets de Estado**: Saludo personalizado y estado de protección activa en tiempo real.
+- **Monitor de Gasto**: Acceso rápido al porcentaje de presupuesto consumido directamente desde el mapa.
 
 ---
 
-🚀 Estado del Proyecto
+## 💰 Control de Presupuesto
 
-🔧 En desarrollo – Fase 1 (Definición y diseño del MVP)
-📅 Proyecto académico – TPY1101 Duoc UC (2026)
-
-
----
-
-📂 Estructura del Repositorio (Inicial)
-
- lib/
-
- ├── core/
- 
- ├── data/
- 
- ├── domain/
- 
- ├── presentation/
- 
- └── main.dart
-
+Implementamos un sistema de alertas dinámicas para evitar exceder tus límites mensuales:
+- **Alertas de Umbral**: Notificaciones automáticas al alcanzar el **50%**, **75%**, **90%** y **100%** del presupuesto definido.
+- **Memoria de Notificaciones**: El sistema recuerda qué alertas ya has visto este mes para evitar interrupciones innecesarias en cada viaje.
+- **Semaforización Visual**:
+  - 🟣 **Violeta**: Gasto normal (< 50%).
+  - 🟢 **Verde**: Alerta informativa (50%).
+  - 🟡 **Amarillo**: Precaución (75%).
+  - 🟠 **Naranja**: Crítico (90%).
+  - 🔴 **Rojo**: Límite excedido (100%).
 
 ---
 
-## 👥 Equipo de Desarrollo
-Proyecto desarrollado para la asignatura **TPY1101 (Taller Aplicado de Programación)** en Duoc UC:
- * **Leonardo Oñate:** Líder / DevOps.
- * **Ignacio Bravo:** Arquitecto / QA.
- * **Jesús Aranguiz:** Especialista en Datos / Integración.
----
+## 🛠️ Stack Tecnológico
 
-📊 Factibilidad
-
-El proyecto está diseñado para operar bajo capas gratuitas, utilizando Firebase y APIs externas en sus planes free, lo que permite un desarrollo inicial con costo $0.
-
-
----
-
-📌 Futuras mejoras
-
-Optimización de rutas por costo
-
-Integración con más fuentes de datos
-
-Alertas inteligentes avanzadas
-
-Funcionalidades B2B
-
-
+| Componente | Tecnología |
+| :--- | :--- |
+| **Framework** | Flutter 3.41.9 (Stable) |
+| **Lenguaje** | Dart 3.11.5 |
+| **Base de Datos** | Firebase Cloud Firestore |
+| **Autenticación** | Firebase Auth |
+| **Mapas** | Flutter Map + Mapbox API |
+| **Estado** | Riverpod / StateNotifier |
+| **Estilos** | Custom Glassmorphism System |
 
 ---
 
-📄 Licencia
+## 🚀 Instalación y Configuración
 
-Proyecto académico – uso educativo.
+### Prerrequisitos
+- Flutter SDK instalado.
+- Cuenta en Mapbox para obtener un Access Token.
+- Proyecto en Firebase con Firestore habilitado.
+
+### Configuración
+1. **Clonar el repositorio:**
+   ```bash
+   git clone https://github.com/tu-usuario/TAG-OK.git
+   cd TAG-OK/Producto/tag_ok
+   ```
+
+2. **Configurar variables de entorno:**
+   Crea un archivo `.env` en la raíz del proyecto:
+   ```env
+   MAPBOX_ACCESS_TOKEN=tu_token_aqui
+   ```
+
+3. **Instalar dependencias:**
+   ```bash
+   flutter pub get
+   ```
+
+4. **Ejecutar:**
+   ```bash
+   flutter run
+   ```
+
+---
+
+## 📂 Estructura del Proyecto
+
+```bash
+lib/
+├── data/
+│   ├── models/       # Modelos de datos (Trip, Vehicle, Route)
+│   ├── mock/         # Base de datos de pórticos 2026
+│   └── services/     # Lógica de Firebase, Mapas y Cálculo
+├── screens/          # Vistas (Home, Audit, Profile, Vehicles)
+├── widgets/          # Componentes reutilizables
+└── main.dart         # Punto de entrada y configuración de Firebase
+```
+
+---
+
+## 🛡️ Seguridad y Privacidad
+- Autenticación segura mediante Firebase.
+- Datos de navegación y gastos almacenados de forma privada por usuario.
+- Respaldo automático en la nube.
+
+---
+*Desarrollado con ❤️ para el ecosistema vial chileno.*
