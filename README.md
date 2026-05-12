@@ -12,20 +12,22 @@
 
 ---
 
+<a name="tabla-de-contenidos"></a>
 ## 📋 Tabla de Contenidos
 
-- [Descripción](#descripción)
-- [Características Principales](#características-principales)
-- [Dashboard & Visualización](#dashboard--visualización)
-- [Gestión de Vehículos](#gestión-de-vehículos)
+- [Descripción](#descripcion)
+- [Características Principales](#caracteristicas-principales)
+- [Dashboard & Visualización](#dashboard-visualizacion)
+- [Gestión de Vehículos](#gestion-de-vehiculos)
 - [Control de Presupuesto](#control-de-presupuesto)
-- [Stack Tecnológico](#stack-tecnológico)
-- [Instalación y Configuración](#instalación-y-configuración)
-- [Estructura del Proyecto](#estructura-del-proyecto)
-- [Documentación de Base de Datos](#documentación-de-base-de-datos)
+- [Stack Tecnológico](#stack-tecnologico)
+- [Instalación y Configuración](#instalacion-configuracion)
+- [Estructura del Proyecto](#estructura-proyecto)
+- [Documentación de Base de Datos](#base-de-datos)
 
 ---
 
+<a name="descripcion"></a>
 ## 📝 Descripción
 
 **Tag OK** es una aplicación móvil diseñada para el conductor moderno que transita por las autopistas urbanas concesionadas de Chile. A diferencia de un GPS convencional, Tag OK integra un motor de cálculo de tarifas actualizado al año **2026**, permitiendo conocer el costo exacto de cada viaje antes de encender el motor.
@@ -34,6 +36,7 @@ Con una interfaz **Glassmorphism** premium y notificaciones inteligentes de pres
 
 ---
 
+<a name="caracteristicas-principales"></a>
 ## ✨ Características Principales
 
 ### 🛰️ Navegación Inteligente
@@ -53,6 +56,7 @@ Con una interfaz **Glassmorphism** premium y notificaciones inteligentes de pres
 
 ---
 
+<a name="dashboard-visualizacion"></a>
 ## 🖼️ Dashboard & Visualización
 
 El nuevo **Centro de Control** utiliza un diseño de vanguardia con:
@@ -62,6 +66,17 @@ El nuevo **Centro de Control** utiliza un diseño de vanguardia con:
 
 ---
 
+<a name="gestion-de-vehiculos"></a>
+## 🚗 Gestión de Vehículos
+
+Mantenemos un control exhaustivo de tu flota:
+- Vinculación de vehículos a tu cuenta personal.
+- Selección dinámica de vehículo activo para el cálculo de tarifas (Motos, Autos, Camionetas).
+- Persistencia de datos en la nube para acceder desde cualquier dispositivo.
+
+---
+
+<a name="control-de-presupuesto"></a>
 ## 💰 Control de Presupuesto
 
 Implementamos un sistema de alertas dinámicas para evitar exceder tus límites mensuales:
@@ -76,6 +91,7 @@ Implementamos un sistema de alertas dinámicas para evitar exceder tus límites 
 
 ---
 
+<a name="stack-tecnologico"></a>
 ## 🛠️ Stack Tecnológico
 
 | Componente | Tecnología |
@@ -90,6 +106,7 @@ Implementamos un sistema de alertas dinámicas para evitar exceder tus límites 
 
 ---
 
+<a name="instalacion-configuracion"></a>
 ## 🚀 Instalación y Configuración
 
 ### Prerrequisitos
@@ -122,6 +139,7 @@ Implementamos un sistema de alertas dinámicas para evitar exceder tus límites 
 
 ---
 
+<a name="estructura-proyecto"></a>
 ## 📂 Estructura del Proyecto
 
 ```bash
@@ -137,55 +155,7 @@ lib/
 
 ---
 
-## 🚀 Guía Rápida de Despliegue (Fast Track)
-
-Si deseas instalar esta aplicación en un nuevo equipo de desarrollo o dispositivo físico, sigue estos pasos en orden:
-
-### 1. Clonar y Preparar
-```bash
-git clone https://github.com/tu-usuario/TAG-OK.git
-cd TAG-OK/Producto/tag_ok
-```
-
-### 2. Configurar Secretos (Mapbox)
-Crea un archivo llamado `.env` en `Producto/tag_ok/` y pega tu token:
-```env
-MAPBOX_ACCESS_TOKEN=pk.your_mapbox_token_here
-```
-
-### 3. Vincular con Firebase
-Asegúrate de tener [Firebase CLI](https://firebase.google.com/docs/cli) instalado y logueado, luego ejecuta:
-```bash
-dart pub global activate flutterfire_cli
-flutterfire configure
-```
-*Esto generará el archivo `lib/firebase_options.dart` necesario para que la app conecte con la base de datos.*
-
-### 4. Instalar Dependencias
-```bash
-flutter clean
-flutter pub get
-```
-
-### 5. Lanzar en Dispositivo
-Conecta tu teléfono por USB (con Depuración USB activa) o abre un emulador y ejecuta:
-```bash
-# Para probar en tiempo real
-flutter run
-
-# Para generar un instalador (APK) para Android
-flutter build apk --split-per-abi
-```
-
----
-
-## 🛡️ Seguridad y Privacidad
-- Autenticación segura mediante Firebase Auth.
-- Datos de navegación y gastos almacenados de forma privada por usuario en Firestore.
-- Respaldo automático en la nube con reglas de seguridad por UID.
-
----
-
+<a name="base-de-datos"></a>
 ## 🗄️ Documentación de Base de Datos
 
 Para una revisión técnica profunda del esquema de datos y la arquitectura NoSQL, consulta los siguientes recursos:
