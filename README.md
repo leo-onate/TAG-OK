@@ -21,7 +21,8 @@
 - [Control de Presupuesto](#control-de-presupuesto)
 - [Stack Tecnológico](#stack-tecnológico)
 - [Instalación y Configuración](#instalación-y-configuración)
-- [Estructura del Proyecto](#estructura-del-proyecto)`n- [Documentaci�n de Base de Datos](#documentaci�n-de-base-de-datos)
+- [Estructura del Proyecto](#estructura-del-proyecto)
+- [Documentación de Base de Datos](#documentación-de-base-de-datos)
 
 ---
 
@@ -184,13 +185,13 @@ flutter build apk --split-per-abi
 - Respaldo automático en la nube con reglas de seguridad por UID.
 
 ---
-*Desarrollado con ❤️ para el ecosistema vial chileno.*
+
+## 🗄️ Documentación de Base de Datos
+
+Para una revisión técnica profunda del esquema de datos y la arquitectura NoSQL, consulta los siguientes recursos:
+
+- 📄 [Informe de Arquitectura de Datos](Producto/Base%20de%20datos/DOCUMENTACION_BASE_DE_DATOS.md)
+- 📂 [Exportación Completa (JSON)](Producto/Base%20de%20datos/EXPORTACION_BASE_DE_DATOS.json)
 
 ---
-
-## ??? Documentaci�n de Base de Datos
-
-Para una revisi�n t�cnica profunda del esquema de datos y la arquitectura NoSQL, consulta los siguientes recursos:
-
-- ?? [Informe de Arquitectura de Datos](Producto/Base%20de%20datos/DOCUMENTACION_BASE_DE_DATOS.md): Detalle de colecciones, campos y tipos de datos.
-- ?? [Exportaci�n Completa (JSON)](Producto/Base%20de%20datos/EXPORTACION_BASE_DE_DATOS.json): Volcado real de la base de datos con los 79 p�rticos y datos de prueba.
+*Desarrollado con ❤️ para el ecosistema vial chileno.*
