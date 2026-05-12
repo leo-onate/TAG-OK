@@ -21,7 +21,7 @@
 - [Control de Presupuesto](#control-de-presupuesto)
 - [Stack Tecnol贸gico](#stack-tecnol贸gico)
 - [Instalaci贸n y Configuraci贸n](#instalaci贸n-y-configuraci贸n)
-- [Estructura del Proyecto](#estructura-del-proyecto)
+- [Estructura del Proyecto](#estructura-del-proyecto)`n- [Documentaci髇 de Base de Datos](#documentaci髇-de-base-de-datos)
 
 ---
 
@@ -185,3 +185,12 @@ flutter build apk --split-per-abi
 
 ---
 *Desarrollado con 鉂わ笍 para el ecosistema vial chileno.*
+
+---
+
+## ??? Documentaci髇 de Base de Datos
+
+Para una revisi髇 t閏nica profunda del esquema de datos y la arquitectura NoSQL, consulta los siguientes recursos:
+
+- ?? [Informe de Arquitectura de Datos](Producto/Base%20de%20datos/DOCUMENTACION_BASE_DE_DATOS.md): Detalle de colecciones, campos y tipos de datos.
+- ?? [Exportaci髇 Completa (JSON)](Producto/Base%20de%20datos/EXPORTACION_BASE_DE_DATOS.json): Volcado real de la base de datos con los 79 p髍ticos y datos de prueba.
