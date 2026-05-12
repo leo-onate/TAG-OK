@@ -1,0 +1,2251 @@
+{
+    "porticos": {
+        "0CJe56uthiZuDHIbpHuN": {
+            "datos": {
+                "costoSaturacion": 681.72,
+                "fecha_actualizacion": "2026-05-11 15:05:44.566000+00:00",
+                "costo": 233.79,
+                "costoPunta": 450.11,
+                "lat": -33.4221473,
+                "lng": -70.6198252,
+                "nombre": "SB Salida Bellavista",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "0mqR8qhfKjg4WTAeF4O1": {
+            "datos": {
+                "costoSaturacion": 1348.92,
+                "fecha_actualizacion": "2026-05-11 15:05:44.887000+00:00",
+                "costo": 462.63,
+                "costoPunta": 890.66,
+                "lat": -33.4251,
+                "lng": -70.6951,
+                "nombre": "Pórtico P4 - Vivaceta",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "1cjmR5fcQ8ZBvvOa9EL2": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:43.412000+00:00",
+                "costo": 350,
+                "costoPunta": null,
+                "lat": -33.4081406,
+                "lng": -70.5997632,
+                "nombre": "P8.1 Las Tranqueras - Costanera Norte",
+                "sentido": null
+            },
+            "subcolecciones": {}
+        },
+        "1wjfomea6rk0ZkYDnEZC": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:44.440000+00:00",
+                "costo": 868.37,
+                "costoPunta": null,
+                "lat": -33.5064259,
+                "lng": -70.697251,
+                "nombre": "PA21 - Américo Vespucio - Carlos Valdovinos",
+                "sentido": "S-N"
+            },
+            "subcolecciones": {}
+        },
+        "26utDu2QuiMbCKfbTZ0x": {
+            "datos": {
+                "costoSaturacion": 997.87,
+                "fecha_actualizacion": "2026-05-11 15:05:43.996000+00:00",
+                "costo": 332.62,
+                "costoPunta": 665.25,
+                "lat": -33.5398418,
+                "lng": -70.6529975,
+                "nombre": "P3.2 Gran Avenida - Santa Rosa",
+                "sentido": "P-O"
+            },
+            "subcolecciones": {}
+        },
+        "3hChUfqWqRGoBhR0j4SV": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:44.390000+00:00",
+                "costo": 868.37,
+                "costoPunta": null,
+                "lat": -33.4690606,
+                "lng": -70.6881273,
+                "nombre": "PA23 - Carlos Valdovinos - Alameda",
+                "sentido": "S-N"
+            },
+            "subcolecciones": {}
+        },
+        "518PtqayZraXDJex3pNu": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:43.309000+00:00",
+                "costo": 350,
+                "costoPunta": null,
+                "lat": -33.4264381,
+                "lng": -70.669833,
+                "nombre": "P05 Vivaceta - Carrascal",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "5HCi7oXY2ydXJx5hwSzD": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:44.516000+00:00",
+                "costo": 350,
+                "costoPunta": null,
+                "lat": -33.3981,
+                "lng": -70.5961,
+                "nombre": "P08 Centenario - Lo Saldes",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "5Qs8CEGqgKW7UxpBwl32": {
+            "datos": {
+                "costoSaturacion": 1310.4,
+                "fecha_actualizacion": "2026-05-11 15:05:44.043000+00:00",
+                "costo": 449.4,
+                "costoPunta": 865.2,
+                "lat": -33.3986159,
+                "lng": -70.6157247,
+                "nombre": "P101 Salto - Kennedy",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "5mAxlDojNWNc1Kf4tVf2": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:43.112000+00:00",
+                "costo": 868.37,
+                "costoPunta": null,
+                "lat": -33.4171865,
+                "lng": -70.6787232,
+                "nombre": "PA16 - Río Mapocho - 14 de la Fama - Américo Vespucio Norte",
+                "sentido": "N-S"
+            },
+            "subcolecciones": {}
+        },
+        "7it1Op5UArhL5d5ckyv7": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:44.592000+00:00",
+                "costo": 350,
+                "costoPunta": null,
+                "lat": -33.4239919,
+                "lng": -70.6219547,
+                "nombre": "P03 Torres Tajamar - Puente Lo Saldes",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "7xYr7oDPVqirdPaNoMeI": {
+            "datos": {
+                "costoSaturacion": 1597.78,
+                "fecha_actualizacion": "2026-05-11 15:05:43.461000+00:00",
+                "costo": 650,
+                "costoPunta": 975,
+                "lat": -33.483359,
+                "lng": -70.7530939,
+                "nombre": "P1 Ruta 78 - Santa Elena",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "9buLJ3WMENypPBnPFQ93": {
+            "datos": {
+                "costoSaturacion": 1698.25,
+                "fecha_actualizacion": "2026-05-11 15:05:42.919000+00:00",
+                "costo": 566.08,
+                "costoPunta": 1132.17,
+                "lat": -33.5588804,
+                "lng": -70.7105862,
+                "nombre": "PA32 - Las Acacias - Lo Blanco",
+                "sentido": "N-S"
+            },
+            "subcolecciones": {}
+        },
+        "AceCKZpnqerZCwgQHxas": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:43.485000+00:00",
+                "costo": 868.37,
+                "costoPunta": null,
+                "lat": -33.5364729,
+                "lng": -70.7076591,
+                "nombre": "PA20 - Américo Vespucio - Ruta 5 Sur",
+                "sentido": "S-N"
+            },
+            "subcolecciones": {}
+        },
+        "CWlypjkO6bRVWYr8VYtL": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:44.493000+00:00",
+                "costo": 350,
+                "costoPunta": null,
+                "lat": -33.398,
+                "lng": -70.596,
+                "nombre": "P07 Lo Saldes - Centenario",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "DUnMX0AQ9pqvf5aWfV4W": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:44.742000+00:00",
+                "costo": 350,
+                "costoPunta": null,
+                "lat": -33.5819958,
+                "lng": -70.6112359,
+                "nombre": "Peaje Gabriela Poniente",
+                "sentido": null
+            },
+            "subcolecciones": {}
+        },
+        "DkpJlb6J3j4CPSFQ5fPo": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:44.345000+00:00",
+                "costo": 350,
+                "costoPunta": null,
+                "lat": -33.3872062,
+                "lng": -70.5413721,
+                "nombre": "P07 Las Tranqueras - Estoril",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "DsT4IUxicQ3LDmVQJRVH": {
+            "datos": {
+                "costoSaturacion": 997.87,
+                "fecha_actualizacion": "2026-05-11 15:05:43.971000+00:00",
+                "costo": 332.62,
+                "costoPunta": 665.25,
+                "lat": -33.5338163,
+                "lng": -70.6764509,
+                "nombre": "P3.4 Ruta 5 - Gran Avenida",
+                "sentido": "P-O"
+            },
+            "subcolecciones": {}
+        },
+        "F919GGklTgYYRt16viGb": {
+            "datos": {
+                "costoSaturacion": 1387.89,
+                "fecha_actualizacion": "2026-05-11 15:05:44.717000+00:00",
+                "costo": 462.63,
+                "costoPunta": 925.26,
+                "lat": -33.5136,
+                "lng": -70.5951,
+                "nombre": "P4.1 Macul - Vicuña Mackenna",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "FCGXHErA1AcyJSPzstjl": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:43.627000+00:00",
+                "costo": 350,
+                "costoPunta": null,
+                "lat": -33.40909,
+                "lng": -70.6043271,
+                "nombre": "P8.0 Costanera Norte - Las Tranqueras",
+                "sentido": null
+            },
+            "subcolecciones": {}
+        },
+        "FLr5rcd2ULKk2T4aFjzi": {
+            "datos": {
+                "costoSaturacion": 2096.64,
+                "fecha_actualizacion": "2026-05-11 15:05:42.760000+00:00",
+                "costo": 719.04,
+                "costoPunta": 1384.32,
+                "lat": -33.4387137,
+                "lng": -70.7831378,
+                "nombre": "P3 Ruta 68 - Costanera Norte",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "HT10OS1ioHgTcRJxQDce": {
+            "datos": {
+                "costoSaturacion": 753.67,
+                "fecha_actualizacion": "2026-05-11 15:05:43.362000+00:00",
+                "costo": 251.22,
+                "costoPunta": 502.45,
+                "lat": -33.3944443,
+                "lng": -70.6033861,
+                "nombre": "P2.2 Puente Lo Saldes - Centenario",
+                "sentido": "P-O"
+            },
+            "subcolecciones": {}
+        },
+        "IbCXsDyyPCqDhCQM0N6W": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:44.618000+00:00",
+                "costo": 350,
+                "costoPunta": null,
+                "lat": -33.423992,
+                "lng": -70.6219548,
+                "nombre": "P03 Puente Lo Saldes - Vivaceta",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "J2a8EjWVv73jkYoY6yLr": {
+            "datos": {
+                "costoSaturacion": 1356.21,
+                "fecha_actualizacion": "2026-05-11 15:05:43.267000+00:00",
+                "costo": 452.06,
+                "costoPunta": 904.14,
+                "lat": -33.5478986,
+                "lng": -70.6970069,
+                "nombre": "PA7 - Las Acacias - Américo Vespucio",
+                "sentido": "S-N"
+            },
+            "subcolecciones": {}
+        },
+        "K3OGjreAbe63qxdzmsDQ": {
+            "datos": {
+                "costoSaturacion": 2096.64,
+                "fecha_actualizacion": "2026-05-11 15:05:44.863000+00:00",
+                "costo": 719.04,
+                "costoPunta": 1384.32,
+                "lat": -33.425,
+                "lng": -70.695,
+                "nombre": "Pórtico P3 - Walker Martínez",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "KB9rRljWk7ZgBKiEOCGx": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:43.652000+00:00",
+                "costo": 350,
+                "costoPunta": null,
+                "lat": -33.4090708,
+                "lng": -70.6038986,
+                "nombre": "P8.1 Costanera Norte - Las Tranqueras",
+                "sentido": null
+            },
+            "subcolecciones": {}
+        },
+        "KLqZUzDon1xryQDkRICQ": {
+            "datos": {
+                "costoSaturacion": 1755.28,
+                "fecha_actualizacion": "2026-05-11 15:05:44.091000+00:00",
+                "costo": 585.09,
+                "costoPunta": 1170.18,
+                "lat": -33.6227591,
+                "lng": -70.7145696,
+                "nombre": "PA3 - La Capilla - Colón",
+                "sentido": "S-N"
+            },
+            "subcolecciones": {}
+        },
+        "KMv6CXoV90QDSLtwQdAg": {
+            "datos": {
+                "costoSaturacion": 1178.49,
+                "fecha_actualizacion": "2026-05-11 15:05:44.165000+00:00",
+                "costo": 392.83,
+                "costoPunta": 785.66,
+                "lat": -33.5072,
+                "lng": -70.6693,
+                "nombre": "PA30 - Américo Vespucio - Departamental",
+                "sentido": "S-N"
+            },
+            "subcolecciones": {}
+        },
+        "Kp7NzR5HluCcb9AxY3DE": {
+            "datos": {
+                "costoSaturacion": 658.32,
+                "fecha_actualizacion": "2026-05-11 15:05:44.256000+00:00",
+                "costo": 225.77,
+                "costoPunta": 434.66,
+                "lat": -33.4302801,
+                "lng": -70.6572269,
+                "nombre": "EV Entrada Vivaceta",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "LPTqAcCL7v1HCCa45B0f": {
+            "datos": {
+                "costoSaturacion": 1863.48,
+                "fecha_actualizacion": "2026-05-11 15:05:44.944000+00:00",
+                "costo": 639.11,
+                "costoPunta": 1230.43,
+                "lat": -33.4130639,
+                "lng": -70.7667427,
+                "nombre": "P6.2 Américo Vespucio Poniente - Petersen",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "MZYv5bScdELtunaypqhf": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:42.974000+00:00",
+                "costo": 350,
+                "costoPunta": null,
+                "lat": -33.3710033,
+                "lng": -70.52258,
+                "nombre": "P00 Puente Padre Arteaga - Puente San Francisco",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "MgJRRIqIVaw6kvNZ97BA": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:44.211000+00:00",
+                "costo": 868.37,
+                "costoPunta": null,
+                "lat": -33.483,
+                "lng": -70.661,
+                "nombre": "PA10 - Departamental - Carlos Valdovinos",
+                "sentido": "N-S"
+            },
+            "subcolecciones": {}
+        },
+        "N7rM1uJNvwXryUXqBPmf": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:43.554000+00:00",
+                "costo": 350,
+                "costoPunta": null,
+                "lat": -33.5528306,
+                "lng": -70.8139017,
+                "nombre": "Padre Hurtado",
+                "sentido": null
+            },
+            "subcolecciones": {}
+        },
+        "OhTSLk7pBVmtgDL9dBX4": {
+            "datos": {
+                "costoSaturacion": 1310.4,
+                "fecha_actualizacion": "2026-05-11 15:05:43.166000+00:00",
+                "costo": 449.4,
+                "costoPunta": 865.2,
+                "lat": -33.3988003,
+                "lng": -70.6151323,
+                "nombre": "P102 Kennedy - El salto",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "Oo3O8bfJRSJqLtuhA7Lx": {
+            "datos": {
+                "costoSaturacion": 1387.89,
+                "fecha_actualizacion": "2026-05-11 15:05:43.838000+00:00",
+                "costo": 462.63,
+                "costoPunta": 925.26,
+                "lat": -33.5268018,
+                "lng": -70.6025742,
+                "nombre": "P4.2 Gnmo. de Alderete - Vicuña Mackena",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "PEhdrn5oxhO8vttuy1i9": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:43.220000+00:00",
+                "costo": 350,
+                "costoPunta": null,
+                "lat": -33.3876805,
+                "lng": -70.5429258,
+                "nombre": "P07 Estoril - Las Tranqueras",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "QUMi3dAxNSofAp1SWgsR": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:44.280000+00:00",
+                "costo": 350,
+                "costoPunta": null,
+                "lat": -33.4302245,
+                "lng": -70.6579611,
+                "nombre": "P04 Vivaceta - Torres Tajamar",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "S2YqBrye1H0XqLFKjvQp": {
+            "datos": {
+                "costoSaturacion": 1597.78,
+                "fecha_actualizacion": "2026-05-11 15:05:43.861000+00:00",
+                "costo": 532.59,
+                "costoPunta": 1065.18,
+                "lat": -33.5058611,
+                "lng": -70.728455,
+                "nombre": "P1.3 2a Transversal - Camino a Melipilla",
+                "sentido": "P-O"
+            },
+            "subcolecciones": {}
+        },
+        "TYypZpTNRGzetqlJ5ES6": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:44.668000+00:00",
+                "costo": 350,
+                "costoPunta": null,
+                "lat": -33.3851,
+                "lng": -70.5501,
+                "nombre": "P02 San Francisco de Asís",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "UTB1pTSt5ovS3wsw196U": {
+            "datos": {
+                "costoSaturacion": 753.67,
+                "fecha_actualizacion": "2026-05-11 15:05:43.922000+00:00",
+                "costo": 251.22,
+                "costoPunta": 502.45,
+                "lat": -33.5260519,
+                "lng": -70.6940167,
+                "nombre": "P2.1 Ruta 5 - General Velásquez",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "WCL0vRdzfsafJjyZSTiG": {
+            "datos": {
+                "costoSaturacion": 1597.78,
+                "fecha_actualizacion": "2026-05-11 15:05:44.840000+00:00",
+                "costo": 532.59,
+                "costoPunta": 1065.18,
+                "lat": -33.5059,
+                "lng": -70.7285,
+                "nombre": "P1.1 Camino a Melipilla - 2a Transversal",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "WU9xfj3WXCydXer2M4Yv": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:44.370000+00:00",
+                "costo": 350,
+                "costoPunta": null,
+                "lat": -33.3872124,
+                "lng": -70.5422849,
+                "nombre": "P06 Estoril - Las Tranqueras",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "WreEsiL7VYctKcwdDwhq": {
+            "datos": {
+                "costoSaturacion": 1003.9,
+                "fecha_actualizacion": "2026-05-11 15:05:44.140000+00:00",
+                "costo": 334.63,
+                "costoPunta": 669.27,
+                "lat": -33.5824122,
+                "lng": -70.7139749,
+                "nombre": "PA6 - Lo Blanco - Colón",
+                "sentido": "N-S"
+            },
+            "subcolecciones": {}
+        },
+        "Wxs5ncRJHztQMIPV8cUR": {
+            "datos": {
+                "costoSaturacion": 1356.21,
+                "fecha_actualizacion": "2026-05-11 15:05:43.290000+00:00",
+                "costo": 452.06,
+                "costoPunta": 904.14,
+                "lat": -33.5476268,
+                "lng": -70.696839,
+                "nombre": "PA8 - Américo Vespucio - Las Acacias",
+                "sentido": "N-S"
+            },
+            "subcolecciones": {}
+        },
+        "XHGNbztdj3xpZWKe3c3A": {
+            "datos": {
+                "costoSaturacion": 1597.78,
+                "fecha_actualizacion": "2026-05-11 15:05:43.882000+00:00",
+                "costo": 650,
+                "costoPunta": 975,
+                "lat": -33.5165613,
+                "lng": -70.7125335,
+                "nombre": "P1.1 General Velásquez - Ruta 78",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "XOkrq3jf0OwpP8ajRxqO": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:44.300000+00:00",
+                "costo": 868.37,
+                "costoPunta": null,
+                "lat": -33.469011,
+                "lng": -70.6562428,
+                "nombre": "PA16 - Río Mapocho - 14 de la Fama",
+                "sentido": "N-S"
+            },
+            "subcolecciones": {}
+        },
+        "XbemSe81KaDuzWgHxJRp": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:43.002000+00:00",
+                "costo": 868.37,
+                "costoPunta": null,
+                "lat": -33.3822386,
+                "lng": -70.6955624,
+                "nombre": "PA28 - Río Mapocho - Ruta 5 Norte",
+                "sentido": "S-N"
+            },
+            "subcolecciones": {}
+        },
+        "Y94UNmAoCFq2nWkEifcX": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:43.776000+00:00",
+                "costo": 868.37,
+                "costoPunta": null,
+                "lat": -33.5514043,
+                "lng": -70.7090613,
+                "nombre": "PA19 - Ruta 5 Sur - Américo Vespucio",
+                "sentido": "N-S"
+            },
+            "subcolecciones": {}
+        },
+        "YHnrFe5tzad3PVGuLjuT": {
+            "datos": {
+                "costoSaturacion": 1597.78,
+                "fecha_actualizacion": "2026-05-11 15:05:44.768000+00:00",
+                "costo": 650,
+                "costoPunta": 975,
+                "lat": -33.525,
+                "lng": -70.73,
+                "nombre": "P1.1 Ruta 78 - Cerrillos",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "Z8Kzq4ix81QMsRaBA8xi": {
+            "datos": {
+                "costoSaturacion": 1178.49,
+                "fecha_actualizacion": "2026-05-11 15:05:44.188000+00:00",
+                "costo": 392.83,
+                "costoPunta": 785.66,
+                "lat": -33.5071,
+                "lng": -70.6694,
+                "nombre": "PA9 - Departamental - Américo Vespucio",
+                "sentido": "N-S"
+            },
+            "subcolecciones": {}
+        },
+        "cwBTkqkzBNbGbsFWLtYk": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:43.703000+00:00",
+                "costo": 868.37,
+                "costoPunta": null,
+                "lat": -33.4489228,
+                "lng": -70.6595919,
+                "nombre": "PA13 - Alameda - Río Mapocho",
+                "sentido": "N-S"
+            },
+            "subcolecciones": {}
+        },
+        "dWZwJysutX0XSjJipoiF": {
+            "datos": {
+                "costoSaturacion": 1863.48,
+                "fecha_actualizacion": "2026-05-11 15:05:44.976000+00:00",
+                "costo": 639.11,
+                "costoPunta": 1230.43,
+                "lat": -33.4117097,
+                "lng": -70.7395811,
+                "nombre": "P6.1 Carrascal - Petersen",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "ddAvN6fiMvWttBml3lE4": {
+            "datos": {
+                "costoSaturacion": 1597.78,
+                "fecha_actualizacion": "2026-05-11 15:05:44.791000+00:00",
+                "costo": 650,
+                "costoPunta": 975,
+                "lat": -33.5251,
+                "lng": -70.7301,
+                "nombre": "P1.3 Cerrillos - Ruta 78",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "fKMTGagQ1kknesNo0YGg": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:43.140000+00:00",
+                "costo": 868.37,
+                "costoPunta": null,
+                "lat": -33.6473389,
+                "lng": -70.7116107,
+                "nombre": "PA2 - Los Guindos - La Capilla",
+                "sentido": "S-N"
+            },
+            "subcolecciones": {}
+        },
+        "fWNC1ziecGj6aeJg8FAo": {
+            "datos": {
+                "costoSaturacion": 997.87,
+                "fecha_actualizacion": "2026-05-11 15:05:44.019000+00:00",
+                "costo": 332.62,
+                "costoPunta": 665.25,
+                "lat": -33.539608,
+                "lng": -70.6529431,
+                "nombre": "P3.1 Santa Rosa - Gran Avenida",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "fbIgjpqeIL0J3gglFUZ4": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:43.386000+00:00",
+                "costo": 350,
+                "costoPunta": null,
+                "lat": -33.3758198,
+                "lng": -70.5426489,
+                "nombre": "P01 Puente La Dehesa - Gran Vía",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "ffBlsOdR2FIBUyPjYkM5": {
+            "datos": {
+                "costoSaturacion": 1310.4,
+                "fecha_actualizacion": "2026-05-11 15:05:42.869000+00:00",
+                "costo": 449.4,
+                "costoPunta": 865.2,
+                "lat": -33.3886039,
+                "lng": -70.6333164,
+                "nombre": "P14 Guanaco - El Salto",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "gU4YOZSxMhCmEr7xqDla": {
+            "datos": {
+                "costoSaturacion": 1310.4,
+                "fecha_actualizacion": "2026-05-11 15:05:45.008000+00:00",
+                "costo": 449.4,
+                "costoPunta": 865.2,
+                "lat": -33.3657718,
+                "lng": -70.6951146,
+                "nombre": "P11 Pedro Fontova - Ruta 5 Norte",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "gqzX234j1z0DEJk8L4Ee": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:43.727000+00:00",
+                "costo": 868.37,
+                "costoPunta": null,
+                "lat": -33.4483818,
+                "lng": -70.6600861,
+                "nombre": "PA14 - Río Mapocho - Alameda",
+                "sentido": "N-S"
+            },
+            "subcolecciones": {}
+        },
+        "gss5u73LSpM02KSNDXHd": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:44.323000+00:00",
+                "costo": 868.37,
+                "costoPunta": null,
+                "lat": -33.4265149,
+                "lng": -70.6688947,
+                "nombre": "PA15 - 14 de la Fama - Río Mapocho",
+                "sentido": "N-S"
+            },
+            "subcolecciones": {}
+        },
+        "i9yml3sHl01PZ0PRBdZ9": {
+            "datos": {
+                "costoSaturacion": 1597.78,
+                "fecha_actualizacion": "2026-05-11 15:05:44.816000+00:00",
+                "costo": 532.59,
+                "costoPunta": 1065.18,
+                "lat": -33.5058,
+                "lng": -70.7284,
+                "nombre": "P1.3 2a Transversal - Camino a Melipilla",
+                "sentido": "P-O"
+            },
+            "subcolecciones": {}
+        },
+        "jOZPVPhDNGcca4peAwO4": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:44.232000+00:00",
+                "costo": 868.37,
+                "costoPunta": null,
+                "lat": -33.4831,
+                "lng": -70.6611,
+                "nombre": "PA11 - Carlos Valdovinos - Departamental",
+                "sentido": "N-S"
+            },
+            "subcolecciones": {}
+        },
+        "jPtxExdi5uTBrBh9KSBs": {
+            "datos": {
+                "costoSaturacion": 1387.89,
+                "fecha_actualizacion": "2026-05-11 15:05:43.798000+00:00",
+                "costo": 462.63,
+                "costoPunta": 925.26,
+                "lat": -33.5411449,
+                "lng": -70.6149956,
+                "nombre": "P4.3 Coronel - Santa Julia",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "kFi3wypQRCtp36jHlQMU": {
+            "datos": {
+                "costoSaturacion": 997.87,
+                "fecha_actualizacion": "2026-05-11 15:05:43.947000+00:00",
+                "costo": 332.62,
+                "costoPunta": 665.25,
+                "lat": -33.5335852,
+                "lng": -70.6763449,
+                "nombre": "P3.3 Gran Avenida - Ruta 5",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "l4UKd3sQD8u6Du8F0F1L": {
+            "datos": {
+                "costoSaturacion": 1755.28,
+                "fecha_actualizacion": "2026-05-11 15:05:44.067000+00:00",
+                "costo": 585.09,
+                "costoPunta": 1170.18,
+                "lat": -33.6219812,
+                "lng": -70.7148676,
+                "nombre": "PA4 - Calera de Tango - La Capilla",
+                "sentido": "N-S"
+            },
+            "subcolecciones": {}
+        },
+        "mJVoNXWbBG7og72eJd3U": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:43.752000+00:00",
+                "costo": 868.37,
+                "costoPunta": null,
+                "lat": -33.3682982,
+                "lng": -70.6994258,
+                "nombre": "PA18 - Américo Vespucio Norte - 14 de la Fama",
+                "sentido": "N-S"
+            },
+            "subcolecciones": {}
+        },
+        "nbNXPG96l5j6o0Vv1AEI": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:43.576000+00:00",
+                "costo": 350,
+                "costoPunta": null,
+                "lat": -33.426442,
+                "lng": -70.6701402,
+                "nombre": "P05 Carrascal - Vivaceta",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "ooxSuXNWjykABbF0r8Kg": {
+            "datos": {
+                "costoSaturacion": 1597.78,
+                "fecha_actualizacion": "2026-05-11 15:05:43.531000+00:00",
+                "costo": 650,
+                "costoPunta": 975,
+                "lat": -33.4828675,
+                "lng": -70.7535733,
+                "nombre": "P17 Los Mares - Ruta 78",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "pqZLt9yhI2Ug3pPXUgRL": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:44.642000+00:00",
+                "costo": 350,
+                "costoPunta": null,
+                "lat": -33.385,
+                "lng": -70.55,
+                "nombre": "P01 San Francisco de Asís",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "rgR7S6WPZ0tQBDsyKarl": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:44.466000+00:00",
+                "costo": 868.37,
+                "costoPunta": null,
+                "lat": -33.5065207,
+                "lng": -70.6976839,
+                "nombre": "PA22 - Carlos Valdovinos - Américo Vespucio",
+                "sentido": "S-N"
+            },
+            "subcolecciones": {}
+        },
+        "rkDXPi4evF8pITYUrxme": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:43.601000+00:00",
+                "costo": 350,
+                "costoPunta": null,
+                "lat": -33.4080729,
+                "lng": -70.599764,
+                "nombre": "P8.0 Las Tranqueras - Costanera Norte",
+                "sentido": null
+            },
+            "subcolecciones": {}
+        },
+        "rsA9qNAdcVOQnRuOKxXf": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:44.916000+00:00",
+                "costo": 350,
+                "costoPunta": null,
+                "lat": -33.418078,
+                "lng": -70.7910033,
+                "nombre": "P09 Ruta 68 - Américo Vespucio Poniente",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "s9uTXjpwundlzgYqxuBc": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:44.413000+00:00",
+                "costo": 868.37,
+                "costoPunta": null,
+                "lat": -33.4698378,
+                "lng": -70.6882455,
+                "nombre": "PA24 - Alameda - Carlos Valdovinos",
+                "sentido": "S-N"
+            },
+            "subcolecciones": {}
+        },
+        "suapMx98xbl44kfzSDqm": {
+            "datos": {
+                "costoSaturacion": 1106.79,
+                "fecha_actualizacion": "2026-05-11 15:05:43.436000+00:00",
+                "costo": 368.93,
+                "costoPunta": 737.86,
+                "lat": -33.469011,
+                "lng": -70.6562428,
+                "nombre": "PA31 - Carlos Valdovinos - Alameda",
+                "sentido": "S-N"
+            },
+            "subcolecciones": {}
+        },
+        "uAonQWu2J8SiEOBPVEK8": {
+            "datos": {
+                "costoSaturacion": 1387.89,
+                "fecha_actualizacion": "2026-05-11 15:05:44.690000+00:00",
+                "costo": 462.63,
+                "costoPunta": 925.26,
+                "lat": -33.5135,
+                "lng": -70.595,
+                "nombre": "P4.4 Vicuña Mackenna - Macul",
+                "sentido": "O-P"
+            },
+            "subcolecciones": {}
+        },
+        "uSCPn2i2zGKqWjpqQfg0": {
+            "datos": {
+                "costoSaturacion": 857.37,
+                "fecha_actualizacion": "2026-05-11 15:05:43.678000+00:00",
+                "costo": 285.79,
+                "costoPunta": 571.58,
+                "lat": -33.468848,
+                "lng": -70.6565584,
+                "nombre": "PA12 - Alameda - Carlos Valdovinos",
+                "sentido": "N-S"
+            },
+            "subcolecciones": {}
+        },
+        "w5FQDfjldZAohMgBWH1a": {
+            "datos": {
+                "costoSaturacion": 753.67,
+                "fecha_actualizacion": "2026-05-11 15:05:43.903000+00:00",
+                "costo": 251.22,
+                "costoPunta": 502.45,
+                "lat": -33.526262,
+                "lng": -70.6941029,
+                "nombre": "P2.2 Gral. Velásquez - Ruta 5",
+                "sentido": "P-O"
+            },
+            "subcolecciones": {}
+        },
+        "xspmbJwxx13Ux9sh3omi": {
+            "datos": {
+                "costoSaturacion": null,
+                "fecha_actualizacion": "2026-05-11 15:05:43.193000+00:00",
+                "costo": 868.37,
+                "costoPunta": null,
+                "lat": -33.3685816,
+                "lng": -70.6991042,
+                "nombre": "PA17 - 14 de la Fama - Américo Vespucio Norte",
+                "sentido": "N-S"
+            },
+            "subcolecciones": {}
+        },
+        "yYbXHEFAO2qDO1lHWHc1": {
+            "datos": {
+                "costoSaturacion": 1003.9,
+                "fecha_actualizacion": "2026-05-11 15:05:44.111000+00:00",
+                "costo": 334.63,
+                "costoPunta": 669.27,
+                "lat": -33.5827543,
+                "lng": -70.7138422,
+                "nombre": "PA5 - Colón - Las Acacias",
+                "sentido": "S-N"
+            },
+            "subcolecciones": {}
+        }
+    },
+    "users": {},
+    "usuarios": {
+        "RbqHThICVsg3hX1GuyK3J55JYoG2": {
+            "datos": {
+                "email": "jesus@gmail.com",
+                "vehiculo_principal_id": "ABBD23",
+                "alertas_vistas": {
+                    "2026-5_50": true,
+                    "2026-5_75": true
+                },
+                "fecha_creacion": "2026-05-04 22:49:31.933000+00:00",
+                "limite_presupuesto_mensual": 70000,
+                "nombre_mostrar": ""
+            },
+            "subcolecciones": {
+                "trips": {
+                    "50KitEYT71iD6esVduLo": {
+                        "vehicleName": "KIA (ABBD23)",
+                        "date": "2026-05-11T11:53:27.756",
+                        "distanceKm": 34.788371,
+                        "duration": "32 min",
+                        "totalCost": 3137.78,
+                        "tolls": [
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:53:27.757",
+                                "name": "P05 Vivaceta - Carrascal"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:53:27.757",
+                                "name": "P8.1 Las Tranqueras - Costanera Norte"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:53:27.757",
+                                "name": "P8.0 Costanera Norte - Las Tranqueras"
+                            },
+                            {
+                                "cost": 225.77,
+                                "timestamp": "2026-05-11T11:53:27.757",
+                                "name": "EV Entrada Vivaceta"
+                            },
+                            {
+                                "cost": 233.79,
+                                "timestamp": "2026-05-11T11:53:27.757",
+                                "name": "SB Salida Bellavista"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:53:27.757",
+                                "name": "P03 Torres Tajamar - Puente Lo Saldes"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:53:27.757",
+                                "name": "P6.2 Américo Vespucio Poniente - Petersen"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:53:27.757",
+                                "name": "P6.1 Carrascal - Petersen"
+                            }
+                        ]
+                    },
+                    "7g5msDvaxNBnLHzZXg3o": {
+                        "distanceKm": 34.788371,
+                        "date": "2026-05-11T01:53:14.947",
+                        "duration": "31 min",
+                        "totalCost": 3137.78,
+                        "tolls": [
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T01:53:14.948",
+                                "name": "P05 Vivaceta - Carrascal"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T01:53:14.948",
+                                "name": "P8.1 Las Tranqueras - Costanera Norte"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T01:53:14.948",
+                                "name": "P8.0 Costanera Norte - Las Tranqueras"
+                            },
+                            {
+                                "cost": 225.77,
+                                "timestamp": "2026-05-11T01:53:14.948",
+                                "name": "EV Entrada Vivaceta"
+                            },
+                            {
+                                "cost": 233.79,
+                                "timestamp": "2026-05-11T01:53:14.948",
+                                "name": "SB Salida Bellavista"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T01:53:14.948",
+                                "name": "P03 Torres Tajamar - Puente Lo Saldes"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T01:53:14.948",
+                                "name": "P6.2 Américo Vespucio Poniente - Petersen"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T01:53:14.948",
+                                "name": "P6.1 Carrascal - Petersen"
+                            }
+                        ]
+                    },
+                    "9gxSc65R92TBBBjjBwpV": {
+                        "vehicleName": "KIA (ABBD23)",
+                        "date": "2026-05-11T11:48:14.791",
+                        "distanceKm": 34.788371,
+                        "duration": "32 min",
+                        "totalCost": 3137.78,
+                        "tolls": [
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:48:14.791",
+                                "name": "P05 Vivaceta - Carrascal"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:48:14.791",
+                                "name": "P8.1 Las Tranqueras - Costanera Norte"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:48:14.791",
+                                "name": "P8.0 Costanera Norte - Las Tranqueras"
+                            },
+                            {
+                                "cost": 225.77,
+                                "timestamp": "2026-05-11T11:48:14.791",
+                                "name": "EV Entrada Vivaceta"
+                            },
+                            {
+                                "cost": 233.79,
+                                "timestamp": "2026-05-11T11:48:14.791",
+                                "name": "SB Salida Bellavista"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:48:14.791",
+                                "name": "P03 Torres Tajamar - Puente Lo Saldes"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:48:14.791",
+                                "name": "P6.2 Américo Vespucio Poniente - Petersen"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:48:14.791",
+                                "name": "P6.1 Carrascal - Petersen"
+                            }
+                        ]
+                    },
+                    "A45ZjaoQ14yBPoj69i77": {
+                        "vehicleName": "KIA (ABBD23)",
+                        "date": "2026-05-11T11:31:38.809",
+                        "distanceKm": 34.788371,
+                        "duration": "32 min",
+                        "totalCost": 3137.78,
+                        "tolls": [
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:31:38.809",
+                                "name": "P05 Vivaceta - Carrascal"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:31:38.809",
+                                "name": "P8.1 Las Tranqueras - Costanera Norte"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:31:38.809",
+                                "name": "P8.0 Costanera Norte - Las Tranqueras"
+                            },
+                            {
+                                "cost": 225.77,
+                                "timestamp": "2026-05-11T11:31:38.809",
+                                "name": "EV Entrada Vivaceta"
+                            },
+                            {
+                                "cost": 233.79,
+                                "timestamp": "2026-05-11T11:31:38.809",
+                                "name": "SB Salida Bellavista"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:31:38.809",
+                                "name": "P03 Torres Tajamar - Puente Lo Saldes"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:31:38.809",
+                                "name": "P6.2 Américo Vespucio Poniente - Petersen"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:31:38.809",
+                                "name": "P6.1 Carrascal - Petersen"
+                            }
+                        ]
+                    },
+                    "E0NCdVKY8LRwK6Gf7aIh": {
+                        "vehicleName": "KIA (ABBD23)",
+                        "date": "2026-05-11T11:43:18.341",
+                        "distanceKm": 34.788371,
+                        "duration": "32 min",
+                        "totalCost": 3137.78,
+                        "tolls": [
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:43:18.341",
+                                "name": "P05 Vivaceta - Carrascal"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:43:18.341",
+                                "name": "P8.1 Las Tranqueras - Costanera Norte"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:43:18.341",
+                                "name": "P8.0 Costanera Norte - Las Tranqueras"
+                            },
+                            {
+                                "cost": 225.77,
+                                "timestamp": "2026-05-11T11:43:18.341",
+                                "name": "EV Entrada Vivaceta"
+                            },
+                            {
+                                "cost": 233.79,
+                                "timestamp": "2026-05-11T11:43:18.341",
+                                "name": "SB Salida Bellavista"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:43:18.341",
+                                "name": "P03 Torres Tajamar - Puente Lo Saldes"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:43:18.341",
+                                "name": "P6.2 Américo Vespucio Poniente - Petersen"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:43:18.341",
+                                "name": "P6.1 Carrascal - Petersen"
+                            }
+                        ]
+                    },
+                    "FWq7j1cq95UI4VyqvNiV": {
+                        "vehicleName": "KIA (ABBD23)",
+                        "date": "2026-05-11T11:30:50.688",
+                        "distanceKm": 34.788371,
+                        "duration": "32 min",
+                        "totalCost": 3137.78,
+                        "tolls": [
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:30:50.688",
+                                "name": "P05 Vivaceta - Carrascal"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:30:50.688",
+                                "name": "P8.1 Las Tranqueras - Costanera Norte"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:30:50.688",
+                                "name": "P8.0 Costanera Norte - Las Tranqueras"
+                            },
+                            {
+                                "cost": 225.77,
+                                "timestamp": "2026-05-11T11:30:50.688",
+                                "name": "EV Entrada Vivaceta"
+                            },
+                            {
+                                "cost": 233.79,
+                                "timestamp": "2026-05-11T11:30:50.688",
+                                "name": "SB Salida Bellavista"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:30:50.688",
+                                "name": "P03 Torres Tajamar - Puente Lo Saldes"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:30:50.688",
+                                "name": "P6.2 Américo Vespucio Poniente - Petersen"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:30:50.688",
+                                "name": "P6.1 Carrascal - Petersen"
+                            }
+                        ]
+                    },
+                    "G9W2NfI3Je7i2FuDml73": {
+                        "vehicleName": "KIA (ABBD23)",
+                        "date": "2026-05-11T11:30:20.490",
+                        "distanceKm": 34.788371,
+                        "duration": "32 min",
+                        "totalCost": 3137.78,
+                        "tolls": [
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:30:20.490",
+                                "name": "P05 Vivaceta - Carrascal"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:30:20.490",
+                                "name": "P8.1 Las Tranqueras - Costanera Norte"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:30:20.490",
+                                "name": "P8.0 Costanera Norte - Las Tranqueras"
+                            },
+                            {
+                                "cost": 225.77,
+                                "timestamp": "2026-05-11T11:30:20.490",
+                                "name": "EV Entrada Vivaceta"
+                            },
+                            {
+                                "cost": 233.79,
+                                "timestamp": "2026-05-11T11:30:20.490",
+                                "name": "SB Salida Bellavista"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:30:20.490",
+                                "name": "P03 Torres Tajamar - Puente Lo Saldes"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:30:20.490",
+                                "name": "P6.2 Américo Vespucio Poniente - Petersen"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:30:20.490",
+                                "name": "P6.1 Carrascal - Petersen"
+                            }
+                        ]
+                    },
+                    "KOa8TlGIacnEyoXMg2HP": {
+                        "vehicleName": "KIA (ABBD23)",
+                        "date": "2026-05-11T11:53:03.445",
+                        "distanceKm": 34.788371,
+                        "duration": "32 min",
+                        "totalCost": 3137.78,
+                        "tolls": [
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:53:03.446",
+                                "name": "P05 Vivaceta - Carrascal"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:53:03.446",
+                                "name": "P8.1 Las Tranqueras - Costanera Norte"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:53:03.446",
+                                "name": "P8.0 Costanera Norte - Las Tranqueras"
+                            },
+                            {
+                                "cost": 225.77,
+                                "timestamp": "2026-05-11T11:53:03.446",
+                                "name": "EV Entrada Vivaceta"
+                            },
+                            {
+                                "cost": 233.79,
+                                "timestamp": "2026-05-11T11:53:03.446",
+                                "name": "SB Salida Bellavista"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:53:03.446",
+                                "name": "P03 Torres Tajamar - Puente Lo Saldes"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:53:03.446",
+                                "name": "P6.2 Américo Vespucio Poniente - Petersen"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:53:03.446",
+                                "name": "P6.1 Carrascal - Petersen"
+                            }
+                        ]
+                    },
+                    "L26BYHLbUyUpIEOHcFwy": {
+                        "vehicleName": "KIA (ABBD23)",
+                        "date": "2026-05-11T11:42:59.052",
+                        "distanceKm": 34.788371,
+                        "duration": "32 min",
+                        "totalCost": 3137.78,
+                        "tolls": [
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:42:59.052",
+                                "name": "P05 Vivaceta - Carrascal"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:42:59.052",
+                                "name": "P8.1 Las Tranqueras - Costanera Norte"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:42:59.052",
+                                "name": "P8.0 Costanera Norte - Las Tranqueras"
+                            },
+                            {
+                                "cost": 225.77,
+                                "timestamp": "2026-05-11T11:42:59.052",
+                                "name": "EV Entrada Vivaceta"
+                            },
+                            {
+                                "cost": 233.79,
+                                "timestamp": "2026-05-11T11:42:59.052",
+                                "name": "SB Salida Bellavista"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:42:59.052",
+                                "name": "P03 Torres Tajamar - Puente Lo Saldes"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:42:59.052",
+                                "name": "P6.2 Américo Vespucio Poniente - Petersen"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:42:59.052",
+                                "name": "P6.1 Carrascal - Petersen"
+                            }
+                        ]
+                    },
+                    "LQYk8LwuDj6ypE16zI0n": {
+                        "vehicleName": "toyota (ABCD55)",
+                        "date": "2026-05-11T10:43:20.127",
+                        "distanceKm": 34.788371,
+                        "duration": "32 min",
+                        "totalCost": 3137.78,
+                        "tolls": [
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T10:43:20.127",
+                                "name": "P05 Vivaceta - Carrascal"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T10:43:20.127",
+                                "name": "P8.1 Las Tranqueras - Costanera Norte"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T10:43:20.127",
+                                "name": "P8.0 Costanera Norte - Las Tranqueras"
+                            },
+                            {
+                                "cost": 225.77,
+                                "timestamp": "2026-05-11T10:43:20.127",
+                                "name": "EV Entrada Vivaceta"
+                            },
+                            {
+                                "cost": 233.79,
+                                "timestamp": "2026-05-11T10:43:20.127",
+                                "name": "SB Salida Bellavista"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T10:43:20.127",
+                                "name": "P03 Torres Tajamar - Puente Lo Saldes"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T10:43:20.127",
+                                "name": "P6.2 Américo Vespucio Poniente - Petersen"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T10:43:20.127",
+                                "name": "P6.1 Carrascal - Petersen"
+                            }
+                        ]
+                    },
+                    "PzIv8eJc1gzW0FOJ6tAf": {
+                        "vehicleName": "KIA (ABBD23)",
+                        "date": "2026-05-11T11:48:01.298",
+                        "distanceKm": 34.788371,
+                        "duration": "32 min",
+                        "totalCost": 3137.78,
+                        "tolls": [
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:48:01.298",
+                                "name": "P05 Vivaceta - Carrascal"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:48:01.299",
+                                "name": "P8.1 Las Tranqueras - Costanera Norte"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:48:01.299",
+                                "name": "P8.0 Costanera Norte - Las Tranqueras"
+                            },
+                            {
+                                "cost": 225.77,
+                                "timestamp": "2026-05-11T11:48:01.299",
+                                "name": "EV Entrada Vivaceta"
+                            },
+                            {
+                                "cost": 233.79,
+                                "timestamp": "2026-05-11T11:48:01.299",
+                                "name": "SB Salida Bellavista"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:48:01.299",
+                                "name": "P03 Torres Tajamar - Puente Lo Saldes"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:48:01.299",
+                                "name": "P6.2 Américo Vespucio Poniente - Petersen"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:48:01.299",
+                                "name": "P6.1 Carrascal - Petersen"
+                            }
+                        ]
+                    },
+                    "QTl54Mi33wywrBL1pTpx": {
+                        "vehicleName": "KIA (ABBD23)",
+                        "date": "2026-05-11T11:31:04.579",
+                        "distanceKm": 34.788371,
+                        "duration": "32 min",
+                        "totalCost": 3137.78,
+                        "tolls": [
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:31:04.579",
+                                "name": "P05 Vivaceta - Carrascal"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:31:04.579",
+                                "name": "P8.1 Las Tranqueras - Costanera Norte"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:31:04.579",
+                                "name": "P8.0 Costanera Norte - Las Tranqueras"
+                            },
+                            {
+                                "cost": 225.77,
+                                "timestamp": "2026-05-11T11:31:04.579",
+                                "name": "EV Entrada Vivaceta"
+                            },
+                            {
+                                "cost": 233.79,
+                                "timestamp": "2026-05-11T11:31:04.579",
+                                "name": "SB Salida Bellavista"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:31:04.579",
+                                "name": "P03 Torres Tajamar - Puente Lo Saldes"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:31:04.579",
+                                "name": "P6.2 Américo Vespucio Poniente - Petersen"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:31:04.579",
+                                "name": "P6.1 Carrascal - Petersen"
+                            }
+                        ]
+                    },
+                    "fh80bZx5fxt312pSqyYh": {
+                        "vehicleName": "KIA (ABBD23)",
+                        "date": "2026-05-11T11:53:39.643",
+                        "distanceKm": 34.788371,
+                        "duration": "32 min",
+                        "totalCost": 3137.78,
+                        "tolls": [
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:53:39.644",
+                                "name": "P05 Vivaceta - Carrascal"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:53:39.644",
+                                "name": "P8.1 Las Tranqueras - Costanera Norte"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:53:39.644",
+                                "name": "P8.0 Costanera Norte - Las Tranqueras"
+                            },
+                            {
+                                "cost": 225.77,
+                                "timestamp": "2026-05-11T11:53:39.644",
+                                "name": "EV Entrada Vivaceta"
+                            },
+                            {
+                                "cost": 233.79,
+                                "timestamp": "2026-05-11T11:53:39.644",
+                                "name": "SB Salida Bellavista"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:53:39.644",
+                                "name": "P03 Torres Tajamar - Puente Lo Saldes"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:53:39.644",
+                                "name": "P6.2 Américo Vespucio Poniente - Petersen"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:53:39.644",
+                                "name": "P6.1 Carrascal - Petersen"
+                            }
+                        ]
+                    },
+                    "gz2vd45lp3ZYxI9lwXqJ": {
+                        "vehicleName": "KIA (ABBD23)",
+                        "date": "2026-05-11T11:53:15.189",
+                        "distanceKm": 34.788371,
+                        "duration": "32 min",
+                        "totalCost": 3137.78,
+                        "tolls": [
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:53:15.189",
+                                "name": "P05 Vivaceta - Carrascal"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:53:15.189",
+                                "name": "P8.1 Las Tranqueras - Costanera Norte"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:53:15.189",
+                                "name": "P8.0 Costanera Norte - Las Tranqueras"
+                            },
+                            {
+                                "cost": 225.77,
+                                "timestamp": "2026-05-11T11:53:15.189",
+                                "name": "EV Entrada Vivaceta"
+                            },
+                            {
+                                "cost": 233.79,
+                                "timestamp": "2026-05-11T11:53:15.189",
+                                "name": "SB Salida Bellavista"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:53:15.189",
+                                "name": "P03 Torres Tajamar - Puente Lo Saldes"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:53:15.189",
+                                "name": "P6.2 Américo Vespucio Poniente - Petersen"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:53:15.189",
+                                "name": "P6.1 Carrascal - Petersen"
+                            }
+                        ]
+                    },
+                    "pL3U2k92e0OGZIfSlm1T": {
+                        "vehicleName": "KIA (ABBD23)",
+                        "date": "2026-05-11T11:30:31.419",
+                        "distanceKm": 34.788371,
+                        "duration": "32 min",
+                        "totalCost": 3137.78,
+                        "tolls": [
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:30:31.419",
+                                "name": "P05 Vivaceta - Carrascal"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:30:31.419",
+                                "name": "P8.1 Las Tranqueras - Costanera Norte"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:30:31.419",
+                                "name": "P8.0 Costanera Norte - Las Tranqueras"
+                            },
+                            {
+                                "cost": 225.77,
+                                "timestamp": "2026-05-11T11:30:31.419",
+                                "name": "EV Entrada Vivaceta"
+                            },
+                            {
+                                "cost": 233.79,
+                                "timestamp": "2026-05-11T11:30:31.419",
+                                "name": "SB Salida Bellavista"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:30:31.419",
+                                "name": "P03 Torres Tajamar - Puente Lo Saldes"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:30:31.419",
+                                "name": "P6.2 Américo Vespucio Poniente - Petersen"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:30:31.419",
+                                "name": "P6.1 Carrascal - Petersen"
+                            }
+                        ]
+                    },
+                    "qosXkvutdZ8L9Vbt4vnm": {
+                        "vehicleName": "KIA (ABBD23)",
+                        "date": "2026-05-11T11:31:13.561",
+                        "distanceKm": 34.788371,
+                        "duration": "32 min",
+                        "totalCost": 3137.78,
+                        "tolls": [
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:31:13.561",
+                                "name": "P05 Vivaceta - Carrascal"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:31:13.561",
+                                "name": "P8.1 Las Tranqueras - Costanera Norte"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:31:13.561",
+                                "name": "P8.0 Costanera Norte - Las Tranqueras"
+                            },
+                            {
+                                "cost": 225.77,
+                                "timestamp": "2026-05-11T11:31:13.561",
+                                "name": "EV Entrada Vivaceta"
+                            },
+                            {
+                                "cost": 233.79,
+                                "timestamp": "2026-05-11T11:31:13.561",
+                                "name": "SB Salida Bellavista"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:31:13.561",
+                                "name": "P03 Torres Tajamar - Puente Lo Saldes"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:31:13.561",
+                                "name": "P6.2 Américo Vespucio Poniente - Petersen"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:31:13.561",
+                                "name": "P6.1 Carrascal - Petersen"
+                            }
+                        ]
+                    },
+                    "uMUkUrU6K0CFFnHsKIAl": {
+                        "vehicleName": "KIA (ABBD23)",
+                        "date": "2026-05-11T11:31:27.830",
+                        "distanceKm": 34.788371,
+                        "duration": "32 min",
+                        "totalCost": 3137.78,
+                        "tolls": [
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:31:27.830",
+                                "name": "P05 Vivaceta - Carrascal"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:31:27.830",
+                                "name": "P8.1 Las Tranqueras - Costanera Norte"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:31:27.830",
+                                "name": "P8.0 Costanera Norte - Las Tranqueras"
+                            },
+                            {
+                                "cost": 225.77,
+                                "timestamp": "2026-05-11T11:31:27.830",
+                                "name": "EV Entrada Vivaceta"
+                            },
+                            {
+                                "cost": 233.79,
+                                "timestamp": "2026-05-11T11:31:27.830",
+                                "name": "SB Salida Bellavista"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:31:27.830",
+                                "name": "P03 Torres Tajamar - Puente Lo Saldes"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:31:27.830",
+                                "name": "P6.2 Américo Vespucio Poniente - Petersen"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:31:27.830",
+                                "name": "P6.1 Carrascal - Petersen"
+                            }
+                        ]
+                    },
+                    "yHQWW4ZWM3fQ4UFKLd2J": {
+                        "vehicleName": "KIA (ABBD23)",
+                        "date": "2026-05-11T11:30:04.101",
+                        "distanceKm": 34.788371,
+                        "duration": "32 min",
+                        "totalCost": 3137.78,
+                        "tolls": [
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:30:04.101",
+                                "name": "P05 Vivaceta - Carrascal"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:30:04.101",
+                                "name": "P8.1 Las Tranqueras - Costanera Norte"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:30:04.101",
+                                "name": "P8.0 Costanera Norte - Las Tranqueras"
+                            },
+                            {
+                                "cost": 225.77,
+                                "timestamp": "2026-05-11T11:30:04.101",
+                                "name": "EV Entrada Vivaceta"
+                            },
+                            {
+                                "cost": 233.79,
+                                "timestamp": "2026-05-11T11:30:04.101",
+                                "name": "SB Salida Bellavista"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T11:30:04.101",
+                                "name": "P03 Torres Tajamar - Puente Lo Saldes"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:30:04.101",
+                                "name": "P6.2 Américo Vespucio Poniente - Petersen"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T11:30:04.101",
+                                "name": "P6.1 Carrascal - Petersen"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "dkRXAdnPCDXsshSXUZKHupHpt1c2": {
+            "datos": {
+                "email": "mariajoseonatealvarez12@gmail.com",
+                "vehiculo_principal_id": null,
+                "nombre_mostrar": "webos",
+                "fecha_creacion": "2026-05-11 17:16:06.175000+00:00",
+                "limite_presupuesto_mensual": 5000
+            },
+            "subcolecciones": {}
+        },
+        "iRtHjWqi4EQopC27fYqEbOYVqFz2": {
+            "datos": {
+                "email": "leo@gmail.com",
+                "nombre_mostrar": "Leonardo",
+                "alertas_vistas": {
+                    "2026-5_90": true
+                },
+                "fecha_creacion": "2026-05-07 17:23:09.964000+00:00",
+                "limite_presupuesto_mensual": 2000,
+                "vehiculo_principal_id": "TATA67"
+            },
+            "subcolecciones": {
+                "trips": {
+                    "NgNiRKrE0TsB6f4tKZhy": {
+                        "vehicleName": "Kia (ABCD34)",
+                        "date": "2026-05-11T13:27:03.946",
+                        "distanceKm": 15.250558000000002,
+                        "duration": "23 min",
+                        "totalCost": 989.11,
+                        "tolls": [
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T13:27:03.946",
+                                "name": "P05 Vivaceta - Carrascal"
+                            },
+                            {
+                                "cost": 639.11,
+                                "timestamp": "2026-05-11T13:27:03.946",
+                                "name": "P6.1 Carrascal - Petersen"
+                            }
+                        ]
+                    },
+                    "hudL4dhEburtPRLrB9Gz": {
+                        "vehicleName": "Kia (ABCD34)",
+                        "date": "2026-05-11T13:28:50.403",
+                        "distanceKm": 15.327849,
+                        "duration": "23 min",
+                        "totalCost": 868.37,
+                        "tolls": [
+                            {
+                                "cost": 868.37,
+                                "timestamp": "2026-05-11T13:28:50.403",
+                                "name": "PA14 - Río Mapocho - Alameda"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "mzIF0YVgSgZHVd6q0uh9J3sn1sP2": {
+            "datos": {
+                "email": "nash2@gmail.com",
+                "nombre_mostrar": "Nash",
+                "alertas_vistas": {
+                    "2026-5_100": true,
+                    "2026-5_75": true,
+                    "2026-5_90": true
+                },
+                "fecha_creacion": "2026-05-09 17:30:12.618000+00:00",
+                "limite_presupuesto_mensual": 1100,
+                "vehiculo_principal_id": "BACD32"
+            },
+            "subcolecciones": {
+                "trips": {
+                    "FOUkRagefAioAo31Kwn2": {
+                        "vehicleName": "Misuvishy (BACD32)",
+                        "date": "2026-05-11T14:23:49.377",
+                        "distanceKm": 1572.287625,
+                        "duration": "18h 14m",
+                        "totalCost": 350,
+                        "tolls": [
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T14:23:49.377",
+                                "name": "P05 Vivaceta - Carrascal"
+                            }
+                        ]
+                    },
+                    "Oxx6BLHopW92GgALb0dG": {
+                        "vehicleName": "Misuvishy (BACD32)",
+                        "date": "2026-05-11T13:45:48.145",
+                        "distanceKm": 4.784862,
+                        "duration": "13 min",
+                        "totalCost": 0,
+                        "tolls": []
+                    },
+                    "SPxEmuHzMAK8twA2mcWK": {
+                        "vehicleName": "Misuvishy (BACD32)",
+                        "date": "2026-05-11T14:25:09.719",
+                        "distanceKm": 1572.287625,
+                        "duration": "18h 14m",
+                        "totalCost": 350,
+                        "tolls": [
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T14:25:09.720",
+                                "name": "P05 Vivaceta - Carrascal"
+                            }
+                        ]
+                    },
+                    "Zeu1SlExbHp4aBeQSYrX": {
+                        "vehicleName": "Misuvishy (BACD32)",
+                        "date": "2026-05-11T14:24:43.207",
+                        "distanceKm": 1572.287625,
+                        "duration": "18h 14m",
+                        "totalCost": 350,
+                        "tolls": [
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T14:24:43.207",
+                                "name": "P05 Vivaceta - Carrascal"
+                            }
+                        ]
+                    },
+                    "fOwl37SVjSStFUnpoGTy": {
+                        "vehicleName": "Misuvishy (BACD32)",
+                        "date": "2026-05-11T13:46:53.409",
+                        "distanceKm": 1572.287625,
+                        "duration": "18h 14m",
+                        "totalCost": 350,
+                        "tolls": [
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T13:46:53.409",
+                                "name": "P05 Vivaceta - Carrascal"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "rjmNke7Ij4c14pxDeWwigs4IS7r2": {
+            "datos": {
+                "email": "jesus2@gmail.com",
+                "nombre_mostrar": null,
+                "vehiculo_principal_id": null,
+                "fecha_creacion": "2026-05-11 15:08:30.978000+00:00",
+                "limite_presupuesto_mensual": 50000
+            },
+            "subcolecciones": {}
+        },
+        "tSrb7ucmEphCbbYbEW3ztaugJMn1": {
+            "datos": {
+                "email": "jesus3@gmail.com",
+                "nombre_mostrar": null,
+                "limite_presupuesto_mensual": 50000,
+                "fecha_creacion": "2026-05-11 22:42:33.972000+00:00",
+                "vehiculo_principal_id": "ABCD55"
+            },
+            "subcolecciones": {
+                "trips": {
+                    "uFBAnnNrYFDnqJcpewdh": {
+                        "vehicleName": "Toyoa (ABCD55)",
+                        "date": "2026-05-11T18:49:25.375",
+                        "distanceKm": 12.902882,
+                        "duration": "20 min",
+                        "totalCost": 1283.79,
+                        "tolls": [
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T18:49:25.375",
+                                "name": "P8.1 Las Tranqueras - Costanera Norte"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T18:49:25.375",
+                                "name": "P8.0 Costanera Norte - Las Tranqueras"
+                            },
+                            {
+                                "cost": 233.79,
+                                "timestamp": "2026-05-11T18:49:25.375",
+                                "name": "SB Salida Bellavista"
+                            },
+                            {
+                                "cost": 350,
+                                "timestamp": "2026-05-11T18:49:25.375",
+                                "name": "P03 Torres Tajamar - Puente Lo Saldes"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "vehiculos": {
+        "1SLxtFkVqtT86eVa7DTG": {
+            "datos": {
+                "fecha_ingreso": "11/05/2026",
+                "marca": "Kia",
+                "id_usuario": "REF:usuarios/iRtHjWqi4EQopC27fYqEbOYVqFz2",
+                "categoria": "AUTO",
+                "patente": "ABCD34"
+            },
+            "subcolecciones": {}
+        },
+        "2xUENsJXNXpw8mtabwqw": {
+            "datos": {
+                "fecha_ingreso": "11/05/2026",
+                "marca": "toyota",
+                "id_usuario": "REF:usuarios/rjmNke7Ij4c14pxDeWwigs4IS7r2",
+                "categoria": "AUTO",
+                "patente": "ABCD55"
+            },
+            "subcolecciones": {}
+        },
+        "3uzvwOXUXaVxpGACpkYi": {
+            "datos": {
+                "id_usuario": "REF:usuarios/iRtHjWqi4EQopC27fYqEbOYVqFz2",
+                "categoria": "AUTO",
+                "patente": "SAFASFASFAS"
+            },
+            "subcolecciones": {}
+        },
+        "65OR61jVhkfG6x51SYvY": {
+            "datos": {
+                "fecha_ingreso": "09/05/2026",
+                "marca": "Misuvishy",
+                "id_usuario": "REF:usuarios/mzIF0YVgSgZHVd6q0uh9J3sn1sP2",
+                "categoria": "CAMIONETA",
+                "patente": "BACD32"
+            },
+            "subcolecciones": {}
+        },
+        "71hjiNtnIyF5rxIWbe4C": {
+            "datos": {
+                "fecha_ingreso": "11/05/2026",
+                "marca": "Toyoa",
+                "id_usuario": "REF:usuarios/tSrb7ucmEphCbbYbEW3ztaugJMn1",
+                "categoria": "AUTO",
+                "patente": "ABCD55"
+            },
+            "subcolecciones": {}
+        },
+        "EDFvPCT0lqmpMhqgJW3m": {
+            "datos": {
+                "id_usuario": "REF:usuarios/iRtHjWqi4EQopC27fYqEbOYVqFz2",
+                "categoria": "AUTO",
+                "patente": "AAAA12"
+            },
+            "subcolecciones": {}
+        },
+        "G0d6BdVNqqSqsRj1633p": {
+            "datos": {
+                "fecha_ingreso": "11/05/2026",
+                "marca": "Kia",
+                "id_usuario": "REF:usuarios/dkRXAdnPCDXsshSXUZKHupHpt1c2",
+                "categoria": "AUTO",
+                "patente": "WBXD69"
+            },
+            "subcolecciones": {}
+        },
+        "KEU6C3hvsPZcAcMSq4ZZ": {
+            "datos": {
+                "patente": "ABCD55",
+                "categoria": "auto",
+                "id_usuario": "REF:usuarios/iRtHjWqi4EQopC27fYqEbOYVqFz2"
+            },
+            "subcolecciones": {}
+        },
+        "SeZqocnIPX4AaSLcfU3U": {
+            "datos": {
+                "fecha_ingreso": "10/05/2026",
+                "marca": "Peugot",
+                "patente": "XDPD69",
+                "categoria": "CAMIONETA",
+                "id_usuario": "REF:usuarios/iRtHjWqi4EQopC27fYqEbOYVqFz2"
+            },
+            "subcolecciones": {}
+        },
+        "UrSwrutDpou3GzsXy6mU": {
+            "datos": {
+                "fecha_ingreso": "10/05/2026",
+                "marca": "KIA",
+                "id_usuario": "REF:usuarios/RbqHThICVsg3hX1GuyK3J55JYoG2",
+                "categoria": "CAMIONETA",
+                "patente": "ABBD23"
+            },
+            "subcolecciones": {}
+        },
+        "fGNsBbrEoYcbQVv1s17j": {
+            "datos": {
+                "fecha_ingreso": "10/05/2026",
+                "marca": "toyota",
+                "id_usuario": "REF:usuarios/RbqHThICVsg3hX1GuyK3J55JYoG2",
+                "categoria": "AUTO",
+                "patente": "ABCD55"
+            },
+            "subcolecciones": {}
+        },
+        "giwRVDCVXWOoDZYB4YOd": {
+            "datos": {
+                "fecha_ingreso": "09/05/2026",
+                "marca": "Nissan",
+                "id_usuario": "REF:usuarios/iRtHjWqi4EQopC27fYqEbOYVqFz2",
+                "categoria": "AUTO",
+                "patente": "TATA67"
+            },
+            "subcolecciones": {}
+        },
+        "yj0C1yyZ2ga4p3bv7uBH": {
+            "datos": {
+                "fecha_ingreso": "09/05/2026",
+                "marca": "Toyota",
+                "id_usuario": "REF:usuarios/mzIF0YVgSgZHVd6q0uh9J3sn1sP2",
+                "categoria": "CAMIONETA",
+                "patente": "HOLA69"
+            },
+            "subcolecciones": {}
+        }
+    }
+}
