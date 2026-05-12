@@ -12,7 +12,7 @@
 
 ---
 
-<a name="tabla-de-contenidos"></a>
+<a id="tabla-de-contenidos" name="tabla-de-contenidos"></a>
 ## 📋 Tabla de Contenidos
 
 - [Descripción](#descripcion)
@@ -27,7 +27,7 @@
 
 ---
 
-<a name="descripcion"></a>
+<a id="descripcion" name="descripcion"></a>
 ## 📝 Descripción
 
 **Tag OK** es una aplicación móvil diseñada para el conductor moderno que transita por las autopistas urbanas concesionadas de Chile. A diferencia de un GPS convencional, Tag OK integra un motor de cálculo de tarifas actualizado al año **2026**, permitiendo conocer el costo exacto de cada viaje antes de encender el motor.
@@ -36,7 +36,7 @@ Con una interfaz **Glassmorphism** premium y notificaciones inteligentes de pres
 
 ---
 
-<a name="caracteristicas-principales"></a>
+<a id="caracteristicas-principales" name="caracteristicas-principales"></a>
 ## ✨ Características Principales
 
 ### 🛰️ Navegación Inteligente
@@ -56,7 +56,7 @@ Con una interfaz **Glassmorphism** premium y notificaciones inteligentes de pres
 
 ---
 
-<a name="dashboard-visualizacion"></a>
+<a id="dashboard-visualizacion" name="dashboard-visualizacion"></a>
 ## 🖼️ Dashboard & Visualización
 
 El nuevo **Centro de Control** utiliza un diseño de vanguardia con:
@@ -66,7 +66,7 @@ El nuevo **Centro de Control** utiliza un diseño de vanguardia con:
 
 ---
 
-<a name="gestion-de-vehiculos"></a>
+<a id="gestion-de-vehiculos" name="gestion-de-vehiculos"></a>
 ## 🚗 Gestión de Vehículos
 
 Mantenemos un control exhaustivo de tu flota:
@@ -76,7 +76,7 @@ Mantenemos un control exhaustivo de tu flota:
 
 ---
 
-<a name="control-de-presupuesto"></a>
+<a id="control-de-presupuesto" name="control-de-presupuesto"></a>
 ## 💰 Control de Presupuesto
 
 Implementamos un sistema de alertas dinámicas para evitar exceder tus límites mensuales:
@@ -91,7 +91,7 @@ Implementamos un sistema de alertas dinámicas para evitar exceder tus límites 
 
 ---
 
-<a name="stack-tecnologico"></a>
+<a id="stack-tecnologico" name="stack-tecnologico"></a>
 ## 🛠️ Stack Tecnológico
 
 | Componente | Tecnología |
@@ -106,7 +106,7 @@ Implementamos un sistema de alertas dinámicas para evitar exceder tus límites 
 
 ---
 
-<a name="instalacion-configuracion"></a>
+<a id="instalacion-configuracion" name="instalacion-configuracion"></a>
 ## 🚀 Instalación y Configuración
 
 ### Prerrequisitos
@@ -139,7 +139,7 @@ Implementamos un sistema de alertas dinámicas para evitar exceder tus límites 
 
 ---
 
-<a name="estructura-proyecto"></a>
+<a id="estructura-proyecto" name="estructura-proyecto"></a>
 ## 📂 Estructura del Proyecto
 
 ```bash
@@ -155,7 +155,7 @@ lib/
 
 ---
 
-<a name="base-de-datos"></a>
+<a id="base-de-datos" name="base-de-datos"></a>
 ## 🗄️ Documentación de Base de Datos
 
 Para una revisión técnica profunda del esquema de datos y la arquitectura NoSQL, consulta los siguientes recursos:
