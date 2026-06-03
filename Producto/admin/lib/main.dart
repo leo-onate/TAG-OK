@@ -335,13 +335,14 @@ class UsersPage extends StatelessWidget {
       child: _FirestoreTable(
         stream: service.streamUsers(),
         emptyMessage: 'No hay usuarios aún.',
-        columns: const ['Correo', 'Estado', 'Presupuesto'],
+        columns: const ['Nombre', 'Correo', 'Presupuesto', 'Vehículo Principal'],
         rowBuilder: (doc) {
           final Map<String, dynamic> data = doc.data();
           return [
+            (data['nombre_mostrar'] ?? 'Sin nombre').toString(),
             (data['email'] ?? 'Sin correo').toString(),
-            (data['estado'] ?? 'activo').toString(),
-            (data['limitePresupuestoMensual'] ?? '-').toString(),
+            '\$${data['limite_presupuesto_mensual'] ?? '0'}',
+            (data['vehiculo_principal_id'] ?? 'Ninguno').toString(),
           ];
         },
       ),
@@ -362,12 +363,14 @@ class PorticosPage extends StatelessWidget {
       child: _FirestoreTable(
         stream: service.streamPorticos(),
         emptyMessage: 'No hay pórticos cargados.',
-        columns: const ['Nombre', 'Costo', 'Sentido'],
+        columns: const ['Nombre', 'Tarifa Base', 'Tarifa Punta', 'Tarifa Saturación', 'Sentido'],
         rowBuilder: (doc) {
           final Map<String, dynamic> data = doc.data();
           return [
             (data['nombre'] ?? 'Sin nombre').toString(),
-            (data['costo'] ?? '-').toString(),
+            '\$${data['costo'] ?? '0'}',
+            '\$${data['costoPunta'] ?? '0'}',
+            '\$${data['costoSaturacion'] ?? '0'}',
             (data['sentido'] ?? '-').toString(),
           ];
         },
