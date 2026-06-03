@@ -1,121 +1,590 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'admin_firestore_service.dart';
+import 'firebase_options.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    await dotenv.load(fileName: '.env');
+  } catch (_) {
+    debugPrint('TAG_OK_ADMIN: no se pudo cargar .env');
+  }
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  runApp(const TagOkAdminApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class TagOkAdminApp extends StatelessWidget {
+  const TagOkAdminApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      title: 'TAG OK Admin',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF0EA5E9),
+          brightness: Brightness.light,
+        ),
+        scaffoldBackgroundColor: const Color(0xFFF8FAFC),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
+        ),
+        cardTheme: CardThemeData(
+          color: Colors.white,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: const BorderSide(color: Color(0xFFE2E8F0)),
+          ),
+        ),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const AdminShell(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+class AdminShell extends StatefulWidget {
+  const AdminShell({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<AdminShell> createState() => _AdminShellState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _AdminShellState extends State<AdminShell> {
+  final AdminFirestoreService _service = AdminFirestoreService();
+  int _selectedIndex = 0;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+  static const List<String> _pages = <String>[
+    'Dashboard',
+    'Usuarios',
+    'Pórticos',
+    'Tarifas',
+    'Reportes',
+  ];
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    final Widget content = switch (_selectedIndex) {
+      0 => DashboardPage(service: _service),
+      1 => UsersPage(service: _service),
+      2 => PorticosPage(service: _service),
+      3 => TariffsPage(service: _service),
+      _ => const ReportsPage(),
+    };
+
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: .center,
-          children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+      body: Row(
+        children: [
+          Container(
+            width: 280,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF0F172A), Color(0xFF111827)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
             ),
+            child: SafeArea(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.all(24),
+                    child: _BrandBlock(),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24),
+                    child: Text(
+                      'Backoffice',
+                      style: TextStyle(
+                        color: Color(0xFF94A3B8),
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      itemCount: _pages.length,
+                      itemBuilder: (context, index) {
+                        final bool selected = _selectedIndex == index;
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: ListTile(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            selected: selected,
+                            selectedTileColor: const Color(0xFF1E293B),
+                            iconColor: selected ? const Color(0xFF38BDF8) : const Color(0xFFCBD5E1),
+                            textColor: selected ? Colors.white : const Color(0xFFCBD5E1),
+                            leading: Icon(_iconFor(index)),
+                            title: Text(_pages[index]),
+                            onTap: () => setState(() => _selectedIndex = index),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.all(24),
+                    child: _AdminHintCard(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(child: content),
+        ],
+      ),
+    );
+  }
+
+  IconData _iconFor(int index) {
+    return switch (index) {
+      0 => Icons.dashboard_outlined,
+      1 => Icons.people_alt_outlined,
+      2 => Icons.toll_outlined,
+      3 => Icons.payments_outlined,
+      _ => Icons.bar_chart_outlined,
+    };
+  }
+}
+
+class _BrandBlock extends StatelessWidget {
+  const _BrandBlock();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _LogoMark(),
+        SizedBox(height: 16),
+        Text(
+          'TAG OK',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 28,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.8,
+          ),
+        ),
+        SizedBox(height: 6),
+        Text(
+          'Panel de administración web',
+          style: TextStyle(
+            color: Color(0xFF94A3B8),
+            fontSize: 13,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _LogoMark extends StatelessWidget {
+  const _LogoMark();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 56,
+      height: 56,
+      decoration: BoxDecoration(
+        color: const Color(0xFF0EA5E9).withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: const Icon(Icons.route_outlined, color: Color(0xFF38BDF8), size: 32),
+    );
+  }
+}
+
+class _AdminHintCard extends StatelessWidget {
+  const _AdminHintCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E293B),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Acceso interno',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+          ),
+          SizedBox(height: 8),
+          Text(
+            'Este panel comparte el mismo Firestore que la app final. Usa roles para restringir edición y publicación.',
+            style: TextStyle(color: Color(0xFFCBD5E1), fontSize: 12, height: 1.4),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class DashboardPage extends StatelessWidget {
+  const DashboardPage({super.key, required this.service});
+
+  final AdminFirestoreService service;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<AdminOverview>(
+      future: service.fetchOverview(),
+      builder: (context, snapshot) {
+        final AdminOverview? overview = snapshot.data;
+        return _AdminPageScaffold(
+          title: 'Dashboard',
+          subtitle: 'Estado general del sistema, datos vigentes y accesos rápidos.',
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Wrap(
+                spacing: 16,
+                runSpacing: 16,
+                children: [
+                  _StatCard(label: 'Usuarios', value: overview?.users ?? 0, icon: Icons.people_alt_outlined),
+                  _StatCard(label: 'Vehículos', value: overview?.vehicles ?? 0, icon: Icons.directions_car_outlined),
+                  _StatCard(label: 'Pórticos', value: overview?.porticos ?? 0, icon: Icons.toll_outlined),
+                  _StatCard(label: 'Tarifas', value: overview?.tariffs ?? 0, icon: Icons.payments_outlined),
+                ],
+              ),
+              const SizedBox(height: 24),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final bool isNarrow = constraints.maxWidth < 1000;
+                  final Widget left = _InfoCard(
+                    title: 'Alertas y actividad reciente',
+                    child: const Text(
+                      'Este módulo quedará conectado a bitácora, alertas y cambios publicados.\n\nPróximo paso sugerido: mostrar últimos cambios en pórticos y tarifas.',
+                    ),
+                  );
+                  final Widget right = _InfoCard(
+                    title: 'Accesos rápidos',
+                    child: Wrap(
+                      spacing: 12,
+                      runSpacing: 12,
+                      children: const [
+                        _QuickAction(label: 'Usuarios', icon: Icons.people_alt_outlined),
+                        _QuickAction(label: 'Pórticos', icon: Icons.toll_outlined),
+                        _QuickAction(label: 'Tarifas', icon: Icons.payments_outlined),
+                        _QuickAction(label: 'Reportes', icon: Icons.bar_chart_outlined),
+                      ],
+                    ),
+                  );
+
+                  if (isNarrow) {
+                    return Column(
+                      children: [
+                        left,
+                        const SizedBox(height: 16),
+                        right,
+                      ],
+                    );
+                  }
+
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: left),
+                      const SizedBox(width: 16),
+                      Expanded(child: right),
+                    ],
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class UsersPage extends StatelessWidget {
+  const UsersPage({super.key, required this.service});
+
+  final AdminFirestoreService service;
+
+  @override
+  Widget build(BuildContext context) {
+    return _AdminPageScaffold(
+      title: 'Usuarios',
+      subtitle: 'Listado de cuentas finales, estado y datos clave para soporte.',
+      child: _FirestoreTable(
+        stream: service.streamUsers(),
+        emptyMessage: 'No hay usuarios aún.',
+        columns: const ['Correo', 'Estado', 'Presupuesto'],
+        rowBuilder: (doc) {
+          final Map<String, dynamic> data = doc.data();
+          return [
+            (data['email'] ?? 'Sin correo').toString(),
+            (data['estado'] ?? 'activo').toString(),
+            (data['limitePresupuestoMensual'] ?? '-').toString(),
+          ];
+        },
+      ),
+    );
+  }
+}
+
+class PorticosPage extends StatelessWidget {
+  const PorticosPage({super.key, required this.service});
+
+  final AdminFirestoreService service;
+
+  @override
+  Widget build(BuildContext context) {
+    return _AdminPageScaffold(
+      title: 'Pórticos',
+      subtitle: 'Catálogo operativo compartido con la app final.',
+      child: _FirestoreTable(
+        stream: service.streamPorticos(),
+        emptyMessage: 'No hay pórticos cargados.',
+        columns: const ['Nombre', 'Costo', 'Sentido'],
+        rowBuilder: (doc) {
+          final Map<String, dynamic> data = doc.data();
+          return [
+            (data['nombre'] ?? 'Sin nombre').toString(),
+            (data['costo'] ?? '-').toString(),
+            (data['sentido'] ?? '-').toString(),
+          ];
+        },
+      ),
+    );
+  }
+}
+
+class TariffsPage extends StatelessWidget {
+  const TariffsPage({super.key, required this.service});
+
+  final AdminFirestoreService service;
+
+  @override
+  Widget build(BuildContext context) {
+    return _AdminPageScaffold(
+      title: 'Tarifas',
+      subtitle: 'Vigencias, edición y publicación controlada.',
+      child: _FirestoreTable(
+        stream: service.streamTariffs(),
+        emptyMessage: 'Todavía no existe la colección tarifas.',
+        columns: const ['Nombre', 'Vigencia', 'Estado'],
+        rowBuilder: (doc) {
+          final Map<String, dynamic> data = doc.data();
+          return [
+            (data['nombre'] ?? 'Tarifa').toString(),
+            (data['vigencia'] ?? data['fecha_actualizacion'] ?? '-').toString(),
+            (data['estado'] ?? 'borrador').toString(),
+          ];
+        },
+      ),
+    );
+  }
+}
+
+class ReportsPage extends StatelessWidget {
+  const ReportsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const _AdminPageScaffold(
+      title: 'Reportes',
+      subtitle: 'KPIs, exportación y trazabilidad operativa.',
+      child: _InfoCard(
+        title: 'Próxima fase',
+        child: Text(
+          'Aquí se conectarán gráficos, filtros por fecha y exportaciones.\n\nSiguiente paso natural: bitácora de cambios y reporte de pórticos/tarifas.',
+        ),
+      ),
+    );
+  }
+}
+
+class _AdminPageScaffold extends StatelessWidget {
+  const _AdminPageScaffold({required this.title, required this.subtitle, required this.child});
+
+  final String title;
+  final String subtitle;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w800, letterSpacing: -0.8),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              subtitle,
+              style: const TextStyle(color: Color(0xFF64748B), fontSize: 14),
+            ),
+            const SizedBox(height: 24),
+            Expanded(child: child),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+    );
+  }
+}
+
+class _StatCard extends StatelessWidget {
+  const _StatCard({required this.label, required this.value, required this.icon});
+
+  final String label;
+  final int value;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 220,
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(icon, color: const Color(0xFF0EA5E9)),
+              const SizedBox(height: 18),
+              Text(
+                value.toString(),
+                style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w800),
+              ),
+              const SizedBox(height: 6),
+              Text(label, style: const TextStyle(color: Color(0xFF64748B))),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _InfoCard extends StatelessWidget {
+  const _InfoCard({required this.title, required this.child});
+
+  final String title;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 16),
+            child,
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _QuickAction extends StatelessWidget {
+  const _QuickAction({required this.label, required this.icon});
+
+  final String label;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton.icon(
+      onPressed: () {},
+      icon: Icon(icon),
+      label: Text(label),
+    );
+  }
+}
+
+class _FirestoreTable extends StatelessWidget {
+  const _FirestoreTable({
+    required this.stream,
+    required this.emptyMessage,
+    required this.columns,
+    required this.rowBuilder,
+  });
+
+  final Stream<QuerySnapshot<Map<String, dynamic>>> stream;
+  final String emptyMessage;
+  final List<String> columns;
+  final List<String> Function(QueryDocumentSnapshot<Map<String, dynamic>>) rowBuilder;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+          stream: stream,
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Text('Error al leer Firestore: ${snapshot.error}');
+            }
+
+            if (!snapshot.hasData) {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(32),
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+
+            final List<QueryDocumentSnapshot<Map<String, dynamic>>> docs = snapshot.data!.docs;
+            if (docs.isEmpty) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(32),
+                  child: Text(emptyMessage),
+                ),
+              );
+            }
+
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
+                columns: columns.map((String column) => DataColumn(label: Text(column))).toList(),
+                rows: docs.take(20).map((doc) {
+                  final List<String> cells = rowBuilder(doc);
+                  return DataRow(
+                    cells: cells.map((String cell) => DataCell(Text(cell))).toList(),
+                  );
+                }).toList(),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

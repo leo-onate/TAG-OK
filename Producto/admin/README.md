@@ -1,17 +1,30 @@
-# intento2
+# TAG OK Admin
 
-A new Flutter project.
+Panel web de administración para el ecosistema TAG OK.
 
-## Getting Started
+## Qué incluye
 
-This project is a starting point for a Flutter application.
+- Dashboard inicial con KPIs del sistema.
+- Listado de usuarios desde Firestore.
+- Catálogo de pórticos compartido con la app principal.
+- Vista base para tarifas y reportes.
 
-A few resources to get you started if this is your first Flutter project:
+## Base de datos compartida
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+Este proyecto apunta al mismo Firebase project que la app final. Las colecciones iniciales usadas por el admin son:
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- `usuarios`
+- `vehiculos`
+- `porticos`
+- `tarifas`
+- `alertas`
+
+## Arranque local
+
+1. Ubícate en la carpeta `Producto/admin`.
+2. Ejecuta `flutter pub get`.
+3. Ejecuta `flutter run -d chrome` para abrir la versión web.
+
+## Nota
+
+El archivo `.env` contiene la configuración del proyecto Firebase usada para desarrollo local.
