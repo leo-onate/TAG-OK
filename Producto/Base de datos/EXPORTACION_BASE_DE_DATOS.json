@@ -1,1031 +1,1376 @@
 {
     "porticos": {
-        "0CJe56uthiZuDHIbpHuN": {
+        "1": {
             "datos": {
-                "costoSaturacion": 681.72,
-                "fecha_actualizacion": "2026-05-11 15:05:44.566000+00:00",
-                "costo": 233.79,
-                "costoPunta": 450.11,
-                "lat": -33.4221473,
-                "lng": -70.6198252,
-                "nombre": "SB Salida Bellavista",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "0mqR8qhfKjg4WTAeF4O1": {
-            "datos": {
-                "costoSaturacion": 1348.92,
-                "fecha_actualizacion": "2026-05-11 15:05:44.887000+00:00",
-                "costo": 462.63,
-                "costoPunta": 890.66,
-                "lat": -33.4251,
-                "lng": -70.6951,
-                "nombre": "Pórtico P4 - Vivaceta",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "1cjmR5fcQ8ZBvvOa9EL2": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:43.412000+00:00",
-                "costo": 350,
-                "costoPunta": null,
-                "lat": -33.4081406,
-                "lng": -70.5997632,
-                "nombre": "P8.1 Las Tranqueras - Costanera Norte",
-                "sentido": null
-            },
-            "subcolecciones": {}
-        },
-        "1wjfomea6rk0ZkYDnEZC": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:44.440000+00:00",
-                "costo": 868.37,
-                "costoPunta": null,
-                "lat": -33.5064259,
-                "lng": -70.697251,
-                "nombre": "PA21 - Américo Vespucio - Carlos Valdovinos",
-                "sentido": "S-N"
-            },
-            "subcolecciones": {}
-        },
-        "26utDu2QuiMbCKfbTZ0x": {
-            "datos": {
-                "costoSaturacion": 997.87,
-                "fecha_actualizacion": "2026-05-11 15:05:43.996000+00:00",
-                "costo": 332.62,
-                "costoPunta": 665.25,
-                "lat": -33.5398418,
-                "lng": -70.6529975,
-                "nombre": "P3.2 Gran Avenida - Santa Rosa",
-                "sentido": "P-O"
-            },
-            "subcolecciones": {}
-        },
-        "3hChUfqWqRGoBhR0j4SV": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:44.390000+00:00",
-                "costo": 868.37,
-                "costoPunta": null,
-                "lat": -33.4690606,
-                "lng": -70.6881273,
-                "nombre": "PA23 - Carlos Valdovinos - Alameda",
-                "sentido": "S-N"
-            },
-            "subcolecciones": {}
-        },
-        "518PtqayZraXDJex3pNu": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:43.309000+00:00",
-                "costo": 350,
-                "costoPunta": null,
-                "lat": -33.4264381,
-                "lng": -70.669833,
-                "nombre": "P05 Vivaceta - Carrascal",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "5HCi7oXY2ydXJx5hwSzD": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:44.516000+00:00",
-                "costo": 350,
-                "costoPunta": null,
-                "lat": -33.3981,
-                "lng": -70.5961,
-                "nombre": "P08 Centenario - Lo Saldes",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "5Qs8CEGqgKW7UxpBwl32": {
-            "datos": {
-                "costoSaturacion": 1310.4,
-                "fecha_actualizacion": "2026-05-11 15:05:44.043000+00:00",
-                "costo": 449.4,
-                "costoPunta": 865.2,
-                "lat": -33.3986159,
-                "lng": -70.6157247,
-                "nombre": "P101 Salto - Kennedy",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "5mAxlDojNWNc1Kf4tVf2": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:43.112000+00:00",
-                "costo": 868.37,
-                "costoPunta": null,
-                "lat": -33.4171865,
-                "lng": -70.6787232,
-                "nombre": "PA16 - Río Mapocho - 14 de la Fama - Américo Vespucio Norte",
-                "sentido": "N-S"
-            },
-            "subcolecciones": {}
-        },
-        "7it1Op5UArhL5d5ckyv7": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:44.592000+00:00",
-                "costo": 350,
-                "costoPunta": null,
-                "lat": -33.4239919,
-                "lng": -70.6219547,
-                "nombre": "P03 Torres Tajamar - Puente Lo Saldes",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "7xYr7oDPVqirdPaNoMeI": {
-            "datos": {
-                "costoSaturacion": 1597.78,
-                "fecha_actualizacion": "2026-05-11 15:05:43.461000+00:00",
-                "costo": 650,
-                "costoPunta": 975,
-                "lat": -33.483359,
-                "lng": -70.7530939,
-                "nombre": "P1 Ruta 78 - Santa Elena",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "9buLJ3WMENypPBnPFQ93": {
-            "datos": {
-                "costoSaturacion": 1698.25,
-                "fecha_actualizacion": "2026-05-11 15:05:42.919000+00:00",
-                "costo": 566.08,
-                "costoPunta": 1132.17,
-                "lat": -33.5588804,
-                "lng": -70.7105862,
-                "nombre": "PA32 - Las Acacias - Lo Blanco",
-                "sentido": "N-S"
-            },
-            "subcolecciones": {}
-        },
-        "AceCKZpnqerZCwgQHxas": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:43.485000+00:00",
-                "costo": 868.37,
-                "costoPunta": null,
-                "lat": -33.5364729,
-                "lng": -70.7076591,
-                "nombre": "PA20 - Américo Vespucio - Ruta 5 Sur",
-                "sentido": "S-N"
-            },
-            "subcolecciones": {}
-        },
-        "CWlypjkO6bRVWYr8VYtL": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:44.493000+00:00",
-                "costo": 350,
-                "costoPunta": null,
-                "lat": -33.398,
-                "lng": -70.596,
-                "nombre": "P07 Lo Saldes - Centenario",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "DUnMX0AQ9pqvf5aWfV4W": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:44.742000+00:00",
-                "costo": 350,
-                "costoPunta": null,
-                "lat": -33.5819958,
-                "lng": -70.6112359,
-                "nombre": "Peaje Gabriela Poniente",
-                "sentido": null
-            },
-            "subcolecciones": {}
-        },
-        "DkpJlb6J3j4CPSFQ5fPo": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:44.345000+00:00",
-                "costo": 350,
-                "costoPunta": null,
-                "lat": -33.3872062,
-                "lng": -70.5413721,
-                "nombre": "P07 Las Tranqueras - Estoril",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "DsT4IUxicQ3LDmVQJRVH": {
-            "datos": {
-                "costoSaturacion": 997.87,
-                "fecha_actualizacion": "2026-05-11 15:05:43.971000+00:00",
-                "costo": 332.62,
-                "costoPunta": 665.25,
-                "lat": -33.5338163,
-                "lng": -70.6764509,
-                "nombre": "P3.4 Ruta 5 - Gran Avenida",
-                "sentido": "P-O"
-            },
-            "subcolecciones": {}
-        },
-        "F919GGklTgYYRt16viGb": {
-            "datos": {
-                "costoSaturacion": 1387.89,
-                "fecha_actualizacion": "2026-05-11 15:05:44.717000+00:00",
-                "costo": 462.63,
-                "costoPunta": 925.26,
-                "lat": -33.5136,
-                "lng": -70.5951,
-                "nombre": "P4.1 Macul - Vicuña Mackenna",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "FCGXHErA1AcyJSPzstjl": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:43.627000+00:00",
-                "costo": 350,
-                "costoPunta": null,
-                "lat": -33.40909,
-                "lng": -70.6043271,
-                "nombre": "P8.0 Costanera Norte - Las Tranqueras",
-                "sentido": null
-            },
-            "subcolecciones": {}
-        },
-        "FLr5rcd2ULKk2T4aFjzi": {
-            "datos": {
-                "costoSaturacion": 2096.64,
-                "fecha_actualizacion": "2026-05-11 15:05:42.760000+00:00",
-                "costo": 719.04,
-                "costoPunta": 1384.32,
-                "lat": -33.4387137,
-                "lng": -70.7831378,
                 "nombre": "P3 Ruta 68 - Costanera Norte",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
+                "latitud": -33.4387137,
+                "longitud": -70.7831378,
+                "tarifa_base": 719.04,
+                "tarifa_punta": 1384.32,
+                "tarifa_saturacion": 2096.64,
+                "sentido": "S-N",
+                "autopista": "Vespucio Norte",
+                "grupo": "Anillo",
+                "secuencia": 3
+            }
         },
-        "HT10OS1ioHgTcRJxQDce": {
+        "2": {
             "datos": {
-                "costoSaturacion": 753.67,
-                "fecha_actualizacion": "2026-05-11 15:05:43.362000+00:00",
-                "costo": 251.22,
-                "costoPunta": 502.45,
-                "lat": -33.3944443,
-                "lng": -70.6033861,
-                "nombre": "P2.2 Puente Lo Saldes - Centenario",
-                "sentido": "P-O"
-            },
-            "subcolecciones": {}
-        },
-        "IbCXsDyyPCqDhCQM0N6W": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:44.618000+00:00",
-                "costo": 350,
-                "costoPunta": null,
-                "lat": -33.423992,
-                "lng": -70.6219548,
-                "nombre": "P03 Puente Lo Saldes - Vivaceta",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "J2a8EjWVv73jkYoY6yLr": {
-            "datos": {
-                "costoSaturacion": 1356.21,
-                "fecha_actualizacion": "2026-05-11 15:05:43.267000+00:00",
-                "costo": 452.06,
-                "costoPunta": 904.14,
-                "lat": -33.5478986,
-                "lng": -70.6970069,
-                "nombre": "PA7 - Las Acacias - Américo Vespucio",
-                "sentido": "S-N"
-            },
-            "subcolecciones": {}
-        },
-        "K3OGjreAbe63qxdzmsDQ": {
-            "datos": {
-                "costoSaturacion": 2096.64,
-                "fecha_actualizacion": "2026-05-11 15:05:44.863000+00:00",
-                "costo": 719.04,
-                "costoPunta": 1384.32,
-                "lat": -33.425,
-                "lng": -70.695,
-                "nombre": "Pórtico P3 - Walker Martínez",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "KB9rRljWk7ZgBKiEOCGx": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:43.652000+00:00",
-                "costo": 350,
-                "costoPunta": null,
-                "lat": -33.4090708,
-                "lng": -70.6038986,
-                "nombre": "P8.1 Costanera Norte - Las Tranqueras",
-                "sentido": null
-            },
-            "subcolecciones": {}
-        },
-        "KLqZUzDon1xryQDkRICQ": {
-            "datos": {
-                "costoSaturacion": 1755.28,
-                "fecha_actualizacion": "2026-05-11 15:05:44.091000+00:00",
-                "costo": 585.09,
-                "costoPunta": 1170.18,
-                "lat": -33.6227591,
-                "lng": -70.7145696,
-                "nombre": "PA3 - La Capilla - Colón",
-                "sentido": "S-N"
-            },
-            "subcolecciones": {}
-        },
-        "KMv6CXoV90QDSLtwQdAg": {
-            "datos": {
-                "costoSaturacion": 1178.49,
-                "fecha_actualizacion": "2026-05-11 15:05:44.165000+00:00",
-                "costo": 392.83,
-                "costoPunta": 785.66,
-                "lat": -33.5072,
-                "lng": -70.6693,
-                "nombre": "PA30 - Américo Vespucio - Departamental",
-                "sentido": "S-N"
-            },
-            "subcolecciones": {}
-        },
-        "Kp7NzR5HluCcb9AxY3DE": {
-            "datos": {
-                "costoSaturacion": 658.32,
-                "fecha_actualizacion": "2026-05-11 15:05:44.256000+00:00",
-                "costo": 225.77,
-                "costoPunta": 434.66,
-                "lat": -33.4302801,
-                "lng": -70.6572269,
-                "nombre": "EV Entrada Vivaceta",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "LPTqAcCL7v1HCCa45B0f": {
-            "datos": {
-                "costoSaturacion": 1863.48,
-                "fecha_actualizacion": "2026-05-11 15:05:44.944000+00:00",
-                "costo": 639.11,
-                "costoPunta": 1230.43,
-                "lat": -33.4130639,
-                "lng": -70.7667427,
-                "nombre": "P6.2 Américo Vespucio Poniente - Petersen",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "MZYv5bScdELtunaypqhf": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:42.974000+00:00",
-                "costo": 350,
-                "costoPunta": null,
-                "lat": -33.3710033,
-                "lng": -70.52258,
-                "nombre": "P00 Puente Padre Arteaga - Puente San Francisco",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "MgJRRIqIVaw6kvNZ97BA": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:44.211000+00:00",
-                "costo": 868.37,
-                "costoPunta": null,
-                "lat": -33.483,
-                "lng": -70.661,
-                "nombre": "PA10 - Departamental - Carlos Valdovinos",
-                "sentido": "N-S"
-            },
-            "subcolecciones": {}
-        },
-        "N7rM1uJNvwXryUXqBPmf": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:43.554000+00:00",
-                "costo": 350,
-                "costoPunta": null,
-                "lat": -33.5528306,
-                "lng": -70.8139017,
-                "nombre": "Padre Hurtado",
-                "sentido": null
-            },
-            "subcolecciones": {}
-        },
-        "OhTSLk7pBVmtgDL9dBX4": {
-            "datos": {
-                "costoSaturacion": 1310.4,
-                "fecha_actualizacion": "2026-05-11 15:05:43.166000+00:00",
-                "costo": 449.4,
-                "costoPunta": 865.2,
-                "lat": -33.3988003,
-                "lng": -70.6151323,
-                "nombre": "P102 Kennedy - El salto",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "Oo3O8bfJRSJqLtuhA7Lx": {
-            "datos": {
-                "costoSaturacion": 1387.89,
-                "fecha_actualizacion": "2026-05-11 15:05:43.838000+00:00",
-                "costo": 462.63,
-                "costoPunta": 925.26,
-                "lat": -33.5268018,
-                "lng": -70.6025742,
-                "nombre": "P4.2 Gnmo. de Alderete - Vicuña Mackena",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "PEhdrn5oxhO8vttuy1i9": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:43.220000+00:00",
-                "costo": 350,
-                "costoPunta": null,
-                "lat": -33.3876805,
-                "lng": -70.5429258,
-                "nombre": "P07 Estoril - Las Tranqueras",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "QUMi3dAxNSofAp1SWgsR": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:44.280000+00:00",
-                "costo": 350,
-                "costoPunta": null,
-                "lat": -33.4302245,
-                "lng": -70.6579611,
-                "nombre": "P04 Vivaceta - Torres Tajamar",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "S2YqBrye1H0XqLFKjvQp": {
-            "datos": {
-                "costoSaturacion": 1597.78,
-                "fecha_actualizacion": "2026-05-11 15:05:43.861000+00:00",
-                "costo": 532.59,
-                "costoPunta": 1065.18,
-                "lat": -33.5058611,
-                "lng": -70.728455,
-                "nombre": "P1.3 2a Transversal - Camino a Melipilla",
-                "sentido": "P-O"
-            },
-            "subcolecciones": {}
-        },
-        "TYypZpTNRGzetqlJ5ES6": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:44.668000+00:00",
-                "costo": 350,
-                "costoPunta": null,
-                "lat": -33.3851,
-                "lng": -70.5501,
-                "nombre": "P02 San Francisco de Asís",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "UTB1pTSt5ovS3wsw196U": {
-            "datos": {
-                "costoSaturacion": 753.67,
-                "fecha_actualizacion": "2026-05-11 15:05:43.922000+00:00",
-                "costo": 251.22,
-                "costoPunta": 502.45,
-                "lat": -33.5260519,
-                "lng": -70.6940167,
-                "nombre": "P2.1 Ruta 5 - General Velásquez",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "WCL0vRdzfsafJjyZSTiG": {
-            "datos": {
-                "costoSaturacion": 1597.78,
-                "fecha_actualizacion": "2026-05-11 15:05:44.840000+00:00",
-                "costo": 532.59,
-                "costoPunta": 1065.18,
-                "lat": -33.5059,
-                "lng": -70.7285,
-                "nombre": "P1.1 Camino a Melipilla - 2a Transversal",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "WU9xfj3WXCydXer2M4Yv": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:44.370000+00:00",
-                "costo": 350,
-                "costoPunta": null,
-                "lat": -33.3872124,
-                "lng": -70.5422849,
-                "nombre": "P06 Estoril - Las Tranqueras",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "WreEsiL7VYctKcwdDwhq": {
-            "datos": {
-                "costoSaturacion": 1003.9,
-                "fecha_actualizacion": "2026-05-11 15:05:44.140000+00:00",
-                "costo": 334.63,
-                "costoPunta": 669.27,
-                "lat": -33.5824122,
-                "lng": -70.7139749,
-                "nombre": "PA6 - Lo Blanco - Colón",
-                "sentido": "N-S"
-            },
-            "subcolecciones": {}
-        },
-        "Wxs5ncRJHztQMIPV8cUR": {
-            "datos": {
-                "costoSaturacion": 1356.21,
-                "fecha_actualizacion": "2026-05-11 15:05:43.290000+00:00",
-                "costo": 452.06,
-                "costoPunta": 904.14,
-                "lat": -33.5476268,
-                "lng": -70.696839,
-                "nombre": "PA8 - Américo Vespucio - Las Acacias",
-                "sentido": "N-S"
-            },
-            "subcolecciones": {}
-        },
-        "XHGNbztdj3xpZWKe3c3A": {
-            "datos": {
-                "costoSaturacion": 1597.78,
-                "fecha_actualizacion": "2026-05-11 15:05:43.882000+00:00",
-                "costo": 650,
-                "costoPunta": 975,
-                "lat": -33.5165613,
-                "lng": -70.7125335,
-                "nombre": "P1.1 General Velásquez - Ruta 78",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "XOkrq3jf0OwpP8ajRxqO": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:44.300000+00:00",
-                "costo": 868.37,
-                "costoPunta": null,
-                "lat": -33.469011,
-                "lng": -70.6562428,
-                "nombre": "PA16 - Río Mapocho - 14 de la Fama",
-                "sentido": "N-S"
-            },
-            "subcolecciones": {}
-        },
-        "XbemSe81KaDuzWgHxJRp": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:43.002000+00:00",
-                "costo": 868.37,
-                "costoPunta": null,
-                "lat": -33.3822386,
-                "lng": -70.6955624,
-                "nombre": "PA28 - Río Mapocho - Ruta 5 Norte",
-                "sentido": "S-N"
-            },
-            "subcolecciones": {}
-        },
-        "Y94UNmAoCFq2nWkEifcX": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:43.776000+00:00",
-                "costo": 868.37,
-                "costoPunta": null,
-                "lat": -33.5514043,
-                "lng": -70.7090613,
-                "nombre": "PA19 - Ruta 5 Sur - Américo Vespucio",
-                "sentido": "N-S"
-            },
-            "subcolecciones": {}
-        },
-        "YHnrFe5tzad3PVGuLjuT": {
-            "datos": {
-                "costoSaturacion": 1597.78,
-                "fecha_actualizacion": "2026-05-11 15:05:44.768000+00:00",
-                "costo": 650,
-                "costoPunta": 975,
-                "lat": -33.525,
-                "lng": -70.73,
-                "nombre": "P1.1 Ruta 78 - Cerrillos",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "Z8Kzq4ix81QMsRaBA8xi": {
-            "datos": {
-                "costoSaturacion": 1178.49,
-                "fecha_actualizacion": "2026-05-11 15:05:44.188000+00:00",
-                "costo": 392.83,
-                "costoPunta": 785.66,
-                "lat": -33.5071,
-                "lng": -70.6694,
-                "nombre": "PA9 - Departamental - Américo Vespucio",
-                "sentido": "N-S"
-            },
-            "subcolecciones": {}
-        },
-        "cwBTkqkzBNbGbsFWLtYk": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:43.703000+00:00",
-                "costo": 868.37,
-                "costoPunta": null,
-                "lat": -33.4489228,
-                "lng": -70.6595919,
-                "nombre": "PA13 - Alameda - Río Mapocho",
-                "sentido": "N-S"
-            },
-            "subcolecciones": {}
-        },
-        "dWZwJysutX0XSjJipoiF": {
-            "datos": {
-                "costoSaturacion": 1863.48,
-                "fecha_actualizacion": "2026-05-11 15:05:44.976000+00:00",
-                "costo": 639.11,
-                "costoPunta": 1230.43,
-                "lat": -33.4117097,
-                "lng": -70.7395811,
-                "nombre": "P6.1 Carrascal - Petersen",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "ddAvN6fiMvWttBml3lE4": {
-            "datos": {
-                "costoSaturacion": 1597.78,
-                "fecha_actualizacion": "2026-05-11 15:05:44.791000+00:00",
-                "costo": 650,
-                "costoPunta": 975,
-                "lat": -33.5251,
-                "lng": -70.7301,
-                "nombre": "P1.3 Cerrillos - Ruta 78",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "fKMTGagQ1kknesNo0YGg": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:43.140000+00:00",
-                "costo": 868.37,
-                "costoPunta": null,
-                "lat": -33.6473389,
-                "lng": -70.7116107,
-                "nombre": "PA2 - Los Guindos - La Capilla",
-                "sentido": "S-N"
-            },
-            "subcolecciones": {}
-        },
-        "fWNC1ziecGj6aeJg8FAo": {
-            "datos": {
-                "costoSaturacion": 997.87,
-                "fecha_actualizacion": "2026-05-11 15:05:44.019000+00:00",
-                "costo": 332.62,
-                "costoPunta": 665.25,
-                "lat": -33.539608,
-                "lng": -70.6529431,
-                "nombre": "P3.1 Santa Rosa - Gran Avenida",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "fbIgjpqeIL0J3gglFUZ4": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:43.386000+00:00",
-                "costo": 350,
-                "costoPunta": null,
-                "lat": -33.3758198,
-                "lng": -70.5426489,
-                "nombre": "P01 Puente La Dehesa - Gran Vía",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "ffBlsOdR2FIBUyPjYkM5": {
-            "datos": {
-                "costoSaturacion": 1310.4,
-                "fecha_actualizacion": "2026-05-11 15:05:42.869000+00:00",
-                "costo": 449.4,
-                "costoPunta": 865.2,
-                "lat": -33.3886039,
-                "lng": -70.6333164,
                 "nombre": "P14 Guanaco - El Salto",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
+                "latitud": -33.3886039,
+                "longitud": -70.6333164,
+                "tarifa_base": 449.4,
+                "tarifa_punta": 865.2,
+                "tarifa_saturacion": 1310.4,
+                "sentido": "P-O",
+                "autopista": "Vespucio Norte",
+                "grupo": "Anillo",
+                "secuencia": 14
+            }
         },
-        "gU4YOZSxMhCmEr7xqDla": {
+        "3": {
             "datos": {
-                "costoSaturacion": 1310.4,
-                "fecha_actualizacion": "2026-05-11 15:05:45.008000+00:00",
-                "costo": 449.4,
-                "costoPunta": 865.2,
-                "lat": -33.3657718,
-                "lng": -70.6951146,
-                "nombre": "P11 Pedro Fontova - Ruta 5 Norte",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
+                "nombre": "PA32 - Las Acacias - Lo Blanco",
+                "latitud": -33.5588804,
+                "longitud": -70.7105862,
+                "tarifa_base": 566.08,
+                "tarifa_punta": 1132.17,
+                "tarifa_saturacion": 1698.25,
+                "sentido": "N-S",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 32
+            }
         },
-        "gqzX234j1z0DEJk8L4Ee": {
+        "4": {
             "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:43.727000+00:00",
-                "costo": 868.37,
-                "costoPunta": null,
-                "lat": -33.4483818,
-                "lng": -70.6600861,
-                "nombre": "PA14 - Río Mapocho - Alameda",
-                "sentido": "N-S"
-            },
-            "subcolecciones": {}
+                "nombre": "P00 Puente Padre Arteaga - Puente San Francisco",
+                "latitud": -33.3710033,
+                "longitud": -70.52258,
+                "tarifa_base": 350.0,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "O-P",
+                "autopista": "Costanera Norte",
+                "grupo": "Oriente-Poniente",
+                "secuencia": 1
+            }
         },
-        "gss5u73LSpM02KSNDXHd": {
+        "5": {
             "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:44.323000+00:00",
-                "costo": 868.37,
-                "costoPunta": null,
-                "lat": -33.4265149,
-                "lng": -70.6688947,
-                "nombre": "PA15 - 14 de la Fama - Río Mapocho",
-                "sentido": "N-S"
-            },
-            "subcolecciones": {}
+                "nombre": "PA28 - Río Mapocho - Ruta 5 Norte",
+                "latitud": -33.3822386,
+                "longitud": -70.6955624,
+                "tarifa_base": 868.37,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "S-N",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 28
+            }
         },
-        "i9yml3sHl01PZ0PRBdZ9": {
+        "6": {
             "datos": {
-                "costoSaturacion": 1597.78,
-                "fecha_actualizacion": "2026-05-11 15:05:44.816000+00:00",
-                "costo": 532.59,
-                "costoPunta": 1065.18,
-                "lat": -33.5058,
-                "lng": -70.7284,
-                "nombre": "P1.3 2a Transversal - Camino a Melipilla",
-                "sentido": "P-O"
-            },
-            "subcolecciones": {}
+                "nombre": "PA16 - Río Mapocho - 14 de la Fama - Américo Vespucio Norte",
+                "latitud": -33.4171865,
+                "longitud": -70.6787232,
+                "tarifa_base": 868.37,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "S-N",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 16
+            }
         },
-        "jOZPVPhDNGcca4peAwO4": {
+        "7": {
             "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:44.232000+00:00",
-                "costo": 868.37,
-                "costoPunta": null,
-                "lat": -33.4831,
-                "lng": -70.6611,
-                "nombre": "PA11 - Carlos Valdovinos - Departamental",
-                "sentido": "N-S"
-            },
-            "subcolecciones": {}
+                "nombre": "PA2 - Los Guindos - La Capilla",
+                "latitud": -33.6473389,
+                "longitud": -70.7116107,
+                "tarifa_base": 868.37,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "S-N",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 2
+            }
         },
-        "jPtxExdi5uTBrBh9KSBs": {
+        "8": {
             "datos": {
-                "costoSaturacion": 1387.89,
-                "fecha_actualizacion": "2026-05-11 15:05:43.798000+00:00",
-                "costo": 462.63,
-                "costoPunta": 925.26,
-                "lat": -33.5411449,
-                "lng": -70.6149956,
-                "nombre": "P4.3 Coronel - Santa Julia",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
+                "nombre": "P102 Kennedy - El salto",
+                "latitud": -33.3988003,
+                "longitud": -70.6151323,
+                "tarifa_base": 449.4,
+                "tarifa_punta": 865.2,
+                "tarifa_saturacion": 1310.4,
+                "sentido": "S-N",
+                "autopista": "Túnel San Cristóbal",
+                "grupo": "Túnel",
+                "secuencia": 102
+            }
         },
-        "kFi3wypQRCtp36jHlQMU": {
+        "9": {
             "datos": {
-                "costoSaturacion": 997.87,
-                "fecha_actualizacion": "2026-05-11 15:05:43.947000+00:00",
-                "costo": 332.62,
-                "costoPunta": 665.25,
-                "lat": -33.5335852,
-                "lng": -70.6763449,
-                "nombre": "P3.3 Gran Avenida - Ruta 5",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "l4UKd3sQD8u6Du8F0F1L": {
-            "datos": {
-                "costoSaturacion": 1755.28,
-                "fecha_actualizacion": "2026-05-11 15:05:44.067000+00:00",
-                "costo": 585.09,
-                "costoPunta": 1170.18,
-                "lat": -33.6219812,
-                "lng": -70.7148676,
-                "nombre": "PA4 - Calera de Tango - La Capilla",
-                "sentido": "N-S"
-            },
-            "subcolecciones": {}
-        },
-        "mJVoNXWbBG7og72eJd3U": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:43.752000+00:00",
-                "costo": 868.37,
-                "costoPunta": null,
-                "lat": -33.3682982,
-                "lng": -70.6994258,
-                "nombre": "PA18 - Américo Vespucio Norte - 14 de la Fama",
-                "sentido": "N-S"
-            },
-            "subcolecciones": {}
-        },
-        "nbNXPG96l5j6o0Vv1AEI": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:43.576000+00:00",
-                "costo": 350,
-                "costoPunta": null,
-                "lat": -33.426442,
-                "lng": -70.6701402,
-                "nombre": "P05 Carrascal - Vivaceta",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "ooxSuXNWjykABbF0r8Kg": {
-            "datos": {
-                "costoSaturacion": 1597.78,
-                "fecha_actualizacion": "2026-05-11 15:05:43.531000+00:00",
-                "costo": 650,
-                "costoPunta": 975,
-                "lat": -33.4828675,
-                "lng": -70.7535733,
-                "nombre": "P17 Los Mares - Ruta 78",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "pqZLt9yhI2Ug3pPXUgRL": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:44.642000+00:00",
-                "costo": 350,
-                "costoPunta": null,
-                "lat": -33.385,
-                "lng": -70.55,
-                "nombre": "P01 San Francisco de Asís",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "rgR7S6WPZ0tQBDsyKarl": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:44.466000+00:00",
-                "costo": 868.37,
-                "costoPunta": null,
-                "lat": -33.5065207,
-                "lng": -70.6976839,
-                "nombre": "PA22 - Carlos Valdovinos - Américo Vespucio",
-                "sentido": "S-N"
-            },
-            "subcolecciones": {}
-        },
-        "rkDXPi4evF8pITYUrxme": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:43.601000+00:00",
-                "costo": 350,
-                "costoPunta": null,
-                "lat": -33.4080729,
-                "lng": -70.599764,
-                "nombre": "P8.0 Las Tranqueras - Costanera Norte",
-                "sentido": null
-            },
-            "subcolecciones": {}
-        },
-        "rsA9qNAdcVOQnRuOKxXf": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:44.916000+00:00",
-                "costo": 350,
-                "costoPunta": null,
-                "lat": -33.418078,
-                "lng": -70.7910033,
-                "nombre": "P09 Ruta 68 - Américo Vespucio Poniente",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "s9uTXjpwundlzgYqxuBc": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:44.413000+00:00",
-                "costo": 868.37,
-                "costoPunta": null,
-                "lat": -33.4698378,
-                "lng": -70.6882455,
-                "nombre": "PA24 - Alameda - Carlos Valdovinos",
-                "sentido": "S-N"
-            },
-            "subcolecciones": {}
-        },
-        "suapMx98xbl44kfzSDqm": {
-            "datos": {
-                "costoSaturacion": 1106.79,
-                "fecha_actualizacion": "2026-05-11 15:05:43.436000+00:00",
-                "costo": 368.93,
-                "costoPunta": 737.86,
-                "lat": -33.469011,
-                "lng": -70.6562428,
-                "nombre": "PA31 - Carlos Valdovinos - Alameda",
-                "sentido": "S-N"
-            },
-            "subcolecciones": {}
-        },
-        "uAonQWu2J8SiEOBPVEK8": {
-            "datos": {
-                "costoSaturacion": 1387.89,
-                "fecha_actualizacion": "2026-05-11 15:05:44.690000+00:00",
-                "costo": 462.63,
-                "costoPunta": 925.26,
-                "lat": -33.5135,
-                "lng": -70.595,
-                "nombre": "P4.4 Vicuña Mackenna - Macul",
-                "sentido": "O-P"
-            },
-            "subcolecciones": {}
-        },
-        "uSCPn2i2zGKqWjpqQfg0": {
-            "datos": {
-                "costoSaturacion": 857.37,
-                "fecha_actualizacion": "2026-05-11 15:05:43.678000+00:00",
-                "costo": 285.79,
-                "costoPunta": 571.58,
-                "lat": -33.468848,
-                "lng": -70.6565584,
-                "nombre": "PA12 - Alameda - Carlos Valdovinos",
-                "sentido": "N-S"
-            },
-            "subcolecciones": {}
-        },
-        "w5FQDfjldZAohMgBWH1a": {
-            "datos": {
-                "costoSaturacion": 753.67,
-                "fecha_actualizacion": "2026-05-11 15:05:43.903000+00:00",
-                "costo": 251.22,
-                "costoPunta": 502.45,
-                "lat": -33.526262,
-                "lng": -70.6941029,
-                "nombre": "P2.2 Gral. Velásquez - Ruta 5",
-                "sentido": "P-O"
-            },
-            "subcolecciones": {}
-        },
-        "xspmbJwxx13Ux9sh3omi": {
-            "datos": {
-                "costoSaturacion": null,
-                "fecha_actualizacion": "2026-05-11 15:05:43.193000+00:00",
-                "costo": 868.37,
-                "costoPunta": null,
-                "lat": -33.3685816,
-                "lng": -70.6991042,
                 "nombre": "PA17 - 14 de la Fama - Américo Vespucio Norte",
-                "sentido": "N-S"
-            },
-            "subcolecciones": {}
+                "latitud": -33.3685816,
+                "longitud": -70.6991042,
+                "tarifa_base": 868.37,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "S-N",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 17
+            }
         },
-        "yYbXHEFAO2qDO1lHWHc1": {
+        "10": {
             "datos": {
-                "costoSaturacion": 1003.9,
-                "fecha_actualizacion": "2026-05-11 15:05:44.111000+00:00",
-                "costo": 334.63,
-                "costoPunta": 669.27,
-                "lat": -33.5827543,
-                "lng": -70.7138422,
+                "nombre": "P07 Estoril - Las Tranqueras",
+                "latitud": -33.3876805,
+                "longitud": -70.5429258,
+                "tarifa_base": 350.0,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "S-N",
+                "autopista": "Costanera Norte",
+                "grupo": "Oriente-Poniente",
+                "secuencia": 1
+            }
+        },
+        "11": {
+            "datos": {
+                "nombre": "PA7 - Las Acacias - Américo Vespucio",
+                "latitud": -33.5478986,
+                "longitud": -70.6970069,
+                "tarifa_base": 452.06,
+                "tarifa_punta": 904.14,
+                "tarifa_saturacion": 1356.21,
+                "sentido": "S-N",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 7
+            }
+        },
+        "12": {
+            "datos": {
+                "nombre": "PA8 - Américo Vespucio - Las Acacias",
+                "latitud": -33.5476268,
+                "longitud": -70.696839,
+                "tarifa_base": 452.06,
+                "tarifa_punta": 904.14,
+                "tarifa_saturacion": 1356.21,
+                "sentido": "N-S",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 8
+            }
+        },
+        "13": {
+            "datos": {
+                "nombre": "P05 Vivaceta - Carrascal",
+                "latitud": -33.4264381,
+                "longitud": -70.669833,
+                "tarifa_base": 350.0,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "O-P",
+                "autopista": "Costanera Norte",
+                "grupo": "Oriente-Poniente",
+                "secuencia": 1
+            }
+        },
+        "14": {
+            "datos": {
+                "nombre": "P2.2 Puente Lo Saldes - Centenario",
+                "latitud": -33.3944443,
+                "longitud": -70.6033861,
+                "tarifa_base": 251.22,
+                "tarifa_punta": 502.45,
+                "tarifa_saturacion": 753.67,
+                "sentido": "P-O",
+                "autopista": "Vespucio Sur",
+                "grupo": "Anillo",
+                "secuencia": 22
+            }
+        },
+        "15": {
+            "datos": {
+                "nombre": "P01 Puente La Dehesa - Gran Vía",
+                "latitud": -33.3758198,
+                "longitud": -70.5426489,
+                "tarifa_base": 350.0,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "O-P",
+                "autopista": "Costanera Norte",
+                "grupo": "Oriente-Poniente",
+                "secuencia": 1
+            }
+        },
+        "16": {
+            "datos": {
+                "nombre": "PA31 - Carlos Valdovinos - Alameda",
+                "latitud": -33.469011,
+                "longitud": -70.6562428,
+                "tarifa_base": 368.93,
+                "tarifa_punta": 737.86,
+                "tarifa_saturacion": 1106.79,
+                "sentido": "S-N",
+                "autopista": "Costanera Norte",
+                "grupo": "Oriente-Poniente",
+                "secuencia": 8
+            }
+        },
+        "17": {
+            "datos": {
+                "nombre": "P1 Ruta 78 - Santa Elena",
+                "latitud": -33.483359,
+                "longitud": -70.7530939,
+                "tarifa_base": 650.0,
+                "tarifa_punta": 975.0,
+                "tarifa_saturacion": 1597.78,
+                "sentido": "S-N",
+                "autopista": "Vespucio Norte",
+                "grupo": "Anillo",
+                "secuencia": 1
+            }
+        },
+        "18": {
+            "datos": {
+                "nombre": "PA20 - Américo Vespucio - Ruta 5 Sur",
+                "latitud": -33.5364729,
+                "longitud": -70.7076591,
+                "tarifa_base": 868.37,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "S-N",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 20
+            }
+        },
+        "19": {
+            "datos": {
+                "nombre": "P17 Los Mares - Ruta 78",
+                "latitud": -33.4828675,
+                "longitud": -70.7535733,
+                "tarifa_base": 650.0,
+                "tarifa_punta": 975.0,
+                "tarifa_saturacion": 1597.78,
+                "sentido": "O-P",
+                "autopista": "Vespucio Norte",
+                "grupo": "Anillo",
+                "secuencia": 17
+            }
+        },
+        "20": {
+            "datos": {
+                "nombre": "P05 Carrascal - Vivaceta",
+                "latitud": -33.426442,
+                "longitud": -70.6701402,
+                "tarifa_base": 350.0,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "P-O",
+                "autopista": "Vespucio Norte",
+                "grupo": "Anillo",
+                "secuencia": 0
+            }
+        },
+        "21": {
+            "datos": {
+                "nombre": "PA12 - Alameda - Carlos Valdovinos",
+                "latitud": -33.468848,
+                "longitud": -70.6565584,
+                "tarifa_base": 285.79,
+                "tarifa_punta": 571.58,
+                "tarifa_saturacion": 857.37,
+                "sentido": "N-S",
+                "autopista": "Costanera Norte",
+                "grupo": "Oriente-Poniente",
+                "secuencia": 8
+            }
+        },
+        "22": {
+            "datos": {
+                "nombre": "PA13 - Alameda - Río Mapocho",
+                "latitud": -33.4489228,
+                "longitud": -70.6595919,
+                "tarifa_base": 868.37,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "S-N",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 13
+            }
+        },
+        "23": {
+            "datos": {
+                "nombre": "PA14 - Río Mapocho - Alameda",
+                "latitud": -33.4483818,
+                "longitud": -70.6600861,
+                "tarifa_base": 868.37,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "N-S",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 14
+            }
+        },
+        "24": {
+            "datos": {
+                "nombre": "PA18 - Américo Vespucio Norte - 14 de la Fama",
+                "latitud": -33.3682982,
+                "longitud": -70.6994258,
+                "tarifa_base": 868.37,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "N-S",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 18
+            }
+        },
+        "25": {
+            "datos": {
+                "nombre": "PA19 - Ruta 5 Sur - Américo Vespucio",
+                "latitud": -33.5514043,
+                "longitud": -70.7090613,
+                "tarifa_base": 868.37,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "N-S",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 19
+            }
+        },
+        "26": {
+            "datos": {
+                "nombre": "P4.3 Coronel - Santa Julia",
+                "latitud": -33.5411449,
+                "longitud": -70.6149956,
+                "tarifa_base": 462.63,
+                "tarifa_punta": 925.26,
+                "tarifa_saturacion": 1387.89,
+                "sentido": "O-P",
+                "autopista": "Vespucio Sur",
+                "grupo": "Anillo",
+                "secuencia": 43
+            }
+        },
+        "27": {
+            "datos": {
+                "nombre": "P4.2 Gnmo. de Alderete - Vicuña Mackena",
+                "latitud": -33.5268018,
+                "longitud": -70.6025742,
+                "tarifa_base": 462.63,
+                "tarifa_punta": 925.26,
+                "tarifa_saturacion": 1387.89,
+                "sentido": "O-P",
+                "autopista": "Vespucio Sur",
+                "grupo": "Anillo",
+                "secuencia": 42
+            }
+        },
+        "28": {
+            "datos": {
+                "nombre": "P1.3 2a Transversal - Camino a Melipilla",
+                "latitud": -33.5058611,
+                "longitud": -70.728455,
+                "tarifa_base": 532.59,
+                "tarifa_punta": 1065.18,
+                "tarifa_saturacion": 1597.78,
+                "sentido": "P-O",
+                "autopista": "Vespucio Sur",
+                "grupo": "Anillo",
+                "secuencia": 13
+            }
+        },
+        "29": {
+            "datos": {
+                "nombre": "P1.1 General Velásquez - Ruta 78",
+                "latitud": -33.5165613,
+                "longitud": -70.7125335,
+                "tarifa_base": 650.0,
+                "tarifa_punta": 975.0,
+                "tarifa_saturacion": 1597.78,
+                "sentido": "O-P",
+                "autopista": "Vespucio Sur",
+                "grupo": "Anillo",
+                "secuencia": 11
+            }
+        },
+        "30": {
+            "datos": {
+                "nombre": "P2.2 Gral. Velásquez - Ruta 5",
+                "latitud": -33.526262,
+                "longitud": -70.6941029,
+                "tarifa_base": 251.22,
+                "tarifa_punta": 502.45,
+                "tarifa_saturacion": 753.67,
+                "sentido": "P-O",
+                "autopista": "Vespucio Sur",
+                "grupo": "Anillo",
+                "secuencia": 22
+            }
+        },
+        "31": {
+            "datos": {
+                "nombre": "P2.1 Ruta 5 - General Velásquez",
+                "latitud": -33.5260519,
+                "longitud": -70.6940167,
+                "tarifa_base": 251.22,
+                "tarifa_punta": 502.45,
+                "tarifa_saturacion": 753.67,
+                "sentido": "O-P",
+                "autopista": "Vespucio Sur",
+                "grupo": "Anillo",
+                "secuencia": 21
+            }
+        },
+        "32": {
+            "datos": {
+                "nombre": "P3.3 Gran Avenida - Ruta 5",
+                "latitud": -33.5335852,
+                "longitud": -70.6763449,
+                "tarifa_base": 332.62,
+                "tarifa_punta": 665.25,
+                "tarifa_saturacion": 997.87,
+                "sentido": "O-P",
+                "autopista": "Vespucio Sur",
+                "grupo": "Anillo",
+                "secuencia": 33
+            }
+        },
+        "33": {
+            "datos": {
+                "nombre": "P3.4 Ruta 5 - Gran Avenida",
+                "latitud": -33.5338163,
+                "longitud": -70.6764509,
+                "tarifa_base": 332.62,
+                "tarifa_punta": 665.25,
+                "tarifa_saturacion": 997.87,
+                "sentido": "P-O",
+                "autopista": "Vespucio Sur",
+                "grupo": "Anillo",
+                "secuencia": 34
+            }
+        },
+        "34": {
+            "datos": {
+                "nombre": "P3.2 Gran Avenida - Santa Rosa",
+                "latitud": -33.5398418,
+                "longitud": -70.6529975,
+                "tarifa_base": 332.62,
+                "tarifa_punta": 665.25,
+                "tarifa_saturacion": 997.87,
+                "sentido": "P-O",
+                "autopista": "Vespucio Sur",
+                "grupo": "Anillo",
+                "secuencia": 32
+            }
+        },
+        "35": {
+            "datos": {
+                "nombre": "P3.1 Santa Rosa - Gran Avenida",
+                "latitud": -33.539608,
+                "longitud": -70.6529431,
+                "tarifa_base": 332.62,
+                "tarifa_punta": 665.25,
+                "tarifa_saturacion": 997.87,
+                "sentido": "O-P",
+                "autopista": "Vespucio Sur",
+                "grupo": "Anillo",
+                "secuencia": 31
+            }
+        },
+        "36": {
+            "datos": {
+                "nombre": "P101 Salto - Kennedy",
+                "latitud": -33.3986159,
+                "longitud": -70.6157247,
+                "tarifa_base": 449.4,
+                "tarifa_punta": 865.2,
+                "tarifa_saturacion": 1310.4,
+                "sentido": "N-S",
+                "autopista": "Túnel San Cristóbal",
+                "grupo": "Túnel",
+                "secuencia": 101
+            }
+        },
+        "37": {
+            "datos": {
+                "nombre": "PA4 - Calera de Tango - La Capilla",
+                "latitud": -33.6219812,
+                "longitud": -70.7148676,
+                "tarifa_base": 585.09,
+                "tarifa_punta": 1170.18,
+                "tarifa_saturacion": 1755.28,
+                "sentido": "N-S",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 4
+            }
+        },
+        "38": {
+            "datos": {
+                "nombre": "PA3 - La Capilla - Colón",
+                "latitud": -33.6227591,
+                "longitud": -70.7145696,
+                "tarifa_base": 585.09,
+                "tarifa_punta": 1170.18,
+                "tarifa_saturacion": 1755.28,
+                "sentido": "S-N",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 3
+            }
+        },
+        "39": {
+            "datos": {
                 "nombre": "PA5 - Colón - Las Acacias",
-                "sentido": "S-N"
-            },
-            "subcolecciones": {}
+                "latitud": -33.5827543,
+                "longitud": -70.7138422,
+                "tarifa_base": 334.63,
+                "tarifa_punta": 669.27,
+                "tarifa_saturacion": 1003.9,
+                "sentido": "S-N",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 5
+            }
+        },
+        "40": {
+            "datos": {
+                "nombre": "PA6 - Lo Blanco - Colón",
+                "latitud": -33.5824122,
+                "longitud": -70.7139749,
+                "tarifa_base": 334.63,
+                "tarifa_punta": 669.27,
+                "tarifa_saturacion": 1003.9,
+                "sentido": "N-S",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 6
+            }
+        },
+        "41": {
+            "datos": {
+                "nombre": "PA30 - Américo Vespucio - Departamental",
+                "latitud": -33.5072,
+                "longitud": -70.6693,
+                "tarifa_base": 392.83,
+                "tarifa_punta": 785.66,
+                "tarifa_saturacion": 1178.49,
+                "sentido": "S-N",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 30
+            }
+        },
+        "42": {
+            "datos": {
+                "nombre": "PA9 - Departamental - Américo Vespucio",
+                "latitud": -33.5071,
+                "longitud": -70.6694,
+                "tarifa_base": 392.83,
+                "tarifa_punta": 785.66,
+                "tarifa_saturacion": 1178.49,
+                "sentido": "N-S",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 9
+            }
+        },
+        "43": {
+            "datos": {
+                "nombre": "PA10 - Departamental - Carlos Valdovinos",
+                "latitud": -33.483,
+                "longitud": -70.661,
+                "tarifa_base": 868.37,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "S-N",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 10
+            }
+        },
+        "44": {
+            "datos": {
+                "nombre": "PA11 - Carlos Valdovinos - Departamental",
+                "latitud": -33.4831,
+                "longitud": -70.6611,
+                "tarifa_base": 868.37,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "N-S",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 11
+            }
+        },
+        "45": {
+            "datos": {
+                "nombre": "EV Entrada Vivaceta",
+                "latitud": -33.4302801,
+                "longitud": -70.6572269,
+                "tarifa_base": 225.77,
+                "tarifa_punta": 434.66,
+                "tarifa_saturacion": 658.32,
+                "sentido": "O-P",
+                "autopista": "Costanera Norte",
+                "grupo": "Oriente-Poniente",
+                "secuencia": 1
+            }
+        },
+        "46": {
+            "datos": {
+                "nombre": "P04 Vivaceta - Torres Tajamar",
+                "latitud": -33.4302245,
+                "longitud": -70.6579611,
+                "tarifa_base": 350.0,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "N-S",
+                "autopista": "Costanera Norte",
+                "grupo": "Oriente-Poniente",
+                "secuencia": 1
+            }
+        },
+        "47": {
+            "datos": {
+                "nombre": "PA15 - 14 de la Fama - Río Mapocho",
+                "latitud": -33.4265149,
+                "longitud": -70.6688947,
+                "tarifa_base": 868.37,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "N-S",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 15
+            }
+        },
+        "48": {
+            "datos": {
+                "nombre": "P07 Las Tranqueras - Estoril",
+                "latitud": -33.3872062,
+                "longitud": -70.5413721,
+                "tarifa_base": 350.0,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "P-O",
+                "autopista": "Costanera Norte",
+                "grupo": "Oriente-Poniente",
+                "secuencia": 1
+            }
+        },
+        "49": {
+            "datos": {
+                "nombre": "P06 Estoril - Las Tranqueras",
+                "latitud": -33.3872124,
+                "longitud": -70.5422849,
+                "tarifa_base": 350.0,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "O-P",
+                "autopista": "Costanera Norte",
+                "grupo": "Oriente-Poniente",
+                "secuencia": 1
+            }
+        },
+        "50": {
+            "datos": {
+                "nombre": "PA23 - Carlos Valdovinos - Alameda",
+                "latitud": -33.4690606,
+                "longitud": -70.6881273,
+                "tarifa_base": 868.37,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "S-N",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 23
+            }
+        },
+        "51": {
+            "datos": {
+                "nombre": "PA24 - Alameda - Carlos Valdovinos",
+                "latitud": -33.4698378,
+                "longitud": -70.6882455,
+                "tarifa_base": 868.37,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "N-S",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 24
+            }
+        },
+        "52": {
+            "datos": {
+                "nombre": "PA21 - Américo Vespucio - Carlos Valdovinos",
+                "latitud": -33.5064259,
+                "longitud": -70.697251,
+                "tarifa_base": 868.37,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "S-N",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 21
+            }
+        },
+        "53": {
+            "datos": {
+                "nombre": "PA22 - Carlos Valdovinos - Américo Vespucio",
+                "latitud": -33.5065207,
+                "longitud": -70.6976839,
+                "tarifa_base": 868.37,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "N-S",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 22
+            }
+        },
+        "54": {
+            "datos": {
+                "nombre": "P07 Lo Saldes - Centenario",
+                "latitud": -33.398,
+                "longitud": -70.596,
+                "tarifa_base": 350.0,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "O-P",
+                "autopista": "Costanera Norte",
+                "grupo": "Oriente-Poniente",
+                "secuencia": 1
+            }
+        },
+        "55": {
+            "datos": {
+                "nombre": "P08 Centenario - Lo Saldes",
+                "latitud": -33.3981,
+                "longitud": -70.5961,
+                "tarifa_base": 350.0,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "P-O",
+                "autopista": "Costanera Norte",
+                "grupo": "Oriente-Poniente",
+                "secuencia": 1
+            }
+        },
+        "56": {
+            "datos": {
+                "nombre": "SB Salida Bellavista",
+                "latitud": -33.4221473,
+                "longitud": -70.6198252,
+                "tarifa_base": 233.79,
+                "tarifa_punta": 450.11,
+                "tarifa_saturacion": 681.72,
+                "sentido": "O-P",
+                "autopista": "Costanera Norte",
+                "grupo": "Oriente-Poniente",
+                "secuencia": 1
+            }
+        },
+        "57": {
+            "datos": {
+                "nombre": "P03 Torres Tajamar - Puente Lo Saldes",
+                "latitud": -33.4239919,
+                "longitud": -70.6219547,
+                "tarifa_base": 350.0,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "P-O",
+                "autopista": "Costanera Norte",
+                "grupo": "Oriente-Poniente",
+                "secuencia": 1
+            }
+        },
+        "58": {
+            "datos": {
+                "nombre": "P03 Puente Lo Saldes - Vivaceta",
+                "latitud": -33.423992,
+                "longitud": -70.6219548,
+                "tarifa_base": 350.0,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "O-P",
+                "autopista": "Costanera Norte",
+                "grupo": "Oriente-Poniente",
+                "secuencia": 1
+            }
+        },
+        "59": {
+            "datos": {
+                "nombre": "P01 San Francisco de Asís",
+                "latitud": -33.385,
+                "longitud": -70.55,
+                "tarifa_base": 350.0,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "O-P",
+                "autopista": "Costanera Norte",
+                "grupo": "Oriente-Poniente",
+                "secuencia": 1
+            }
+        },
+        "60": {
+            "datos": {
+                "nombre": "P02 San Francisco de Asís",
+                "latitud": -33.3851,
+                "longitud": -70.5501,
+                "tarifa_base": 350.0,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "O-P",
+                "autopista": "Costanera Norte",
+                "grupo": "Oriente-Poniente",
+                "secuencia": 1
+            }
+        },
+        "61": {
+            "datos": {
+                "nombre": "P4.4 Vicuña Mackenna - Macul",
+                "latitud": -33.5135,
+                "longitud": -70.595,
+                "tarifa_base": 462.63,
+                "tarifa_punta": 925.26,
+                "tarifa_saturacion": 1387.89,
+                "sentido": "P-O",
+                "autopista": "Vespucio Sur",
+                "grupo": "Anillo",
+                "secuencia": 44
+            }
+        },
+        "62": {
+            "datos": {
+                "nombre": "P4.1 Macul - Vicuña Mackenna",
+                "latitud": -33.5136,
+                "longitud": -70.5951,
+                "tarifa_base": 462.63,
+                "tarifa_punta": 925.26,
+                "tarifa_saturacion": 1387.89,
+                "sentido": "O-P",
+                "autopista": "Vespucio Sur",
+                "grupo": "Anillo",
+                "secuencia": 41
+            }
+        },
+        "63": {
+            "datos": {
+                "nombre": "P1.1 Ruta 78 - Cerrillos",
+                "latitud": -33.525,
+                "longitud": -70.73,
+                "tarifa_base": 650.0,
+                "tarifa_punta": 975.0,
+                "tarifa_saturacion": 1597.78,
+                "sentido": "P-O",
+                "autopista": "Vespucio Norte",
+                "grupo": "Anillo",
+                "secuencia": 0
+            }
+        },
+        "64": {
+            "datos": {
+                "nombre": "P1.3 Cerrillos - Ruta 78",
+                "latitud": -33.5251,
+                "longitud": -70.7301,
+                "tarifa_base": 650.0,
+                "tarifa_punta": 975.0,
+                "tarifa_saturacion": 1597.78,
+                "sentido": "O-P",
+                "autopista": "Vespucio Sur",
+                "grupo": "Anillo",
+                "secuencia": 13
+            }
+        },
+        "65": {
+            "datos": {
+                "nombre": "P1.1 Camino a Melipilla - 2a Transversal",
+                "latitud": -33.5059,
+                "longitud": -70.7285,
+                "tarifa_base": 532.59,
+                "tarifa_punta": 1065.18,
+                "tarifa_saturacion": 1597.78,
+                "sentido": "O-P",
+                "autopista": "Vespucio Sur",
+                "grupo": "Anillo",
+                "secuencia": 11
+            }
+        },
+        "66": {
+            "datos": {
+                "nombre": "Pórtico P3 - Walker Martínez",
+                "latitud": -33.425,
+                "longitud": -70.695,
+                "tarifa_base": 719.04,
+                "tarifa_punta": 1384.32,
+                "tarifa_saturacion": 2096.64,
+                "sentido": "O-P",
+                "autopista": "Vespucio Norte",
+                "grupo": "Anillo",
+                "secuencia": 3
+            }
+        },
+        "67": {
+            "datos": {
+                "nombre": "Pórtico P4 - Vivaceta",
+                "latitud": -33.4251,
+                "longitud": -70.6951,
+                "tarifa_base": 462.63,
+                "tarifa_punta": 890.66,
+                "tarifa_saturacion": 1348.92,
+                "sentido": "O-P",
+                "autopista": "Vespucio Norte",
+                "grupo": "Anillo",
+                "secuencia": 4
+            }
+        },
+        "68": {
+            "datos": {
+                "nombre": "P09 Ruta 68 - Américo Vespucio Poniente",
+                "latitud": -33.418078,
+                "longitud": -70.7910033,
+                "tarifa_base": 350.0,
+                "tarifa_punta": null,
+                "tarifa_saturacion": null,
+                "sentido": "P-O",
+                "autopista": "Costanera Norte",
+                "grupo": "Oriente-Poniente",
+                "secuencia": 1
+            }
+        },
+        "69": {
+            "datos": {
+                "nombre": "P6.2 Américo Vespucio Poniente - Petersen",
+                "latitud": -33.4130639,
+                "longitud": -70.7667427,
+                "tarifa_base": 639.11,
+                "tarifa_punta": 1230.43,
+                "tarifa_saturacion": 1863.48,
+                "sentido": "S-N",
+                "autopista": "Vespucio Norte",
+                "grupo": "Anillo",
+                "secuencia": 6
+            }
+        },
+        "70": {
+            "datos": {
+                "nombre": "P6.1 Carrascal - Petersen",
+                "latitud": -33.4117097,
+                "longitud": -70.7395811,
+                "tarifa_base": 639.11,
+                "tarifa_punta": 1230.43,
+                "tarifa_saturacion": 1863.48,
+                "sentido": "N-S",
+                "autopista": "Vespucio Norte",
+                "grupo": "Anillo",
+                "secuencia": 6
+            }
+        },
+        "71": {
+            "datos": {
+                "nombre": "P11 Pedro Fontova - Ruta 5 Norte",
+                "latitud": -33.3657718,
+                "longitud": -70.6951146,
+                "tarifa_base": 449.4,
+                "tarifa_punta": 865.2,
+                "tarifa_saturacion": 1310.4,
+                "sentido": "O-P",
+                "autopista": "Vespucio Norte",
+                "grupo": "Anillo",
+                "secuencia": 11
+            }
+        },
+        "72": {
+            "datos": {
+                "nombre": "Pórtico 10 Ruta 5 - Pedro Fontova",
+                "latitud": -33.3657,
+                "longitud": -70.6951,
+                "tarifa_base": 650.0,
+                "tarifa_punta": 975.0,
+                "tarifa_saturacion": 1597.78,
+                "sentido": "P-O",
+                "autopista": "Vespucio Norte",
+                "grupo": "Anillo",
+                "secuencia": 0
+            }
+        },
+        "73": {
+            "datos": {
+                "nombre": "Pórtico 11 Pedro Fontova - Independencia",
+                "latitud": -33.37,
+                "longitud": -70.68,
+                "tarifa_base": 650.0,
+                "tarifa_punta": 975.0,
+                "tarifa_saturacion": 1597.78,
+                "sentido": "P-O",
+                "autopista": "Vespucio Norte",
+                "grupo": "Anillo",
+                "secuencia": 0
+            }
+        },
+        "74": {
+            "datos": {
+                "nombre": "Pórtico 12 Independencia - Recoleta",
+                "latitud": -33.375,
+                "longitud": -70.67,
+                "tarifa_base": 650.0,
+                "tarifa_punta": 975.0,
+                "tarifa_saturacion": 1597.78,
+                "sentido": "P-O",
+                "autopista": "Vespucio Norte",
+                "grupo": "Anillo",
+                "secuencia": 0
+            }
+        },
+        "75": {
+            "datos": {
+                "nombre": "Pórtico 13 Recoleta - Guanaco",
+                "latitud": -33.38,
+                "longitud": -70.66,
+                "tarifa_base": 650.0,
+                "tarifa_punta": 975.0,
+                "tarifa_saturacion": 1597.78,
+                "sentido": "P-O",
+                "autopista": "Vespucio Norte",
+                "grupo": "Anillo",
+                "secuencia": 0
+            }
+        },
+        "76": {
+            "datos": {
+                "nombre": "P2 Ruta 68 - Los Mares",
+                "latitud": -33.456362,
+                "longitud": -70.767131,
+                "tarifa_base": 211.03,
+                "tarifa_punta": 422.05,
+                "tarifa_saturacion": 633.08,
+                "sentido": "N-S",
+                "autopista": "Vespucio Norte",
+                "grupo": "Anillo",
+                "secuencia": 2
+            }
+        },
+        "77": {
+            "datos": {
+                "nombre": "P3 Ruta 68 - Costanera Norte",
+                "latitud": -33.438755,
+                "longitud": -70.783088,
+                "tarifa_base": 351.71,
+                "tarifa_punta": 703.42,
+                "tarifa_saturacion": null,
+                "sentido": "S-N",
+                "autopista": "Vespucio Norte",
+                "grupo": "Anillo",
+                "secuencia": 3
+            }
+        },
+        "78": {
+            "datos": {
+                "nombre": "P4 Costanera Norte - Ruta 68",
+                "latitud": -33.4313,
+                "longitud": -70.784842,
+                "tarifa_base": 351.71,
+                "tarifa_punta": 703.42,
+                "tarifa_saturacion": 1055.13,
+                "sentido": "N-S",
+                "autopista": "Vespucio Norte",
+                "grupo": "Anillo",
+                "secuencia": 4
+            }
+        },
+        "79": {
+            "datos": {
+                "nombre": "P5 Costanera Norte - Condell",
+                "latitud": -33.399627,
+                "longitud": -70.775606,
+                "tarifa_base": 452.2,
+                "tarifa_punta": 904.4,
+                "tarifa_saturacion": null,
+                "sentido": "S-N",
+                "autopista": "Vespucio Norte",
+                "grupo": "Anillo",
+                "secuencia": 5
+            }
+        },
+        "80": {
+            "datos": {
+                "nombre": "P7 Condell - Lo Echevers",
+                "latitud": -33.381475,
+                "longitud": -70.753988,
+                "tarifa_base": 104.51,
+                "tarifa_punta": 209.02,
+                "tarifa_saturacion": null,
+                "sentido": "P-O",
+                "autopista": "Vespucio Norte",
+                "grupo": "Anillo",
+                "secuencia": 7
+            }
+        },
+        "81": {
+            "datos": {
+                "nombre": "P8 Ruta 5 Norte - Condell",
+                "latitud": -33.373011,
+                "longitud": -70.711264,
+                "tarifa_base": 653.18,
+                "tarifa_punta": 1306.36,
+                "tarifa_saturacion": null,
+                "sentido": "O-P",
+                "autopista": "Vespucio Norte",
+                "grupo": "Anillo",
+                "secuencia": 8
+            }
+        },
+        "82": {
+            "datos": {
+                "nombre": "P9 Lo Echevers - Ruta 5 Norte",
+                "latitud": -33.368868,
+                "longitud": -70.704319,
+                "tarifa_base": 548.67,
+                "tarifa_punta": 1097.34,
+                "tarifa_saturacion": null,
+                "sentido": "P-O",
+                "autopista": "Vespucio Norte",
+                "grupo": "Anillo",
+                "secuencia": 9
+            }
+        },
+        "83": {
+            "datos": {
+                "nombre": "P15 El Salto - Recoleta",
+                "latitud": -33.388665,
+                "longitud": -70.632964,
+                "tarifa_base": 140.68,
+                "tarifa_punta": 281.37,
+                "tarifa_saturacion": 422.05,
+                "sentido": "O-P",
+                "autopista": "Vespucio Norte",
+                "grupo": "Anillo",
+                "secuencia": 15
+            }
+        },
+        "84": {
+            "datos": {
+                "nombre": "P16 Santa Elena - Ruta 68",
+                "latitud": -33.451274,
+                "longitud": -70.772932,
+                "tarifa_base": 482.35,
+                "tarifa_punta": 964.69,
+                "tarifa_saturacion": 1447.04,
+                "sentido": "S-N",
+                "autopista": "Vespucio Norte",
+                "grupo": "Anillo",
+                "secuencia": 16
+            }
+        },
+        "85": {
+            "datos": {
+                "nombre": "PA1 La Capilla - Los Guindos",
+                "latitud": -33.6473389,
+                "longitud": -70.7116107,
+                "tarifa_base": 868.37,
+                "tarifa_punta": 1736.74,
+                "tarifa_saturacion": null,
+                "sentido": "N-S",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 1
+            }
+        },
+        "86": {
+            "datos": {
+                "nombre": "PA25 Alameda - Río Mapocho",
+                "latitud": -33.442,
+                "longitud": -70.686,
+                "tarifa_base": 421.93,
+                "tarifa_punta": 843.86,
+                "tarifa_saturacion": null,
+                "sentido": "S-N",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 25
+            }
+        },
+        "87": {
+            "datos": {
+                "nombre": "PA26 Río Mapocho - Alameda",
+                "latitud": -33.442,
+                "longitud": -70.686,
+                "tarifa_base": 421.93,
+                "tarifa_punta": 843.86,
+                "tarifa_saturacion": null,
+                "sentido": "N-S",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 26
+            }
+        },
+        "88": {
+            "datos": {
+                "nombre": "PA29 Ruta 5 Norte - Río Mapocho",
+                "latitud": -33.3822386,
+                "longitud": -70.6955624,
+                "tarifa_base": 512.34,
+                "tarifa_punta": 1024.69,
+                "tarifa_saturacion": null,
+                "sentido": "N-S",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 29
+            }
+        },
+        "89": {
+            "datos": {
+                "nombre": "PA37 Colón - Calera de Tango",
+                "latitud": -33.61,
+                "longitud": -70.713,
+                "tarifa_base": 455.18,
+                "tarifa_punta": 910.37,
+                "tarifa_saturacion": null,
+                "sentido": "N-S",
+                "autopista": "Autopista Central",
+                "grupo": "Norte-Sur",
+                "secuencia": 37
+            }
+        },
+        "90": {
+            "datos": {
+                "nombre": "P5.1 Grecia - Quilín",
+                "latitud": -33.480956,
+                "longitud": -70.57905,
+                "tarifa_base": 121.59,
+                "tarifa_punta": 243.18,
+                "tarifa_saturacion": 364.78,
+                "sentido": "N-S",
+                "autopista": "Vespucio Sur",
+                "grupo": "Anillo",
+                "secuencia": 51
+            }
+        },
+        "91": {
+            "datos": {
+                "nombre": "P5.2 Quilín - Grecia",
+                "latitud": -33.48109,
+                "longitud": -70.57881,
+                "tarifa_base": 290.41,
+                "tarifa_punta": 580.83,
+                "tarifa_saturacion": 871.24,
+                "sentido": "S-N",
+                "autopista": "Vespucio Sur",
+                "grupo": "Anillo",
+                "secuencia": 52
+            }
+        },
+        "92": {
+            "datos": {
+                "nombre": "P5.3 Quilín - Las Torres",
+                "latitud": -33.495589,
+                "longitud": -70.584467,
+                "tarifa_base": 551.68,
+                "tarifa_punta": 1103.37,
+                "tarifa_saturacion": 1655.05,
+                "sentido": "N-S",
+                "autopista": "Vespucio Sur",
+                "grupo": "Anillo",
+                "secuencia": 53
+            }
+        },
+        "93": {
+            "datos": {
+                "nombre": "P5.4 Las Torres - Quilín",
+                "latitud": -33.49613,
+                "longitud": -70.584513,
+                "tarifa_base": 382.86,
+                "tarifa_punta": 765.73,
+                "tarifa_saturacion": 1148.59,
+                "sentido": "S-N",
+                "autopista": "Vespucio Sur",
+                "grupo": "Anillo",
+                "secuencia": 54
+            }
+        },
+        "94": {
+            "datos": {
+                "nombre": "EP Entrada Purísima",
+                "latitud": -33.434671,
+                "longitud": -70.639482,
+                "tarifa_base": 225.77,
+                "tarifa_punta": 434.66,
+                "tarifa_saturacion": 658.32,
+                "sentido": "P-O",
+                "autopista": "Costanera Norte",
+                "grupo": "Oriente-Poniente",
+                "secuencia": 1
+            }
+        },
+        "95": {
+            "datos": {
+                "nombre": "P8.2 Costanera Norte - Las Tranqueras",
+                "latitud": -33.4085,
+                "longitud": -70.601965,
+                "tarifa_base": 583.84,
+                "tarifa_punta": 1124.03,
+                "tarifa_saturacion": 1702.42,
+                "sentido": "O-P",
+                "autopista": "Costanera Norte",
+                "grupo": "Oriente-Poniente",
+                "secuencia": 8
+            }
+        },
+        "96": {
+            "datos": {
+                "nombre": "P8.3 Costanera Norte - Las Tranqueras",
+                "latitud": -33.4084,
+                "longitud": -70.601965,
+                "tarifa_base": 583.84,
+                "tarifa_punta": 1124.03,
+                "tarifa_saturacion": 1702.42,
+                "sentido": "O-P",
+                "autopista": "Costanera Norte",
+                "grupo": "Oriente-Poniente",
+                "secuencia": 8
+            }
+        },
+        "97": {
+            "datos": {
+                "nombre": "P6 Condell - Costanera Norte",
+                "latitud": -33.399627,
+                "longitud": -70.775606,
+                "tarifa_base": 452.2,
+                "tarifa_punta": 904.4,
+                "tarifa_saturacion": null,
+                "sentido": "N-S",
+                "autopista": "Vespucio Norte",
+                "grupo": "Anillo",
+                "secuencia": 6
+            }
+        },
+        "98": {
+            "datos": {
+                "nombre": "P17 Los Mares - Ruta 78",
+                "latitud": -33.484,
+                "longitud": -70.763,
+                "tarifa_base": 391.91,
+                "tarifa_punta": 783.81,
+                "tarifa_saturacion": 1175.72,
+                "sentido": "N-S",
+                "autopista": "Vespucio Norte",
+                "grupo": "Anillo",
+                "secuencia": 17
+            }
         }
     },
     "users": {},
