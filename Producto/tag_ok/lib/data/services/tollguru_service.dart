@@ -19,9 +19,10 @@ class TollGuruService {
     required LatLng destination,
     String vehicleType = '2AxlesAuto', // Por defecto auto normal
   }) async {
-    // Si es Web, usamos nuestro Proxy Local para evitar el bloqueo CORS de Chrome
+    // Si es Web, usamos el Proxy definido en .env (o local por defecto) para evitar CORS
+    final proxyUrl = dotenv.env['WEB_CORS_PROXY'] ?? 'http://localhost:8080';
     final url = kIsWeb 
-        ? Uri.parse('http://localhost:8080')
+        ? Uri.parse(proxyUrl)
         : Uri.parse('$_baseUrl/origin-destination-waypoints');
 
     // Estructura requerida por TollGuru v2

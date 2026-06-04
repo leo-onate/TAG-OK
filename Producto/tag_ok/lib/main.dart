@@ -14,8 +14,8 @@ void main() async {
   // 2. Carga las variables de entorno (con try-catch por si falta el archivo)
   try {
     await dotenv.load(fileName: ".env");
-  } catch (e) {
-    debugPrint("Advertencia: No se encontró el archivo .env o hubo un error al cargarlo.");
+  } catch (e, stackTrace) {
+    debugPrint("Advertencia: No se encontró el archivo .env o hubo un error al cargarlo: $e");
   }
 
   // 3. Inicializa Firebase con tus opciones generadas
