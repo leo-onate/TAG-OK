@@ -45,7 +45,7 @@ class AdminFirestoreService {
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> streamPorticos() {
-    return _firestore.collection('porticos').orderBy('nombre').snapshots();
+    return _firestore.collection('porticos').snapshots();
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> streamTariffs() {

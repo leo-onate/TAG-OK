@@ -387,19 +387,52 @@ class PorticosPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return _AdminPageScaffold(
       title: 'Pórticos',
-      subtitle: 'Catálogo operativo compartido con la app final.',
+      subtitle: 'Catálogo operativo compartido con la app final. Administra las tarifas aquí.',
       child: _FirestoreTable(
         stream: service.streamPorticos(),
         emptyMessage: 'No hay pórticos cargados.',
-        columns: const ['Nombre', 'Tarifa Base', 'Tarifa Punta', 'Tarifa Saturación', 'Sentido'],
+        columns: const ['Nombre', 'Sentido', 'Tarifa Base', 'Tarifa Punta', 'Tarifa Saturación', 'Acciones'],
         rowBuilder: (doc) {
-          final Map<String, dynamic> data = doc.data();
+          final Map<String, dynamic> rawData = doc.data();
+          
+          // Extraer información si está anidada dentro de un mapa llamado 'datos'
+          final Map<String, dynamic> data = (rawData.containsKey('datos') && rawData['datos'] is Map)
+              ? Map<String, dynamic>.from(rawData['datos'])
+              : rawData;
+
+          final String nombre = (data['nombre'] ?? data['autopista'] ?? 'Sin nombre').toString();
+          final String sentido = (data['sentido'] ?? '-').toString();
+          final String base = (data['tarifa_base'] ?? data['costo'] ?? data['Tarifa_Base'] ?? data['Tarifa Base'] ?? '0').toString();
+          final String punta = (data['tarifa_punta'] ?? data['costoPunta'] ?? data['Tarifa_Punta'] ?? data['Tarifa Punta'] ?? '0').toString();
+          final String saturacion = (data['tarifa_saturacion'] ?? data['costoSaturacion'] ?? data['Tarifa_Saturacion'] ?? data['Tarifa Saturacion'] ?? '0').toString();
+
           return [
-            DataCell(Text((data['nombre'] ?? 'Sin nombre').toString())),
-            DataCell(Text('\$${data['costo'] ?? '0'}')),
-            DataCell(Text('\$${data['costoPunta'] ?? '0'}')),
-            DataCell(Text('\$${data['costoSaturacion'] ?? '0'}')),
-            DataCell(Text((data['sentido'] ?? '-').toString())),
+            DataCell(Text(nombre)),
+            DataCell(Text(sentido)),
+            DataCell(Text('\$$base')),
+            DataCell(Text('\$$punta')),
+            DataCell(Text('\$$saturacion')),
+            DataCell(
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit_outlined, color: Colors.blue, size: 20),
+                    tooltip: 'Editar Tarifas',
+                    onPressed: () {
+                      // TODO: Implementar modal para editar tarifas del pórtico
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                    tooltip: 'Eliminar Pórtico',
+                    onPressed: () {
+                      // TODO: Eliminar documento de pórtico en Firestore
+                    },
+                  ),
+                ],
+              ),
+            ),
           ];
         },
       ),
