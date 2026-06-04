@@ -41,7 +41,7 @@ class AdminFirestoreService {
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> streamUsers() {
-    return _firestore.collection('usuarios').orderBy('fechaCreacion', descending: true).limit(25).snapshots();
+    return _firestore.collection('usuarios').snapshots();
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> streamPorticos() {

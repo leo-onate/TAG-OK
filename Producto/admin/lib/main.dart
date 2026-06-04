@@ -331,18 +331,46 @@ class UsersPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return _AdminPageScaffold(
       title: 'Usuarios',
-      subtitle: 'Listado de cuentas finales, estado y datos clave para soporte.',
+      subtitle: 'Gestión de cuentas. (Por seguridad de Firebase, las contraseñas están encriptadas. Usa las acciones para resetearlas).',
       child: _FirestoreTable(
         stream: service.streamUsers(),
         emptyMessage: 'No hay usuarios aún.',
-        columns: const ['Nombre', 'Correo', 'Presupuesto', 'Vehículo Principal'],
+        columns: const ['Nombre', 'Correo', 'Presupuesto', 'Vehículo Principal', 'Acciones'],
         rowBuilder: (doc) {
           final Map<String, dynamic> data = doc.data();
           return [
-            (data['nombre_mostrar'] ?? 'Sin nombre').toString(),
-            (data['email'] ?? 'Sin correo').toString(),
-            '\$${data['limite_presupuesto_mensual'] ?? '0'}',
-            (data['vehiculo_principal_id'] ?? 'Ninguno').toString(),
+            DataCell(Text((data['nombre_mostrar'] ?? 'Sin nombre').toString())),
+            DataCell(Text((data['email'] ?? 'Sin correo').toString())),
+            DataCell(Text('\$${data['limite_presupuesto_mensual'] ?? '0'}')),
+            DataCell(Text((data['vehiculo_principal_id'] ?? 'Ninguno').toString())),
+            DataCell(
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit_outlined, color: Colors.blue, size: 20),
+                    tooltip: 'Editar Presupuesto',
+                    onPressed: () {
+                      // TODO: Implementar modal de edición
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.lock_reset_outlined, color: Colors.orange, size: 20),
+                    tooltip: 'Restablecer Contraseña',
+                    onPressed: () {
+                      // TODO: Enviar email de reset (Firebase Auth)
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                    tooltip: 'Eliminar Usuario',
+                    onPressed: () {
+                      // TODO: Eliminar documento de Firestore
+                    },
+                  ),
+                ],
+              ),
+            ),
           ];
         },
       ),
@@ -367,11 +395,11 @@ class PorticosPage extends StatelessWidget {
         rowBuilder: (doc) {
           final Map<String, dynamic> data = doc.data();
           return [
-            (data['nombre'] ?? 'Sin nombre').toString(),
-            '\$${data['costo'] ?? '0'}',
-            '\$${data['costoPunta'] ?? '0'}',
-            '\$${data['costoSaturacion'] ?? '0'}',
-            (data['sentido'] ?? '-').toString(),
+            DataCell(Text((data['nombre'] ?? 'Sin nombre').toString())),
+            DataCell(Text('\$${data['costo'] ?? '0'}')),
+            DataCell(Text('\$${data['costoPunta'] ?? '0'}')),
+            DataCell(Text('\$${data['costoSaturacion'] ?? '0'}')),
+            DataCell(Text((data['sentido'] ?? '-').toString())),
           ];
         },
       ),
@@ -396,9 +424,9 @@ class TariffsPage extends StatelessWidget {
         rowBuilder: (doc) {
           final Map<String, dynamic> data = doc.data();
           return [
-            (data['nombre'] ?? 'Tarifa').toString(),
-            (data['vigencia'] ?? data['fecha_actualizacion'] ?? '-').toString(),
-            (data['estado'] ?? 'borrador').toString(),
+            DataCell(Text((data['nombre'] ?? 'Tarifa').toString())),
+            DataCell(Text((data['vigencia'] ?? data['fecha_actualizacion'] ?? '-').toString())),
+            DataCell(Text((data['estado'] ?? 'borrador').toString())),
           ];
         },
       ),
@@ -541,7 +569,7 @@ class _FirestoreTable extends StatelessWidget {
   final Stream<QuerySnapshot<Map<String, dynamic>>> stream;
   final String emptyMessage;
   final List<String> columns;
-  final List<String> Function(QueryDocumentSnapshot<Map<String, dynamic>>) rowBuilder;
+  final List<DataCell> Function(QueryDocumentSnapshot<Map<String, dynamic>>) rowBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -579,10 +607,7 @@ class _FirestoreTable extends StatelessWidget {
               child: DataTable(
                 columns: columns.map((String column) => DataColumn(label: Text(column))).toList(),
                 rows: docs.take(20).map((doc) {
-                  final List<String> cells = rowBuilder(doc);
-                  return DataRow(
-                    cells: cells.map((String cell) => DataCell(Text(cell))).toList(),
-                  );
+                  return DataRow(cells: rowBuilder(doc));
                 }).toList(),
               ),
             );
