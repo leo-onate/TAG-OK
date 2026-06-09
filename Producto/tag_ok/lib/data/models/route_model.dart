@@ -25,6 +25,9 @@ class TollData {
   final double? costPunta; // TBP
   final double? costSaturacion; // TS
   final String? direction; // "N-S", "S-N", "P-O", "O-P"
+  final String? highway;
+  final String? group;
+  final int? sequence;
 
   TollData({
     required this.location,
@@ -33,5 +36,8 @@ class TollData {
     this.costPunta,
     this.costSaturacion,
     this.direction,
+    this.highway,
+    this.group,
+    this.sequence,
   });
 }

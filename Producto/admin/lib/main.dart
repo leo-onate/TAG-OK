@@ -71,7 +71,7 @@ class _AdminShellState extends State<AdminShell> {
     'Dashboard',
     'Usuarios',
     'Pórticos',
-    'Viajes',
+    'Tarifas',
     'Reportes',
   ];
 
@@ -81,7 +81,7 @@ class _AdminShellState extends State<AdminShell> {
       0 => DashboardPage(service: _service),
       1 => UsersPage(service: _service),
       2 => PorticosPage(service: _service),
-      3 => TripsPage(service: _service),
+      3 => TariffsPage(service: _service),
       _ => const ReportsPage(),
     };
 
@@ -160,7 +160,7 @@ class _AdminShellState extends State<AdminShell> {
       0 => Icons.dashboard_outlined,
       1 => Icons.people_alt_outlined,
       2 => Icons.toll_outlined,
-      3 => Icons.route_outlined,
+      3 => Icons.payments_outlined,
       _ => Icons.bar_chart_outlined,
     };
   }
@@ -268,7 +268,7 @@ class DashboardPage extends StatelessWidget {
                   _StatCard(label: 'Usuarios', value: overview?.users ?? 0, icon: Icons.people_alt_outlined),
                   _StatCard(label: 'Vehículos', value: overview?.vehicles ?? 0, icon: Icons.directions_car_outlined),
                   _StatCard(label: 'Pórticos', value: overview?.porticos ?? 0, icon: Icons.toll_outlined),
-                  _StatCard(label: 'Viajes', value: overview?.tariffs ?? 0, icon: Icons.route_outlined),
+                  _StatCard(label: 'Tarifas', value: overview?.tariffs ?? 0, icon: Icons.payments_outlined),
                 ],
               ),
               const SizedBox(height: 24),
@@ -289,7 +289,7 @@ class DashboardPage extends StatelessWidget {
                       children: const [
                         _QuickAction(label: 'Usuarios', icon: Icons.people_alt_outlined),
                         _QuickAction(label: 'Pórticos', icon: Icons.toll_outlined),
-                        _QuickAction(label: 'Viajes', icon: Icons.route_outlined),
+                        _QuickAction(label: 'Tarifas', icon: Icons.payments_outlined),
                         _QuickAction(label: 'Reportes', icon: Icons.bar_chart_outlined),
                       ],
                     ),
@@ -529,35 +529,26 @@ class PorticosPage extends StatelessWidget {
   }
 }
 
-class TripsPage extends StatelessWidget {
-  const TripsPage({super.key, required this.service});
+class TariffsPage extends StatelessWidget {
+  const TariffsPage({super.key, required this.service});
 
   final AdminFirestoreService service;
 
   @override
   Widget build(BuildContext context) {
     return _AdminPageScaffold(
-      title: 'Historial de Viajes',
-      subtitle: 'Listado global de todos los trayectos realizados por los usuarios en la app.',
+      title: 'Tarifas',
+      subtitle: 'Vigencias, edición y publicación controlada.',
       child: _FirestoreTable(
-        stream: service.streamTrips(),
-        emptyMessage: 'No hay viajes registrados aún.',
-        columns: const ['ID Usuario', 'Costo Total', 'Distancia', 'Fecha'],
+        stream: service.streamTariffs(),
+        emptyMessage: 'Todavía no existe la colección tarifas.',
+        columns: const ['Nombre', 'Vigencia', 'Estado'],
         rowBuilder: (doc) {
           final Map<String, dynamic> data = doc.data();
-          
-          // Extraemos el ID del usuario subiendo en la jerarquía del documento (users/ID/trips/DOC_ID)
-          final String userId = doc.reference.parent.parent?.id ?? 'Desconocido';
-          
-          final String costo = (data['costo_total'] ?? data['costo'] ?? data['total'] ?? '0').toString();
-          final String distancia = (data['distancia'] ?? data['distance'] ?? '-').toString();
-          final String fecha = (data['fecha'] ?? data['timestamp'] ?? data['date'] ?? 'Llaves: ${data.keys.join(", ")}').toString();
-
           return [
-            DataCell(Text(userId)),
-            DataCell(Text('\$$costo')),
-            DataCell(Text(distancia)),
-            DataCell(Text(fecha)),
+            DataCell(Text((data['nombre'] ?? 'Tarifa').toString())),
+            DataCell(Text((data['vigencia'] ?? data['fecha_actualizacion'] ?? '-').toString())),
+            DataCell(Text((data['estado'] ?? 'borrador').toString())),
           ];
         },
       ),
