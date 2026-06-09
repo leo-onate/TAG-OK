@@ -48,8 +48,9 @@ class AdminFirestoreService {
     return _firestore.collection('porticos').snapshots();
   }
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> streamTariffs() {
-    return _firestore.collection('tarifas').orderBy('fecha_actualizacion', descending: true).snapshots();
+  // Usa collectionGroup para obtener todos los "trips" sin importar de qué usuario sean
+  Stream<QuerySnapshot<Map<String, dynamic>>> streamTrips() {
+    return _firestore.collectionGroup('trips').snapshots();
   }
 
   Future<int> _count(String collection) async {

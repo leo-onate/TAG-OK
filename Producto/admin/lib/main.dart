@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -70,7 +71,7 @@ class _AdminShellState extends State<AdminShell> {
     'Dashboard',
     'Usuarios',
     'Pórticos',
-    'Tarifas',
+    'Viajes',
     'Reportes',
   ];
 
@@ -80,7 +81,7 @@ class _AdminShellState extends State<AdminShell> {
       0 => DashboardPage(service: _service),
       1 => UsersPage(service: _service),
       2 => PorticosPage(service: _service),
-      3 => TariffsPage(service: _service),
+      3 => TripsPage(service: _service),
       _ => const ReportsPage(),
     };
 
@@ -159,7 +160,7 @@ class _AdminShellState extends State<AdminShell> {
       0 => Icons.dashboard_outlined,
       1 => Icons.people_alt_outlined,
       2 => Icons.toll_outlined,
-      3 => Icons.payments_outlined,
+      3 => Icons.route_outlined,
       _ => Icons.bar_chart_outlined,
     };
   }
@@ -267,7 +268,7 @@ class DashboardPage extends StatelessWidget {
                   _StatCard(label: 'Usuarios', value: overview?.users ?? 0, icon: Icons.people_alt_outlined),
                   _StatCard(label: 'Vehículos', value: overview?.vehicles ?? 0, icon: Icons.directions_car_outlined),
                   _StatCard(label: 'Pórticos', value: overview?.porticos ?? 0, icon: Icons.toll_outlined),
-                  _StatCard(label: 'Tarifas', value: overview?.tariffs ?? 0, icon: Icons.payments_outlined),
+                  _StatCard(label: 'Viajes', value: overview?.tariffs ?? 0, icon: Icons.route_outlined),
                 ],
               ),
               const SizedBox(height: 24),
@@ -288,7 +289,7 @@ class DashboardPage extends StatelessWidget {
                       children: const [
                         _QuickAction(label: 'Usuarios', icon: Icons.people_alt_outlined),
                         _QuickAction(label: 'Pórticos', icon: Icons.toll_outlined),
-                        _QuickAction(label: 'Tarifas', icon: Icons.payments_outlined),
+                        _QuickAction(label: 'Viajes', icon: Icons.route_outlined),
                         _QuickAction(label: 'Reportes', icon: Icons.bar_chart_outlined),
                       ],
                     ),
@@ -338,10 +339,15 @@ class UsersPage extends StatelessWidget {
         columns: const ['Nombre', 'Correo', 'Presupuesto', 'Vehículo Principal', 'Acciones'],
         rowBuilder: (doc) {
           final Map<String, dynamic> data = doc.data();
+          final String docId = doc.id;
+          final String nombre = (data['nombre_mostrar'] ?? 'Sin nombre').toString();
+          final String correo = (data['email'] ?? 'Sin correo').toString();
+          final int presupuesto = int.tryParse(data['limite_presupuesto_mensual']?.toString() ?? '0') ?? 0;
+
           return [
-            DataCell(Text((data['nombre_mostrar'] ?? 'Sin nombre').toString())),
-            DataCell(Text((data['email'] ?? 'Sin correo').toString())),
-            DataCell(Text('\$${data['limite_presupuesto_mensual'] ?? '0'}')),
+            DataCell(Text(nombre)),
+            DataCell(Text(correo)),
+            DataCell(Text('\$$presupuesto')),
             DataCell(Text((data['vehiculo_principal_id'] ?? 'Ninguno').toString())),
             DataCell(
               Row(
@@ -351,21 +357,21 @@ class UsersPage extends StatelessWidget {
                     icon: const Icon(Icons.edit_outlined, color: Colors.blue, size: 20),
                     tooltip: 'Editar Presupuesto',
                     onPressed: () {
-                      // TODO: Implementar modal de edición
+                      _mostrarDialogoEdicion(context, docId, nombre, presupuesto);
                     },
                   ),
                   IconButton(
                     icon: const Icon(Icons.lock_reset_outlined, color: Colors.orange, size: 20),
                     tooltip: 'Restablecer Contraseña',
                     onPressed: () {
-                      // TODO: Enviar email de reset (Firebase Auth)
+                      _enviarResetPassword(context, correo);
                     },
                   ),
                   IconButton(
                     icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
                     tooltip: 'Eliminar Usuario',
                     onPressed: () {
-                      // TODO: Eliminar documento de Firestore
+                      _mostrarDialogoEliminar(context, docId, nombre);
                     },
                   ),
                 ],
@@ -373,6 +379,89 @@ class UsersPage extends StatelessWidget {
             ),
           ];
         },
+      ),
+    );
+  }
+
+  void _mostrarDialogoEdicion(BuildContext context, String docId, String nombreActual, int limiteActual) {
+    final TextEditingController nombreCtrl = TextEditingController(text: nombreActual);
+    final TextEditingController limiteCtrl = TextEditingController(text: limiteActual.toString());
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text('Editar Usuario'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nombreCtrl,
+              decoration: const InputDecoration(labelText: 'Nombre a mostrar'),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: limiteCtrl,
+              decoration: const InputDecoration(labelText: 'Límite Mensual (\$)'),
+              keyboardType: TextInputType.number,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0EA5E9)),
+            onPressed: () {
+              final nuevoLimite = int.tryParse(limiteCtrl.text) ?? limiteActual;
+              FirebaseFirestore.instance.collection('usuarios').doc(docId).update({
+                'nombre_mostrar': nombreCtrl.text,
+                'limite_presupuesto_mensual': nuevoLimite,
+              });
+              Navigator.pop(context); // Cierra el diálogo
+            },
+            child: const Text('Guardar', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _enviarResetPassword(BuildContext context, String correo) async {
+    if (correo == 'Sin correo') return;
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: correo);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Correo de restablecimiento enviado a $correo'), backgroundColor: Colors.green),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al enviar correo: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
+  void _mostrarDialogoEliminar(BuildContext context, String docId, String nombre) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text('Eliminar Usuario'),
+        content: Text('¿Estás seguro que deseas eliminar el registro y los datos de $nombre? Esta acción es irreversible.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () {
+              FirebaseFirestore.instance.collection('usuarios').doc(docId).delete();
+              Navigator.pop(context); // Cierra el diálogo
+            },
+            child: const Text('Sí, Eliminar', style: TextStyle(color: Colors.white)),
+          ),
+        ],
       ),
     );
   }
@@ -440,26 +529,35 @@ class PorticosPage extends StatelessWidget {
   }
 }
 
-class TariffsPage extends StatelessWidget {
-  const TariffsPage({super.key, required this.service});
+class TripsPage extends StatelessWidget {
+  const TripsPage({super.key, required this.service});
 
   final AdminFirestoreService service;
 
   @override
   Widget build(BuildContext context) {
     return _AdminPageScaffold(
-      title: 'Tarifas',
-      subtitle: 'Vigencias, edición y publicación controlada.',
+      title: 'Historial de Viajes',
+      subtitle: 'Listado global de todos los trayectos realizados por los usuarios en la app.',
       child: _FirestoreTable(
-        stream: service.streamTariffs(),
-        emptyMessage: 'Todavía no existe la colección tarifas.',
-        columns: const ['Nombre', 'Vigencia', 'Estado'],
+        stream: service.streamTrips(),
+        emptyMessage: 'No hay viajes registrados aún.',
+        columns: const ['ID Usuario', 'Costo Total', 'Distancia', 'Fecha'],
         rowBuilder: (doc) {
           final Map<String, dynamic> data = doc.data();
+          
+          // Extraemos el ID del usuario subiendo en la jerarquía del documento (users/ID/trips/DOC_ID)
+          final String userId = doc.reference.parent.parent?.id ?? 'Desconocido';
+          
+          final String costo = (data['costo_total'] ?? data['costo'] ?? data['total'] ?? '0').toString();
+          final String distancia = (data['distancia'] ?? data['distance'] ?? '-').toString();
+          final String fecha = (data['fecha'] ?? data['timestamp'] ?? data['date'] ?? 'Llaves: ${data.keys.join(", ")}').toString();
+
           return [
-            DataCell(Text((data['nombre'] ?? 'Tarifa').toString())),
-            DataCell(Text((data['vigencia'] ?? data['fecha_actualizacion'] ?? '-').toString())),
-            DataCell(Text((data['estado'] ?? 'borrador').toString())),
+            DataCell(Text(userId)),
+            DataCell(Text('\$$costo')),
+            DataCell(Text(distancia)),
+            DataCell(Text(fecha)),
           ];
         },
       ),
@@ -636,12 +734,15 @@ class _FirestoreTable extends StatelessWidget {
             }
 
             return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: DataTable(
-                columns: columns.map((String column) => DataColumn(label: Text(column))).toList(),
-                rows: docs.take(20).map((doc) {
-                  return DataRow(cells: rowBuilder(doc));
-                }).toList(),
+              scrollDirection: Axis.vertical,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  columns: columns.map((String column) => DataColumn(label: Text(column))).toList(),
+                  rows: docs.map((doc) {
+                    return DataRow(cells: rowBuilder(doc));
+                  }).toList(),
+                ),
               ),
             );
           },
