@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -338,10 +339,15 @@ class UsersPage extends StatelessWidget {
         columns: const ['Nombre', 'Correo', 'Presupuesto', 'Vehículo Principal', 'Acciones'],
         rowBuilder: (doc) {
           final Map<String, dynamic> data = doc.data();
+          final String docId = doc.id;
+          final String nombre = (data['nombre_mostrar'] ?? 'Sin nombre').toString();
+          final String correo = (data['email'] ?? 'Sin correo').toString();
+          final int presupuesto = int.tryParse(data['limite_presupuesto_mensual']?.toString() ?? '0') ?? 0;
+
           return [
-            DataCell(Text((data['nombre_mostrar'] ?? 'Sin nombre').toString())),
-            DataCell(Text((data['email'] ?? 'Sin correo').toString())),
-            DataCell(Text('\$${data['limite_presupuesto_mensual'] ?? '0'}')),
+            DataCell(Text(nombre)),
+            DataCell(Text(correo)),
+            DataCell(Text('\$$presupuesto')),
             DataCell(Text((data['vehiculo_principal_id'] ?? 'Ninguno').toString())),
             DataCell(
               Row(
@@ -351,21 +357,21 @@ class UsersPage extends StatelessWidget {
                     icon: const Icon(Icons.edit_outlined, color: Colors.blue, size: 20),
                     tooltip: 'Editar Presupuesto',
                     onPressed: () {
-                      // TODO: Implementar modal de edición
+                      _mostrarDialogoEdicion(context, docId, nombre, presupuesto);
                     },
                   ),
                   IconButton(
                     icon: const Icon(Icons.lock_reset_outlined, color: Colors.orange, size: 20),
                     tooltip: 'Restablecer Contraseña',
                     onPressed: () {
-                      // TODO: Enviar email de reset (Firebase Auth)
+                      _enviarResetPassword(context, correo);
                     },
                   ),
                   IconButton(
                     icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
                     tooltip: 'Eliminar Usuario',
                     onPressed: () {
-                      // TODO: Eliminar documento de Firestore
+                      _mostrarDialogoEliminar(context, docId, nombre);
                     },
                   ),
                 ],
@@ -373,6 +379,89 @@ class UsersPage extends StatelessWidget {
             ),
           ];
         },
+      ),
+    );
+  }
+
+  void _mostrarDialogoEdicion(BuildContext context, String docId, String nombreActual, int limiteActual) {
+    final TextEditingController nombreCtrl = TextEditingController(text: nombreActual);
+    final TextEditingController limiteCtrl = TextEditingController(text: limiteActual.toString());
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text('Editar Usuario'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nombreCtrl,
+              decoration: const InputDecoration(labelText: 'Nombre a mostrar'),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: limiteCtrl,
+              decoration: const InputDecoration(labelText: 'Límite Mensual (\$)'),
+              keyboardType: TextInputType.number,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0EA5E9)),
+            onPressed: () {
+              final nuevoLimite = int.tryParse(limiteCtrl.text) ?? limiteActual;
+              FirebaseFirestore.instance.collection('usuarios').doc(docId).update({
+                'nombre_mostrar': nombreCtrl.text,
+                'limite_presupuesto_mensual': nuevoLimite,
+              });
+              Navigator.pop(context); // Cierra el diálogo
+            },
+            child: const Text('Guardar', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _enviarResetPassword(BuildContext context, String correo) async {
+    if (correo == 'Sin correo') return;
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: correo);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Correo de restablecimiento enviado a $correo'), backgroundColor: Colors.green),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al enviar correo: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
+  void _mostrarDialogoEliminar(BuildContext context, String docId, String nombre) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text('Eliminar Usuario'),
+        content: Text('¿Estás seguro que deseas eliminar el registro y los datos de $nombre? Esta acción es irreversible.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () {
+              FirebaseFirestore.instance.collection('usuarios').doc(docId).delete();
+              Navigator.pop(context); // Cierra el diálogo
+            },
+            child: const Text('Sí, Eliminar', style: TextStyle(color: Colors.white)),
+          ),
+        ],
       ),
     );
   }
@@ -636,12 +725,15 @@ class _FirestoreTable extends StatelessWidget {
             }
 
             return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: DataTable(
-                columns: columns.map((String column) => DataColumn(label: Text(column))).toList(),
-                rows: docs.take(20).map((doc) {
-                  return DataRow(cells: rowBuilder(doc));
-                }).toList(),
+              scrollDirection: Axis.vertical,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  columns: columns.map((String column) => DataColumn(label: Text(column))).toList(),
+                  rows: docs.map((doc) {
+                    return DataRow(cells: rowBuilder(doc));
+                  }).toList(),
+                ),
               ),
             );
           },
