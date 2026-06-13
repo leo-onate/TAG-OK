@@ -135,7 +135,12 @@ class SimulatedTollService {
       if (passedThrough && bestSnappedPoint != null) {
         // Filtrar por sentido de marcha
         if (knownToll.direction != null && segmentBearing != null) {
-          bool isMatch = _checkDirectionMatch(segmentBearing, knownToll.direction!);
+          bool isMatch = _checkDirectionMatch(
+            segmentBearing, 
+            knownToll.direction!,
+            highway: knownToll.highway,
+            location: knownToll.location,
+          );
           if (!isMatch) {
             continue; 
           }
@@ -224,7 +229,14 @@ class SimulatedTollService {
     return bearing;
   }
 
-  bool _checkDirectionMatch(double bearing, String tollDir) {
+  bool _checkDirectionMatch(double bearing, String tollDir, {String? highway, LatLng? location}) {
+    // Para autopistas tipo anillo (como Vespucio Norte), la dirección física
+    // cambia de Este-Oeste a Norte-Sur en la zona Poniente (longitud < -70.73).
+    if (highway == "Vespucio Norte" && location != null && location.longitude < -70.73) {
+      if (tollDir == "P-O") return bearing >= 315 || bearing < 45; // Sentido Norte
+      if (tollDir == "O-P") return bearing >= 135 && bearing < 225; // Sentido Sur
+    }
+
     // Cuadrantes estrictos de 90 grados (+/- 45 del eje)
     if (tollDir == "S-N") return bearing >= 315 || bearing < 45; // Norte
     if (tollDir == "P-O") return bearing >= 45 && bearing < 135; // Oriente
