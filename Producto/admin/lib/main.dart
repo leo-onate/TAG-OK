@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'login_screen.dart';
 import 'admin_firestore_service.dart';
 import 'firebase_options.dart';
 
@@ -51,7 +52,7 @@ class TagOkAdminApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const AdminShell(),
+       home: const AdminAuthGate(),
     );
   }
 }
@@ -138,6 +139,22 @@ class _AdminShellState extends State<AdminShell> {
                             onTap: () => setState(() => _selectedIndex = index),
                           ),
                         );
+                      },
+                    ),
+                  ),
+                  const Divider(color: Color(0xFF1E293B)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    child: ListTile(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      iconColor: const Color(0xFFEF4444),
+                      textColor: const Color(0xFFEF4444),
+                      leading: const Icon(Icons.logout),
+                      title: const Text('Cerrar sesión'),
+                      onTap: () async {
+                        await FirebaseAuth.instance.signOut();
                       },
                     ),
                   ),
