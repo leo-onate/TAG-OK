@@ -483,8 +483,10 @@ class PorticosPage extends StatelessWidget {
         columns: const ['Nombre', 'Sentido', 'Tarifa Base', 'Tarifa Punta', 'Tarifa Saturación', 'Acciones'],
         rowBuilder: (doc) {
           final Map<String, dynamic> rawData = doc.data();
+          final String docId = doc.id;
           
           // Extraer información si está anidada dentro de un mapa llamado 'datos'
+          final bool isNested = rawData.containsKey('datos') && rawData['datos'] is Map;
           final Map<String, dynamic> data = (rawData.containsKey('datos') && rawData['datos'] is Map)
               ? Map<String, dynamic>.from(rawData['datos'])
               : rawData;
@@ -509,14 +511,14 @@ class PorticosPage extends StatelessWidget {
                     icon: const Icon(Icons.edit_outlined, color: Colors.blue, size: 20),
                     tooltip: 'Editar Tarifas',
                     onPressed: () {
-                      // TODO: Implementar modal para editar tarifas del pórtico
+                      _mostrarDialogoEdicion(context, docId, nombre, base, punta, saturacion, isNested);
                     },
                   ),
                   IconButton(
                     icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
                     tooltip: 'Eliminar Pórtico',
                     onPressed: () {
-                      // TODO: Eliminar documento de pórtico en Firestore
+                      _mostrarDialogoEliminar(context, docId, nombre);
                     },
                   ),
                 ],
@@ -524,6 +526,96 @@ class PorticosPage extends StatelessWidget {
             ),
           ];
         },
+      ),
+    );
+  }
+
+  void _mostrarDialogoEdicion(BuildContext context, String docId, String nombre, String baseActual, String puntaActual, String saturacionActual, bool isNested) {
+    final TextEditingController baseCtrl = TextEditingController(text: baseActual);
+    final TextEditingController puntaCtrl = TextEditingController(text: puntaActual);
+    final TextEditingController saturacionCtrl = TextEditingController(text: saturacionActual);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text('Editar Tarifas'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Pórtico: $nombre', style: const TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            TextField(
+              controller: baseCtrl,
+              decoration: const InputDecoration(labelText: 'Tarifa Base (\$)'),
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: puntaCtrl,
+              decoration: const InputDecoration(labelText: 'Tarifa Punta (\$)'),
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: saturacionCtrl,
+              decoration: const InputDecoration(labelText: 'Tarifa Saturación (\$)'),
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0EA5E9)),
+            onPressed: () {
+              // Reemplazamos comas por puntos por si el administrador escribe "700,50"
+              final double? nBase = double.tryParse(baseCtrl.text.replaceAll(',', '.'));
+              final double? nPunta = double.tryParse(puntaCtrl.text.replaceAll(',', '.'));
+              final double? nSaturacion = double.tryParse(saturacionCtrl.text.replaceAll(',', '.'));
+
+              final Map<String, dynamic> updates = {};
+              
+              if (nBase != null) {
+                updates[isNested ? 'datos.tarifa_base' : 'tarifa_base'] = nBase;
+              }
+              if (nPunta != null) {
+                updates[isNested ? 'datos.tarifa_punta' : 'tarifa_punta'] = nPunta;
+              }
+              if (nSaturacion != null) {
+                updates[isNested ? 'datos.tarifa_saturacion' : 'tarifa_saturacion'] = nSaturacion;
+              }
+
+              if (updates.isNotEmpty) {
+                FirebaseFirestore.instance.collection('porticos').doc(docId).update(updates);
+              }
+              Navigator.pop(context); // Cierra el diálogo
+            },
+            child: const Text('Guardar', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _mostrarDialogoEliminar(BuildContext context, String docId, String nombre) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text('Eliminar Pórtico'),
+        content: Text('¿Estás seguro que deseas eliminar el pórtico "$nombre"? Esta acción es irreversible.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () {
+              FirebaseFirestore.instance.collection('porticos').doc(docId).delete();
+              Navigator.pop(context); // Cierra el diálogo
+            },
+            child: const Text('Sí, Eliminar', style: TextStyle(color: Colors.white)),
+          ),
+        ],
       ),
     );
   }
@@ -678,7 +770,8 @@ class _QuickAction extends StatelessWidget {
       label: Text(label),
     );
   }
-}
+} 
+
 
 class _FirestoreTable extends StatelessWidget {
   const _FirestoreTable({
