@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -38,6 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
   
   
   RouteData? _currentRoute;
+  List<LatLng> _remainingPolyline = []; // Coordenadas restantes de la ruta activa
   bool _isNavigating = false; // Estado de navegación activa
   Map<String, dynamic>? _selectedVehicle; // Vehículo para el viaje actual
 
@@ -97,9 +99,10 @@ class _HomeScreenState extends State<HomeScreen> {
           _currentPosition = LatLng(position.latitude, position.longitude);
         });
         
-        // Si estamos navegando, el mapa sigue al usuario automáticamente
+        // Si estamos navegando, el mapa sigue al usuario automáticamente y recorta la ruta recorrida
         if (_isNavigating && _currentPosition != null) {
           _mapController.move(_currentPosition!, 17.0);
+          _updateRemainingPolyline(_currentPosition!);
         }
 
         // Si es la primera vez que obtenemos la ubicación, centramos el mapa ahí
@@ -116,6 +119,39 @@ class _HomeScreenState extends State<HomeScreen> {
   void _centerOnUser() {
     if (_currentPosition != null) {
       _mapController.move(_currentPosition!, 15.0);
+    }
+  }
+
+  double _calculateDistance(LatLng p1, LatLng p2) {
+    const double kLat = 111320.0;
+    final double kLon = 111320.0 * math.cos(p1.latitude * math.pi / 180.0);
+    final double dx = (p1.longitude - p2.longitude) * kLon;
+    final double dy = (p1.latitude - p2.latitude) * kLat;
+    return math.sqrt(dx * dx + dy * dy);
+  }
+
+  void _updateRemainingPolyline(LatLng userLocation) {
+    if (_remainingPolyline.isEmpty) return;
+
+    // Buscamos el punto más cercano en la lista restante
+    int closestIndex = -1;
+    double minDistance = double.infinity;
+
+    for (int i = 0; i < _remainingPolyline.length; i++) {
+      final double dist = _calculateDistance(userLocation, _remainingPolyline[i]);
+      if (dist < minDistance) {
+        minDistance = dist;
+        closestIndex = i;
+      }
+    }
+
+    // Para evitar saltos erráticos si el usuario se desvía levemente,
+    // usamos un umbral de proximidad de 200 metros.
+    // Si el punto más cercano es más adelante en la ruta, recortamos lo recorrido.
+    if (closestIndex > 0 && minDistance < 200.0) {
+      setState(() {
+        _remainingPolyline.removeRange(0, closestIndex);
+      });
     }
   }
 
@@ -158,6 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
             if (result is RouteData) {
               setState(() {
                 _currentRoute = result;
+                _remainingPolyline = List<LatLng>.from(result.polyline);
               });
               
               if (result.polyline.isNotEmpty) {
@@ -288,11 +325,14 @@ class _HomeScreenState extends State<HomeScreen> {
               userAgentPackageName: 'com.tagok.app',
             ),
             // Capa de la Ruta (Línea Azul)
-            if (_currentRoute != null && _currentRoute!.polyline.isNotEmpty)
+            if (_currentRoute != null && _remainingPolyline.isNotEmpty)
               PolylineLayer(
                 polylines: [
                   Polyline(
-                    points: _currentRoute!.polyline,
+                    points: [
+                      if (_isNavigating && _currentPosition != null) _currentPosition!,
+                      ..._remainingPolyline,
+                    ],
                     strokeWidth: 6.0,
                     color: const Color(0xFF3B82F6),
                   ),
@@ -494,6 +534,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               setState(() {
                                 _isNavigating = false;
                                 _currentRoute = null;
+                                _remainingPolyline = [];
                               });
                               _centerOnUser();
                             },
@@ -525,7 +566,7 @@ class _HomeScreenState extends State<HomeScreen> {
         
         // 3. Botón flotante para centrar la ubicación
         Positioned(
-          bottom: 110,
+          bottom: 186,
           right: 16,
           child: FloatingActionButton(
             heroTag: "centerLocationBtn", // Evita conflictos de hero con el boton central
@@ -864,7 +905,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildBottomInfoCard() {
     return Positioned(
-      bottom: 20,
+      bottom: 96,
       left: 16,
       right: 16,
       child: ClipRRect(
