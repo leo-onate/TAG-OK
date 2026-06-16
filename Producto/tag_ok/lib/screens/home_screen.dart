@@ -1,12 +1,15 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'route_setup_screen.dart';
 import 'profile_screen.dart';
 import 'vehiculos_screen.dart';
@@ -41,12 +44,14 @@ class _HomeScreenState extends State<HomeScreen> {
   RouteData? _currentRoute;
   List<LatLng> _remainingPolyline = []; // Coordenadas restantes de la ruta activa
   bool _isNavigating = false; // Estado de navegación activa
+  bool _isOffRoute = false; // Si el usuario se desvió a caletera u otro lugar
   Map<String, dynamic>? _selectedVehicle; // Vehículo para el viaje actual
 
   @override
   void initState() {
     super.initState();
     _determinePosition();
+    _loadNavigationState();
     // Verificar si el usuario tiene vehículos al iniciar
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkVehiclesAndAlert();
@@ -58,6 +63,78 @@ class _HomeScreenState extends State<HomeScreen> {
     _positionStreamSubscription?.cancel();
     _mapController.dispose();
     super.dispose();
+  }
+
+  Future<void> _saveNavigationState() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (_isNavigating && _currentRoute != null) {
+      prefs.setBool('isNavigating', true);
+      prefs.setString('currentRoute', jsonEncode(_currentRoute!.toJson()));
+      if (_selectedVehicle != null) {
+        prefs.setString('selectedVehicle', jsonEncode(_selectedVehicle));
+      } else {
+        prefs.remove('selectedVehicle');
+      }
+    } else {
+      prefs.remove('isNavigating');
+      prefs.remove('currentRoute');
+      prefs.remove('selectedVehicle');
+    }
+  }
+
+  Future<void> _loadNavigationState() async {
+    final prefs = await SharedPreferences.getInstance();
+    final bool? isNav = prefs.getBool('isNavigating');
+    final String? routeStr = prefs.getString('currentRoute');
+    final String? vehicleStr = prefs.getString('selectedVehicle');
+
+    if (isNav == true && routeStr != null) {
+      try {
+        final decodedRoute = jsonDecode(routeStr);
+        final route = RouteData.fromJson(decodedRoute);
+        Map<String, dynamic>? vehicle;
+        if (vehicleStr != null) {
+          vehicle = jsonDecode(vehicleStr);
+        }
+
+        if (mounted) {
+          setState(() {
+            _currentRoute = route;
+            _isNavigating = true;
+            _selectedVehicle = vehicle;
+            _remainingPolyline = List<LatLng>.from(route.polyline);
+          });
+          
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (_currentPosition != null) {
+              _mapController.move(_currentPosition!, 17.0);
+              _updateRemainingPolyline(_currentPosition!);
+            } else if (route.polyline.isNotEmpty) {
+              final bounds = LatLngBounds.fromPoints(route.polyline);
+              _mapController.fitCamera(CameraFit.bounds(
+                bounds: bounds,
+                padding: const EdgeInsets.all(50.0),
+              ));
+            }
+          });
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Row(
+                children: [
+                  Icon(Icons.restore, color: Colors.white),
+                  SizedBox(width: 8),
+                  Expanded(child: Text('Viaje recuperado tras cierre inesperado')),
+                ],
+              ),
+              backgroundColor: Color(0xFF10B981),
+            ),
+          );
+        }
+      } catch (e) {
+        debugPrint('Error recovering state: $e');
+      }
+    }
   }
 
   /// Pide permisos e inicia el seguimiento en tiempo real
@@ -103,6 +180,17 @@ class _HomeScreenState extends State<HomeScreen> {
         if (_isNavigating && _currentPosition != null) {
           _mapController.move(_currentPosition!, 17.0);
           _updateRemainingPolyline(_currentPosition!);
+          
+          // Actualizar estado de caletera (off-route)
+          final double distToRoute = _distanceToPolyline(_currentPosition!, _remainingPolyline);
+          final bool offRoute = distToRoute > 35.0;
+          if (_isOffRoute != offRoute) {
+            setState(() {
+              _isOffRoute = offRoute;
+            });
+          }
+          
+          _checkTollCrossings(_currentPosition!);
         }
 
         // Si es la primera vez que obtenemos la ubicación, centramos el mapa ahí
@@ -130,6 +218,44 @@ class _HomeScreenState extends State<HomeScreen> {
     return math.sqrt(dx * dx + dy * dy);
   }
 
+  double _distanceToSegment(LatLng p, LatLng v, LatLng w) {
+    const double kLat = 111320.0;
+    final double kLon = 111320.0 * math.cos(v.latitude * math.pi / 180.0);
+    
+    final double dx = (w.longitude - v.longitude) * kLon;
+    final double dy = (w.latitude - v.latitude) * kLat;
+    final double l2 = dx * dx + dy * dy;
+    
+    if (l2 == 0) return _calculateDistance(p, v);
+    
+    // Dot product
+    double t = (((p.longitude - v.longitude) * kLon * dx) + ((p.latitude - v.latitude) * kLat * dy)) / l2;
+    t = math.max(0, math.min(1, t));
+    
+    // Projection
+    final double projX = v.longitude * kLon + t * dx;
+    final double projY = v.latitude * kLat + t * dy;
+    
+    final double pdx = (p.longitude * kLon) - projX;
+    final double pdy = (p.latitude * kLat) - projY;
+    
+    return math.sqrt(pdx * pdx + pdy * pdy);
+  }
+
+  double _distanceToPolyline(LatLng point, List<LatLng> polyline) {
+    if (polyline.isEmpty) return double.infinity;
+    if (polyline.length == 1) return _calculateDistance(point, polyline.first);
+    
+    double minDistance = double.infinity;
+    // Revisar primeros 50 segmentos de _remainingPolyline para eficiencia
+    int limit = math.min(polyline.length - 1, 50);
+    for (int i = 0; i < limit; i++) {
+      double d = _distanceToSegment(point, polyline[i], polyline[i+1]);
+      if (d < minDistance) minDistance = d;
+    }
+    return minDistance;
+  }
+
   void _updateRemainingPolyline(LatLng userLocation) {
     if (_remainingPolyline.isEmpty) return;
 
@@ -152,6 +278,40 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _remainingPolyline.removeRange(0, closestIndex);
       });
+    }
+  }
+
+  void _checkTollCrossings(LatLng userLocation) {
+    if (_currentRoute == null || !_isNavigating) return;
+    if (_isOffRoute) return; // Si estamos en caletera (>35m de la autopista principal), NO cobra peajes
+
+    for (var toll in _currentRoute!.tolls) {
+      if (!toll.isCrossed) {
+        double dist = _calculateDistance(userLocation, toll.location);
+        if (dist <= 60.0) { // Radio reducido a 60m (Aprox. 1 cuadra)
+          setState(() {
+            toll.isCrossed = true;
+            toll.crossedAt = DateTime.now();
+          });
+          _saveNavigationState(); // Guardar estado de peaje cruzado
+          
+          // Feedback al usuario
+          HapticFeedback.heavyImpact();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.check_circle, color: Colors.white),
+                  const SizedBox(width: 8),
+                  Expanded(child: Text('Peaje cobrado: ${toll.name} (\$${toll.cost})')),
+                ],
+              ),
+              backgroundColor: const Color(0xFF10B981),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      }
     }
   }
 
@@ -205,6 +365,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.all(50.0),
                 ));
               }
+              // Aún no guardamos en cache hasta que el usuario le de a "SÍ, COMENZAR"
             }
           },
           backgroundColor: primaryColor,
@@ -367,11 +528,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     width: 32,
                     height: 32,
                     child: Container(
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
+                      decoration: BoxDecoration(
+                        color: toll.isCrossed ? const Color(0xFF10B981) : Colors.white,
                         shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 4, offset: const Offset(0, 2))
+                        ],
                       ),
-                      child: const Icon(Icons.monetization_on, color: Color(0xFFF59E0B), size: 24),
+                      child: Icon(
+                        toll.isCrossed ? Icons.check : Icons.monetization_on, 
+                        color: toll.isCrossed ? Colors.white : const Color(0xFFF59E0B), 
+                        size: 20
+                      ),
                     ),
                   )),
                 ],
@@ -438,6 +606,36 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
+                  if (_isOffRoute && _isNavigating) ...[
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(color: Colors.orangeAccent.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.orange)),
+                      child: const Row(
+                        children: [
+                          Icon(Icons.route_outlined, color: Colors.orange, size: 16),
+                          SizedBox(width: 8),
+                          Expanded(child: Text('Desvío detectado (Caletera). Cobro de peajes pausado.', style: TextStyle(color: Colors.orange, fontSize: 12, fontWeight: FontWeight.bold))),
+                        ],
+                      ),
+                    ),
+                  ],
+                  if (_isNavigating && !_isOffRoute) ...[
+                    const SizedBox(height: 12),
+                    Builder(builder: (context) {
+                      final nextToll = _currentRoute!.tolls.cast<TollData?>().firstWhere((t) => !(t!.isCrossed), orElse: () => null);
+                      if (nextToll != null) {
+                        return Row(
+                          children: [
+                            const Icon(Icons.sensors, color: Color(0xFF10B981), size: 16),
+                            const SizedBox(width: 8),
+                            Expanded(child: Text('Próximo peaje: ${nextToll.name}', style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500), overflow: TextOverflow.ellipsis)),
+                          ],
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    }),
+                  ],
                   if (!_isNavigating) ...[
                     const SizedBox(height: 16),
                     GestureDetector(
@@ -473,6 +671,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               setState(() {
                                 _isNavigating = !_isNavigating;
                               });
+                              _saveNavigationState();
                             },
                             child: Container(
                               height: 48,
@@ -500,17 +699,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                 final trip = TripHistory(
                                   id: '', // Se genera en Firestore
                                   date: DateTime.now(),
-                                  totalCost: _currentRoute!.totalCost,
+                                  totalCost: _currentRoute!.tolls.where((t) => t.isCrossed).fold(0.0, (sum, t) => sum + t.cost),
                                   distanceKm: _currentRoute!.distanceKm,
                                   duration: _currentRoute!.durationText,
                                   vehicleName: _selectedVehicle != null 
                                     ? '${_selectedVehicle!['marca']} (${_selectedVehicle!['patente']})'
                                     : 'Vehículo Principal',
-                                  tolls: _currentRoute!.tolls.map((t) => TollRecord(
-                                    name: t.name,
-                                    cost: t.cost, // Usamos el costo base o el que se haya aplicado
-                                    timestamp: DateTime.now(),
-                                  )).toList(),
+                                  tolls: _currentRoute!.tolls
+                                    .where((t) => t.isCrossed)
+                                    .map((t) => TollRecord(
+                                      name: t.name,
+                                      cost: t.cost, // Usamos el costo base o el que se haya aplicado
+                                      timestamp: t.crossedAt ?? DateTime.now(),
+                                    )).toList(),
                                 );
                                 await historyService.saveTrip(trip);
                                 
@@ -536,6 +737,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 _currentRoute = null;
                                 _remainingPolyline = [];
                               });
+                              _saveNavigationState(); // Limpia la caché
                               _centerOnUser();
                             },
                             child: Container(
@@ -652,6 +854,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               Navigator.pop(context);
               setState(() => _isNavigating = true);
+              _saveNavigationState();
               _mapController.move(_currentPosition ?? _currentRoute!.polyline.first, 17.0);
             },
             child: const Text("SÍ, COMENZAR", style: TextStyle(color: Colors.white)),
@@ -689,6 +892,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     _selectedVehicle = v;
                     _isNavigating = true;
                   });
+                  _saveNavigationState();
                   Navigator.pop(context);
                   _mapController.move(_currentPosition ?? _currentRoute!.polyline.first, 17.0);
                 },

@@ -63,4 +63,26 @@ void main() {
     
     expect(routeData.tolls.length, equals(4));
   });
+
+  test('Simular Ruta Usuario - Maipu a Huechuraba', () async {
+    // Cargar variables de entorno
+    await dotenv.load(fileName: ".env");
+    
+    final service = SimulatedTollService();
+    final origin = LatLng(-33.5132, -70.7587); // Av. 5 de Abril 313, Maipú
+    final destination = LatLng(-33.3852, -70.6225); // Palacio Riesco 4515, Huechuraba
+    
+    print("Iniciando cálculo de ruta Maipu -> Huechuraba...");
+    final routeData = await service.calculateRouteAndTolls(
+      origin: origin,
+      destination: destination,
+    );
+    
+    print("Distancia calculada: ${routeData.distanceKm} km");
+    print("Costo total estimado: ${routeData.totalCost} CLP");
+    print("Pórticos detectados: ${routeData.tolls.length}");
+    for (var toll in routeData.tolls) {
+      print("  - ${toll.name} (Costo: ${toll.cost} CLP)");
+    }
+  });
 }
