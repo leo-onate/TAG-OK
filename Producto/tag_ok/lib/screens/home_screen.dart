@@ -43,6 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
   
   RouteData? _currentRoute;
   List<LatLng> _remainingPolyline = []; // Coordenadas restantes de la ruta activa
+  List<LatLng> _passedPolyline = []; // Coordenadas ya recorridas (línea gris)
   bool _isNavigating = false; // Estado de navegación activa
   bool _isOffRoute = false; // Si el usuario se desvió a caletera u otro lugar
   Map<String, dynamic>? _selectedVehicle; // Vehículo para el viaje actual
@@ -103,6 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
             _isNavigating = true;
             _selectedVehicle = vehicle;
             _remainingPolyline = List<LatLng>.from(route.polyline);
+            _passedPolyline = [];
           });
           
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -276,6 +278,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // Si el punto más cercano es más adelante en la ruta, recortamos lo recorrido.
     if (closestIndex > 0 && minDistance < 200.0) {
       setState(() {
+        _passedPolyline.addAll(_remainingPolyline.sublist(0, closestIndex));
         _remainingPolyline.removeRange(0, closestIndex);
       });
     }
@@ -355,6 +358,7 @@ class _HomeScreenState extends State<HomeScreen> {
               setState(() {
                 _currentRoute = result;
                 _remainingPolyline = List<LatLng>.from(result.polyline);
+                _passedPolyline = [];
               });
               
               if (result.polyline.isNotEmpty) {
@@ -485,18 +489,30 @@ class _HomeScreenState extends State<HomeScreen> {
               zoomOffset: -1,
               userAgentPackageName: 'com.tagok.app',
             ),
-            // Capa de la Ruta (Línea Azul)
-            if (_currentRoute != null && _remainingPolyline.isNotEmpty)
+            // Capa de la Ruta (Línea Gris y Azul)
+            if (_currentRoute != null)
               PolylineLayer(
                 polylines: [
-                  Polyline(
-                    points: [
-                      if (_isNavigating && _currentPosition != null) _currentPosition!,
-                      ..._remainingPolyline,
-                    ],
-                    strokeWidth: 6.0,
-                    color: const Color(0xFF3B82F6),
-                  ),
+                  // Tramo recorrido (Gris)
+                  if (_passedPolyline.isNotEmpty)
+                    Polyline(
+                      points: [
+                        ..._passedPolyline,
+                        if (_isNavigating && _currentPosition != null) _currentPosition!,
+                      ],
+                      strokeWidth: 6.0,
+                      color: Colors.grey.withOpacity(0.6),
+                    ),
+                  // Tramo restante (Azul)
+                  if (_remainingPolyline.isNotEmpty)
+                    Polyline(
+                      points: [
+                        if (_isNavigating && _currentPosition != null) _currentPosition!,
+                        ..._remainingPolyline,
+                      ],
+                      strokeWidth: 6.0,
+                      color: const Color(0xFF3B82F6),
+                    ),
                 ],
               ),
               
@@ -736,6 +752,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 _isNavigating = false;
                                 _currentRoute = null;
                                 _remainingPolyline = [];
+                                _passedPolyline = [];
                               });
                               _saveNavigationState(); // Limpia la caché
                               _centerOnUser();
