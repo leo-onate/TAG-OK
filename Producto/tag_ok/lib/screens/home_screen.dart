@@ -46,6 +46,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   List<LatLng> _remainingPolyline = []; // Coordenadas restantes de la ruta activa
   List<LatLng> _passedPolyline = []; // Coordenadas ya recorridas (línea gris)
   bool _isNavigating = false; // Estado de navegación activa
+  bool _isFollowingUser = true; // Si el mapa debe seguir al usuario
   Map<String, dynamic>? _selectedVehicle; // Vehículo para el viaje actual
 
   // Notificaciones y Ciclo de vida
@@ -86,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     const InitializationSettings initializationSettings =
         InitializationSettings(android: initializationSettingsAndroid);
     
-    await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    await _flutterLocalNotificationsPlugin.initialize(settings: initializationSettings);
     
     await _flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
@@ -207,7 +208,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         
         // Si estamos navegando, el mapa sigue al usuario automáticamente y recorta la ruta recorrida
         if (_isNavigating && _currentPosition != null) {
-          _mapController.move(_currentPosition!, 17.0);
+          if (_isFollowingUser) {
+            _mapController.move(_currentPosition!, 17.0);
+          }
           _updateRemainingPolyline(_currentPosition!);
           _checkTollCrossings(_currentPosition!);
         }
@@ -224,8 +227,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   bool _hasCenteredMapInitially = false;
 
   void _centerOnUser() {
+    setState(() {
+      _isFollowingUser = true;
+    });
     if (_currentPosition != null) {
-      _mapController.move(_currentPosition!, 15.0);
+      _mapController.move(_currentPosition!, _isNavigating ? 17.0 : 15.0);
     }
   }
 
@@ -316,10 +322,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         NotificationDetails(android: androidPlatformChannelSpecifics);
     
     await _flutterLocalNotificationsPlugin.show(
-      toll.sequence ?? 0,
-      '✅ Peaje Cobrado',
-      '${toll.name} - \$${toll.cost.toStringAsFixed(0)} CLP',
-      platformChannelSpecifics,
+      id: toll.sequence ?? 0,
+      title: '✅ Peaje Cobrado',
+      body: '${toll.name} - \$${toll.cost.toStringAsFixed(0)} CLP',
+      notificationDetails: platformChannelSpecifics,
     );
   }
 
@@ -483,9 +489,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         // 1. El Mapa en sí
         FlutterMap(
           mapController: _mapController,
-          options: const MapOptions(
-            initialCenter: LatLng(-33.4489, -70.6693), // Santiago, Chile (fallback)
+          options: MapOptions(
+            initialCenter: const LatLng(-33.4489, -70.6693), // Santiago, Chile (fallback)
             initialZoom: 12.0,
+            onPositionChanged: (position, hasGesture) {
+              if (hasGesture && _isFollowingUser) {
+                setState(() {
+                  _isFollowingUser = false;
+                });
+              }
+            },
           ),
           children: [
             TileLayer(
@@ -785,7 +798,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             onPressed: _centerOnUser,
             child: Icon(
               Icons.my_location,
-              color: _currentPosition != null ? primaryColor : textMuted,
+              color: _isFollowingUser ? primaryColor : textMuted,
             ),
           ),
         ),
