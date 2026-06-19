@@ -182,16 +182,6 @@ class _HomeScreenState extends State<HomeScreen> {
         if (_isNavigating && _currentPosition != null) {
           _mapController.move(_currentPosition!, 17.0);
           _updateRemainingPolyline(_currentPosition!);
-          
-          // Actualizar estado de caletera (off-route)
-          final double distToRoute = _distanceToPolyline(_currentPosition!, _remainingPolyline);
-          final bool offRoute = distToRoute > 35.0;
-          if (_isOffRoute != offRoute) {
-            setState(() {
-              _isOffRoute = offRoute;
-            });
-          }
-          
           _checkTollCrossings(_currentPosition!);
         }
 
@@ -286,7 +276,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _checkTollCrossings(LatLng userLocation) {
     if (_currentRoute == null || !_isNavigating) return;
-    if (_isOffRoute) return; // Si estamos en caletera (>35m de la autopista principal), NO cobra peajes
 
     for (var toll in _currentRoute!.tolls) {
       if (!toll.isCrossed) {
@@ -622,21 +611,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-                  if (_isOffRoute && _isNavigating) ...[
-                    const SizedBox(height: 12),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(color: Colors.orangeAccent.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.orange)),
-                      child: const Row(
-                        children: [
-                          Icon(Icons.route_outlined, color: Colors.orange, size: 16),
-                          SizedBox(width: 8),
-                          Expanded(child: Text('Desvío detectado (Caletera). Cobro de peajes pausado.', style: TextStyle(color: Colors.orange, fontSize: 12, fontWeight: FontWeight.bold))),
-                        ],
-                      ),
-                    ),
-                  ],
-                  if (_isNavigating && !_isOffRoute) ...[
+                  if (_isNavigating) ...[
                     const SizedBox(height: 12),
                     Builder(builder: (context) {
                       final nextToll = _currentRoute!.tolls.cast<TollData?>().firstWhere((t) => !(t!.isCrossed), orElse: () => null);
