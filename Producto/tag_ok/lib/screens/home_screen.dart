@@ -45,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<LatLng> _remainingPolyline = []; // Coordenadas restantes de la ruta activa
   List<LatLng> _passedPolyline = []; // Coordenadas ya recorridas (línea gris)
   bool _isNavigating = false; // Estado de navegación activa
+  bool _isOffRoute = false; // Si el usuario se desvió a caletera u otro lugar
   Map<String, dynamic>? _selectedVehicle; // Vehículo para el viaje actual
 
   @override
@@ -207,6 +208,44 @@ class _HomeScreenState extends State<HomeScreen> {
     final double dx = (p1.longitude - p2.longitude) * kLon;
     final double dy = (p1.latitude - p2.latitude) * kLat;
     return math.sqrt(dx * dx + dy * dy);
+  }
+
+  double _distanceToSegment(LatLng p, LatLng v, LatLng w) {
+    const double kLat = 111320.0;
+    final double kLon = 111320.0 * math.cos(v.latitude * math.pi / 180.0);
+    
+    final double dx = (w.longitude - v.longitude) * kLon;
+    final double dy = (w.latitude - v.latitude) * kLat;
+    final double l2 = dx * dx + dy * dy;
+    
+    if (l2 == 0) return _calculateDistance(p, v);
+    
+    // Dot product
+    double t = (((p.longitude - v.longitude) * kLon * dx) + ((p.latitude - v.latitude) * kLat * dy)) / l2;
+    t = math.max(0, math.min(1, t));
+    
+    // Projection
+    final double projX = v.longitude * kLon + t * dx;
+    final double projY = v.latitude * kLat + t * dy;
+    
+    final double pdx = (p.longitude * kLon) - projX;
+    final double pdy = (p.latitude * kLat) - projY;
+    
+    return math.sqrt(pdx * pdx + pdy * pdy);
+  }
+
+  double _distanceToPolyline(LatLng point, List<LatLng> polyline) {
+    if (polyline.isEmpty) return double.infinity;
+    if (polyline.length == 1) return _calculateDistance(point, polyline.first);
+    
+    double minDistance = double.infinity;
+    // Revisar primeros 50 segmentos de _remainingPolyline para eficiencia
+    int limit = math.min(polyline.length - 1, 50);
+    for (int i = 0; i < limit; i++) {
+      double d = _distanceToSegment(point, polyline[i], polyline[i+1]);
+      if (d < minDistance) minDistance = d;
+    }
+    return minDistance;
   }
 
   void _updateRemainingPolyline(LatLng userLocation) {
