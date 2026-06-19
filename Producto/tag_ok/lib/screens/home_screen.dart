@@ -10,6 +10,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'route_setup_screen.dart';
 import 'profile_screen.dart';
 import 'vehiculos_screen.dart';
@@ -25,7 +26,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   int _selectedIndex = 0;
   
   // Colores extraídos de tu diseño dark mode
@@ -45,12 +46,18 @@ class _HomeScreenState extends State<HomeScreen> {
   List<LatLng> _remainingPolyline = []; // Coordenadas restantes de la ruta activa
   List<LatLng> _passedPolyline = []; // Coordenadas ya recorridas (línea gris)
   bool _isNavigating = false; // Estado de navegación activa
-  bool _isOffRoute = false; // Si el usuario se desvió a caletera u otro lugar
+  bool _isFollowingUser = true; // Si el mapa debe seguir al usuario
   Map<String, dynamic>? _selectedVehicle; // Vehículo para el viaje actual
+
+  // Notificaciones y Ciclo de vida
+  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  AppLifecycleState _appLifecycleState = AppLifecycleState.resumed;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _initNotifications();
     _determinePosition();
     _loadNavigationState();
     // Verificar si el usuario tiene vehículos al iniciar
@@ -61,9 +68,30 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _positionStreamSubscription?.cancel();
     _mapController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    setState(() {
+      _appLifecycleState = state;
+    });
+  }
+
+  Future<void> _initNotifications() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+    
+    await _flutterLocalNotificationsPlugin.initialize(settings: initializationSettings);
+    
+    await _flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestNotificationsPermission();
   }
 
   Future<void> _saveNavigationState() async {
@@ -180,7 +208,9 @@ class _HomeScreenState extends State<HomeScreen> {
         
         // Si estamos navegando, el mapa sigue al usuario automáticamente y recorta la ruta recorrida
         if (_isNavigating && _currentPosition != null) {
-          _mapController.move(_currentPosition!, 17.0);
+          if (_isFollowingUser) {
+            _mapController.move(_currentPosition!, 17.0);
+          }
           _updateRemainingPolyline(_currentPosition!);
           _checkTollCrossings(_currentPosition!);
         }
@@ -197,8 +227,11 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _hasCenteredMapInitially = false;
 
   void _centerOnUser() {
+    setState(() {
+      _isFollowingUser = true;
+    });
     if (_currentPosition != null) {
-      _mapController.move(_currentPosition!, 15.0);
+      _mapController.move(_currentPosition!, _isNavigating ? 17.0 : 15.0);
     }
   }
 
@@ -289,22 +322,49 @@ class _HomeScreenState extends State<HomeScreen> {
           
           // Feedback al usuario
           HapticFeedback.heavyImpact();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  const Icon(Icons.check_circle, color: Colors.white),
-                  const SizedBox(width: 8),
-                  Expanded(child: Text('Peaje cobrado: ${toll.name} (\$${toll.cost})')),
-                ],
+          
+          if (_appLifecycleState != AppLifecycleState.resumed) {
+            _showLocalNotification(toll);
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  children: [
+                    const Icon(Icons.check_circle, color: Colors.white),
+                    const SizedBox(width: 8),
+                    Expanded(child: Text('Peaje cobrado: ${toll.name} (\$${toll.cost})')),
+                  ],
+                ),
+                backgroundColor: const Color(0xFF10B981),
+                duration: const Duration(seconds: 3),
               ),
-              backgroundColor: const Color(0xFF10B981),
-              duration: const Duration(seconds: 3),
-            ),
-          );
+            );
+          }
         }
       }
     }
+  }
+
+  Future<void> _showLocalNotification(TollData toll) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'toll_crossings',
+      'Cobros de Peaje',
+      channelDescription: 'Notificaciones cuando cruzas un peaje',
+      importance: Importance.max,
+      priority: Priority.high,
+      ticker: 'ticker',
+      icon: '@mipmap/ic_launcher',
+    );
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+    
+    await _flutterLocalNotificationsPlugin.show(
+      id: toll.sequence ?? 0,
+      title: '✅ Peaje Cobrado',
+      body: '${toll.name} - \$${toll.cost.toStringAsFixed(0)} CLP',
+      notificationDetails: platformChannelSpecifics,
+    );
   }
 
   void _onItemTapped(int index) {
@@ -467,9 +527,16 @@ class _HomeScreenState extends State<HomeScreen> {
         // 1. El Mapa en sí
         FlutterMap(
           mapController: _mapController,
-          options: const MapOptions(
-            initialCenter: LatLng(-33.4489, -70.6693), // Santiago, Chile (fallback)
+          options: MapOptions(
+            initialCenter: const LatLng(-33.4489, -70.6693), // Santiago, Chile (fallback)
             initialZoom: 12.0,
+            onPositionChanged: (position, hasGesture) {
+              if (hasGesture && _isFollowingUser) {
+                setState(() {
+                  _isFollowingUser = false;
+                });
+              }
+            },
           ),
           children: [
             TileLayer(
@@ -769,7 +836,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: _centerOnUser,
             child: Icon(
               Icons.my_location,
-              color: _currentPosition != null ? primaryColor : textMuted,
+              color: _isFollowingUser ? primaryColor : textMuted,
             ),
           ),
         ),

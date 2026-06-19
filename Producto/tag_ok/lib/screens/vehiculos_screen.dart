@@ -62,13 +62,13 @@ class _VehiculosScreenState extends State<VehiculosScreen> {
     }
   }
 
-  void _agregarVehiculo() async {
+  Future<bool> _agregarVehiculo() async {
     final patente = _patenteController.text.trim().toUpperCase();
     final categoria = _categoriaSeleccionada;
     final marca = _marcaController.text.trim();
     final user = FirebaseAuth.instance.currentUser;
 
-    if (patente.isEmpty || user == null) return;
+    if (patente.isEmpty || user == null) return false;
 
     // Validación de patente (4 letras y 2 números)
     final patenteRegex = RegExp(r'^[A-Z]{4}\d{2}$');
@@ -82,7 +82,7 @@ class _VehiculosScreenState extends State<VehiculosScreen> {
           ),
         );
       }
-      return;
+      return false;
     }
 
     try {
@@ -115,6 +115,7 @@ class _VehiculosScreenState extends State<VehiculosScreen> {
           ),
         );
       }
+      return true;
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -124,10 +125,41 @@ class _VehiculosScreenState extends State<VehiculosScreen> {
           ),
         );
       }
+      return false;
     }
   }
 
-  void _mostrarInfoVehiculo(Map<String, dynamic> data) {
+  Future<bool> _editarVehiculo(String docId, String patente, String marca, String categoria) async {
+    try {
+      await FirebaseFirestore.instance.collection('vehiculos').doc(docId).update({
+        'patente': patente,
+        'categoria': categoria,
+        'marca': marca.isNotEmpty ? marca : 'No especificada',
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Vehículo actualizado exitosamente'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+      return true;
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al actualizar: $e'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+      return false;
+    }
+  }
+
+  void _mostrarInfoVehiculo(QueryDocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
     showDialog(
       context: context,
       builder: (context) {
@@ -150,10 +182,134 @@ class _VehiculosScreenState extends State<VehiculosScreen> {
           ),
           actions: [
             TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _mostrarFormularioEditarVehiculo(doc);
+              },
+              child: const Text('Editar', style: TextStyle(color: Colors.blueAccent)),
+            ),
+            TextButton(
               onPressed: () => Navigator.pop(context),
               child: const Text('Cerrar'),
             ),
           ],
+        );
+      },
+    );
+  }
+
+  void _mostrarFormularioEditarVehiculo(QueryDocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    final TextEditingController patenteCtrl = TextEditingController(text: data['patente']);
+    final TextEditingController marcaCtrl = TextEditingController(text: data['marca'] == 'No especificada' ? '' : data['marca']);
+    String categoriaSel = data['categoria'] ?? 'AUTO';
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return AlertDialog(
+              backgroundColor: navBgColor,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              title: Text('Editar Vehículo', style: TextStyle(color: textMain, fontWeight: FontWeight.bold)),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      controller: patenteCtrl,
+                      style: TextStyle(color: textMain),
+                      textCapitalization: TextCapitalization.characters,
+                      inputFormatters: [
+                        TextInputFormatter.withFunction((oldValue, newValue) {
+                          return TextEditingValue(
+                            text: newValue.text.toUpperCase(),
+                            selection: newValue.selection,
+                          );
+                        }),
+                      ],
+                      decoration: InputDecoration(
+                        labelText: 'Patente (ej: ABCD55)',
+                        labelStyle: TextStyle(color: textMuted),
+                        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: textMuted.withOpacity(0.5))),
+                        focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: primaryColor)),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: marcaCtrl,
+                      style: TextStyle(color: textMain),
+                      textCapitalization: TextCapitalization.words,
+                      decoration: InputDecoration(
+                        labelText: 'Marca (ej: Toyota, Kia)',
+                        labelStyle: TextStyle(color: textMuted),
+                        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: textMuted.withOpacity(0.5))),
+                        focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: primaryColor)),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<String>(
+                      value: categoriaSel,
+                      dropdownColor: navBgColor,
+                      style: TextStyle(color: textMain),
+                      decoration: InputDecoration(
+                        labelText: 'Tipo de Vehículo',
+                        labelStyle: TextStyle(color: textMuted),
+                        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: textMuted.withOpacity(0.5))),
+                        focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: primaryColor)),
+                      ),
+                      items: const [
+                        DropdownMenuItem(value: 'AUTO', child: Text('AUTO')),
+                        DropdownMenuItem(value: 'CAMIONETA', child: Text('CAMIONETA')),
+                        DropdownMenuItem(value: 'MOTO', child: Text('MOTO')),
+                      ],
+                      onChanged: (value) {
+                        if (value != null) {
+                          setModalState(() {
+                            categoriaSel = value;
+                          });
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('Cancelar', style: TextStyle(color: textMuted)),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: primaryColor,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  onPressed: () async {
+                    final p = patenteCtrl.text.trim().toUpperCase();
+                    final m = marcaCtrl.text.trim();
+                    final patenteRegex = RegExp(r'^[A-Z]{4}\d{2}$');
+                    if (!patenteRegex.hasMatch(p)) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Formato inválido (ej: ABCD12)'),
+                          backgroundColor: Colors.redAccent,
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                      return;
+                    }
+                    bool success = await _editarVehiculo(doc.id, p, m, categoriaSel);
+                    if (success && context.mounted) {
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: const Text('Guardar', style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            );
+          }
         );
       },
     );
@@ -198,6 +354,105 @@ class _VehiculosScreenState extends State<VehiculosScreen> {
     );
   }
 
+  void _mostrarFormularioAgregarVehiculo() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return AlertDialog(
+              backgroundColor: navBgColor,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              title: Text('Agregar Nuevo Vehículo', style: TextStyle(color: textMain, fontWeight: FontWeight.bold)),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      controller: _patenteController,
+                      style: TextStyle(color: textMain),
+                      textCapitalization: TextCapitalization.characters,
+                      inputFormatters: [
+                        TextInputFormatter.withFunction((oldValue, newValue) {
+                          return TextEditingValue(
+                            text: newValue.text.toUpperCase(),
+                            selection: newValue.selection,
+                          );
+                        }),
+                      ],
+                      decoration: InputDecoration(
+                        labelText: 'Patente (ej: ABCD55)',
+                        labelStyle: TextStyle(color: textMuted),
+                        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: textMuted.withOpacity(0.5))),
+                        focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: primaryColor)),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _marcaController,
+                      style: TextStyle(color: textMain),
+                      textCapitalization: TextCapitalization.words,
+                      decoration: InputDecoration(
+                        labelText: 'Marca (ej: Toyota, Kia)',
+                        labelStyle: TextStyle(color: textMuted),
+                        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: textMuted.withOpacity(0.5))),
+                        focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: primaryColor)),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<String>(
+                      value: _categoriaSeleccionada,
+                      dropdownColor: navBgColor,
+                      style: TextStyle(color: textMain),
+                      decoration: InputDecoration(
+                        labelText: 'Tipo de Vehículo',
+                        labelStyle: TextStyle(color: textMuted),
+                        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: textMuted.withOpacity(0.5))),
+                        focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: primaryColor)),
+                      ),
+                      items: const [
+                        DropdownMenuItem(value: 'AUTO', child: Text('AUTO')),
+                        DropdownMenuItem(value: 'CAMIONETA', child: Text('CAMIONETA')),
+                        DropdownMenuItem(value: 'MOTO', child: Text('MOTO')),
+                      ],
+                      onChanged: (value) {
+                        if (value != null) {
+                          setModalState(() {
+                            _categoriaSeleccionada = value;
+                          });
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('Cancelar', style: TextStyle(color: textMuted)),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: primaryColor,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  onPressed: () async {
+                    bool success = await _agregarVehiculo();
+                    if (success && context.mounted) {
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: const Text('Agregar', style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            );
+          }
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
@@ -215,97 +470,16 @@ class _VehiculosScreenState extends State<VehiculosScreen> {
         title: const Text('Mis Vehículos', style: TextStyle(color: Colors.white)),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _mostrarFormularioAgregarVehiculo,
+        backgroundColor: primaryColor,
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // --- SECCIÓN: AGREGAR VEHÍCULO ---
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: navBgColor,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Agregar Nuevo Vehículo', style: TextStyle(color: textMain, fontSize: 18, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: _patenteController,
-                    style: TextStyle(color: textMain),
-                    textCapitalization: TextCapitalization.characters,
-                    inputFormatters: [
-                      TextInputFormatter.withFunction((oldValue, newValue) {
-                        return TextEditingValue(
-                          text: newValue.text.toUpperCase(),
-                          selection: newValue.selection,
-                        );
-                      }),
-                    ],
-                    decoration: InputDecoration(
-                      labelText: 'Patente (ej: ABCD55)',
-                      labelStyle: TextStyle(color: textMuted),
-                      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: textMuted.withOpacity(0.5))),
-                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: primaryColor)),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: _marcaController,
-                    style: TextStyle(color: textMain),
-                    textCapitalization: TextCapitalization.words,
-                    decoration: InputDecoration(
-                      labelText: 'Marca (ej: Toyota, Kia)',
-                      labelStyle: TextStyle(color: textMuted),
-                      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: textMuted.withOpacity(0.5))),
-                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: primaryColor)),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<String>(
-                    value: _categoriaSeleccionada,
-                    dropdownColor: navBgColor,
-                    style: TextStyle(color: textMain),
-                    decoration: InputDecoration(
-                      labelText: 'Tipo de Vehículo',
-                      labelStyle: TextStyle(color: textMuted),
-                      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: textMuted.withOpacity(0.5))),
-                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: primaryColor)),
-                    ),
-                    items: const [
-                      DropdownMenuItem(value: 'AUTO', child: Text('AUTO')),
-                      DropdownMenuItem(value: 'CAMIONETA', child: Text('CAMIONETA')),
-                      DropdownMenuItem(value: 'MOTO', child: Text('MOTO')),
-                    ],
-                    onChanged: (value) {
-                      if (value != null) {
-                        setState(() {
-                          _categoriaSeleccionada = value;
-                        });
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: primaryColor,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                      ),
-                      onPressed: _agregarVehiculo,
-                      child: const Text('Agregar Auto', style: TextStyle(color: Colors.white, fontSize: 16)),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            
             // --- TÍTULO LISTA ---
             Text('Tus Autos Registrados', style: TextStyle(color: textMain, fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
@@ -334,7 +508,7 @@ class _VehiculosScreenState extends State<VehiculosScreen> {
                           return const Center(child: CircularProgressIndicator());
                         }
                         if (!snapshotStr.hasData || snapshotStr.data!.docs.isEmpty) {
-                          return Center(child: Text('No tienes vehículos registrados.', style: TextStyle(color: textMuted)));
+                          return _buildEmptyState();
                         }
                         return _buildListaVehiculos(snapshotStr.data!.docs);
                       }
@@ -347,6 +521,27 @@ class _VehiculosScreenState extends State<VehiculosScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.directions_car_filled_outlined, size: 80, color: Colors.white.withOpacity(0.1)),
+          const SizedBox(height: 16),
+          Text(
+            'Aún no hay vehículos',
+            style: TextStyle(color: textMain, fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Presiona el botón + para agregar uno',
+            style: TextStyle(color: textMuted, fontSize: 16),
+          ),
+        ],
       ),
     );
   }
@@ -419,7 +614,7 @@ class _VehiculosScreenState extends State<VehiculosScreen> {
                   title: Text(patente, style: TextStyle(color: textMain, fontWeight: FontWeight.bold)),
                   subtitle: Text('${data['marca'] ?? 'Sin marca'} • $categoria', style: TextStyle(color: textMuted)),
                   trailing: const Icon(Icons.chevron_right, color: Colors.grey),
-                  onTap: () => _mostrarInfoVehiculo(data),
+                  onTap: () => _mostrarInfoVehiculo(docs[index]),
                 ),
               );
             },

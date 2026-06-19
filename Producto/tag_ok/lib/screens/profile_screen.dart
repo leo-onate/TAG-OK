@@ -59,9 +59,11 @@ class ProfileScreen extends StatelessWidget {
         String vehiculoPrincipal = 'Ninguno';
         String miembroDesde = 'Reciente';
 
+        Map<String, dynamic> userData = {};
         // Si Firebase devolvió la data exitosamente, reescribimos los valores
         if (snapshot.hasData && snapshot.data!.exists) {
-          final data = snapshot.data!.data() as Map<String, dynamic>;
+          userData = snapshot.data!.data() as Map<String, dynamic>;
+          final data = userData;
 
           if (data['nombre_mostrar'] != null &&
               data['nombre_mostrar'].toString().isNotEmpty) {
@@ -220,30 +222,12 @@ class ProfileScreen extends StatelessWidget {
               _buildProfileOption(
                 icon: Icons.notifications_none_outlined,
                 title: 'Notificaciones / Alertas',
-                onTap: () {},
-              ),
-              const SizedBox(height: 16),
-              _buildProfileOption(
-                icon: Icons.directions_car_outlined,
-                title: 'Mis Vehículos',
-                onTap: () {},
+                onTap: () => _mostrarOpcionesNotificaciones(context, user.uid, userData),
               ),
               const SizedBox(height: 16),
               _buildProfileOption(
                 icon: Icons.lock_outline,
                 title: 'Seguridad y Contraseña',
-                onTap: () {},
-              ),
-              const SizedBox(height: 16),
-              _buildProfileOption(
-                icon: Icons.help_outline,
-                title: 'Soporte y Ayuda',
-                onTap: () {},
-              ),
-              const SizedBox(height: 16),
-              _buildProfileOption(
-                icon: Icons.description_outlined,
-                title: 'Términos y Condiciones',
                 onTap: () {},
               ),
               const SizedBox(height: 32),
@@ -288,6 +272,77 @@ class ProfileScreen extends StatelessWidget {
               ),
             ],
           ),
+        );
+      },
+    );
+  }
+
+  void _mostrarOpcionesNotificaciones(BuildContext context, String uid, Map<String, dynamic> userData) {
+    bool cobros = userData['notif_cobros'] ?? true;
+    bool presupuesto = userData['notif_presupuesto'] ?? true;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: navBgColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Notificaciones y Alertas',
+                    style: TextStyle(color: textMain, fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Administra qué alertas quieres recibir en tu dispositivo.',
+                    style: TextStyle(color: textMuted, fontSize: 14),
+                  ),
+                  const SizedBox(height: 24),
+                  SwitchListTile(
+                    activeColor: primaryColor,
+                    title: Text('Nuevos cobros de TAG', style: TextStyle(color: textMain)),
+                    subtitle: Text('Recibe una alerta cada vez que pases por un pórtico.', style: TextStyle(color: textMuted, fontSize: 12)),
+                    value: cobros,
+                    onChanged: (val) {
+                      setModalState(() => cobros = val);
+                      FirebaseFirestore.instance.collection('usuarios').doc(uid).set({'notif_cobros': val}, SetOptions(merge: true));
+                    },
+                  ),
+                  SwitchListTile(
+                    activeColor: primaryColor,
+                    title: Text('Alertas de Presupuesto', style: TextStyle(color: textMain)),
+                    subtitle: Text('Te avisaremos cuando te acerques a tu límite mensual.', style: TextStyle(color: textMuted, fontSize: 12)),
+                    value: presupuesto,
+                    onChanged: (val) {
+                      setModalState(() => presupuesto = val);
+                      FirebaseFirestore.instance.collection('usuarios').doc(uid).set({'notif_presupuesto': val}, SetOptions(merge: true));
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primaryColor,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Listo', style: TextStyle(color: Colors.white, fontSize: 16)),
+                    ),
+                  )
+                ],
+              ),
+            );
+          }
         );
       },
     );
