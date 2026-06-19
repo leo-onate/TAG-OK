@@ -10,6 +10,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'route_setup_screen.dart';
 import 'profile_screen.dart';
 import 'vehiculos_screen.dart';
@@ -25,7 +26,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   int _selectedIndex = 0;
   
   // Colores extraídos de tu diseño dark mode
@@ -47,9 +48,15 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isNavigating = false; // Estado de navegación activa
   Map<String, dynamic>? _selectedVehicle; // Vehículo para el viaje actual
 
+  // Notificaciones y Ciclo de vida
+  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  AppLifecycleState _appLifecycleState = AppLifecycleState.resumed;
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _initNotifications();
     _determinePosition();
     _loadNavigationState();
     // Verificar si el usuario tiene vehículos al iniciar
@@ -60,9 +67,30 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _positionStreamSubscription?.cancel();
     _mapController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    setState(() {
+      _appLifecycleState = state;
+    });
+  }
+
+  Future<void> _initNotifications() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+    
+    await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    
+    await _flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestNotificationsPermission();
   }
 
   Future<void> _saveNavigationState() async {
@@ -250,22 +278,49 @@ class _HomeScreenState extends State<HomeScreen> {
           
           // Feedback al usuario
           HapticFeedback.heavyImpact();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  const Icon(Icons.check_circle, color: Colors.white),
-                  const SizedBox(width: 8),
-                  Expanded(child: Text('Peaje cobrado: ${toll.name} (\$${toll.cost})')),
-                ],
+          
+          if (_appLifecycleState != AppLifecycleState.resumed) {
+            _showLocalNotification(toll);
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  children: [
+                    const Icon(Icons.check_circle, color: Colors.white),
+                    const SizedBox(width: 8),
+                    Expanded(child: Text('Peaje cobrado: ${toll.name} (\$${toll.cost})')),
+                  ],
+                ),
+                backgroundColor: const Color(0xFF10B981),
+                duration: const Duration(seconds: 3),
               ),
-              backgroundColor: const Color(0xFF10B981),
-              duration: const Duration(seconds: 3),
-            ),
-          );
+            );
+          }
         }
       }
     }
+  }
+
+  Future<void> _showLocalNotification(TollData toll) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'toll_crossings',
+      'Cobros de Peaje',
+      channelDescription: 'Notificaciones cuando cruzas un peaje',
+      importance: Importance.max,
+      priority: Priority.high,
+      ticker: 'ticker',
+      icon: '@mipmap/ic_launcher',
+    );
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+    
+    await _flutterLocalNotificationsPlugin.show(
+      toll.sequence ?? 0,
+      '✅ Peaje Cobrado',
+      '${toll.name} - \$${toll.cost.toStringAsFixed(0)} CLP',
+      platformChannelSpecifics,
+    );
   }
 
   void _onItemTapped(int index) {
