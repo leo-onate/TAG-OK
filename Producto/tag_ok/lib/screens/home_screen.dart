@@ -330,9 +330,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           // Feedback al usuario
           HapticFeedback.heavyImpact();
           
-          if (_appLifecycleState != AppLifecycleState.resumed) {
-            _showLocalNotification(toll);
-          } else {
+          // Siempre disparar la notificación para reproducir el sonido (tanto abierta como en 2do plano)
+          _showLocalNotification(toll);
+          
+          if (_appLifecycleState == AppLifecycleState.resumed) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Row(
@@ -355,16 +356,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Future<void> _showLocalNotification(TollData toll) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      'toll_crossings',
+      'toll_crossings_sound', // Nuevo canal para que Android reconozca el sonido personalizado
       'Cobros de Peaje',
       channelDescription: 'Notificaciones cuando cruzas un peaje',
       importance: Importance.max,
       priority: Priority.high,
+      playSound: true,
+      sound: RawResourceAndroidNotificationSound('peaje'), // peaje.wav en android/app/src/main/res/raw/
       ticker: 'ticker',
       icon: '@mipmap/ic_launcher',
     );
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+    );
     
     await _flutterLocalNotificationsPlugin.show(
       id: toll.sequence ?? 0,
