@@ -46,6 +46,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   List<LatLng> _remainingPolyline = []; // Coordenadas restantes de la ruta activa
   List<LatLng> _passedPolyline = []; // Coordenadas ya recorridas (línea gris)
   bool _isNavigating = false; // Estado de navegación activa
+  bool _hasStartedTrip = false; // Indica si el viaje actual ya fue confirmado y comenzó
   bool _isFollowingUser = true; // Si el mapa debe seguir al usuario
   Map<String, dynamic>? _selectedVehicle; // Vehículo para el viaje actual
 
@@ -130,6 +131,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           setState(() {
             _currentRoute = route;
             _isNavigating = true;
+            _hasStartedTrip = true;
             _selectedVehicle = vehicle;
             _remainingPolyline = List<LatLng>.from(route.polyline);
             _passedPolyline = [];
@@ -408,6 +410,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 _currentRoute = result;
                 _remainingPolyline = List<LatLng>.from(result.polyline);
                 _passedPolyline = [];
+                _hasStartedTrip = false; // Reseteamos al cargar nueva ruta
               });
               
               if (result.polyline.isNotEmpty) {
@@ -697,7 +700,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   if (!_isNavigating) ...[
                     const SizedBox(height: 16),
                     GestureDetector(
-                      onTap: () => _confirmVehicleAndStart(context),
+                      onTap: () {
+                        if (_hasStartedTrip) {
+                          setState(() {
+                            _isNavigating = true;
+                          });
+                          _saveNavigationState();
+                        } else {
+                          _confirmVehicleAndStart(context);
+                        }
+                      },
                       child: Container(
                         height: 48,
                         decoration: BoxDecoration(
@@ -707,12 +719,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             BoxShadow(color: primaryColor.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 4)),
                           ],
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.navigation, color: Colors.white, size: 20),
-                            SizedBox(width: 8),
-                            Text('IR AHORA', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                            Icon(_hasStartedTrip ? Icons.play_arrow : Icons.navigation, color: Colors.white, size: 20),
+                            const SizedBox(width: 8),
+                            Text(_hasStartedTrip ? 'CONTINUAR VIAJE' : 'IR AHORA', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                           ],
                         ),
                       ),
@@ -792,6 +804,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
                               setState(() {
                                 _isNavigating = false;
+                                _hasStartedTrip = false;
                                 _currentRoute = null;
                                 _remainingPolyline = [];
                                 _passedPolyline = [];
@@ -853,7 +866,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     if (principal == null) {
       // Si no tiene vehículos, iniciamos igual o avisamos
-      setState(() => _isNavigating = true);
+      setState(() {
+        _isNavigating = true;
+        _hasStartedTrip = true;
+      });
       _mapController.move(_currentPosition ?? _currentRoute!.polyline.first, 17.0);
       return;
     }
@@ -912,7 +928,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             ),
             onPressed: () {
               Navigator.pop(context);
-              setState(() => _isNavigating = true);
+              setState(() {
+                _isNavigating = true;
+                _hasStartedTrip = true;
+              });
               _saveNavigationState();
               _mapController.move(_currentPosition ?? _currentRoute!.polyline.first, 17.0);
             },

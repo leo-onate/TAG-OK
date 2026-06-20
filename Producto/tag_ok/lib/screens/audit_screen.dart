@@ -531,6 +531,66 @@ class _AuditScreenState extends State<AuditScreen> {
     }
   }
 
+  Future<Map<String, dynamic>> _extractDataWithGemini(String rawText, String fileName) async {
+    final geminiApiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
+    if (geminiApiKey.isEmpty) {
+      throw Exception('Clave de API de Gemini no configurada.');
+    }
+
+    final model = GenerativeModel(
+      model: 'gemini-2.5-flash',
+      apiKey: geminiApiKey,
+      generationConfig: GenerationConfig(responseMimeType: 'application/json'),
+    );
+
+    final limitedText = rawText.length > 60000 ? rawText.substring(0, 60000) : rawText;
+
+    final prompt = '''
+Eres un asistente experto en analizar boletas de peaje y autopistas de Chile.
+A continuación te proporcionaré el texto crudo extraído de un archivo llamado "\$fileName".
+Tu tarea es encontrar y extraer:
+1. La concesionaria de la autopista (ej: Autopista Central, Costanera Norte, Vespucio Sur, Vespucio Norte, etc.). Si no estás seguro, usa "Autopista Desconocida".
+2. La patente principal del vehículo cobrado (por lo general 6 caracteres alfanuméricos).
+3. Una lista de todos los tránsitos/cobros individuales (fecha, hora, pórtico y costo).
+   - Formato de fecha esperado: "YYYY-MM-DD"
+   - Formato de hora esperado: "HH:MM:SS" (si falta, usa "00:00:00")
+   - Costo: número numérico entero o decimal (sin símbolos de peso).
+
+Texto crudo del archivo:
+"""
+\$limitedText
+"""
+
+Debes devolver EXCLUSIVAMENTE un objeto JSON válido con esta estructura estricta:
+{
+  "concessionaire": "Nombre de la Autopista",
+  "patent": "ABCD12",
+  "crossings": [
+    {
+      "date": "2026-03-15",
+      "time": "14:30:00",
+      "portico": "Pórtico Nombre",
+      "cost": 1500.0
+    }
+  ]
+}
+''';
+
+    final response = await model.generateContent([Content.text(prompt)]);
+    final responseText = response.text?.trim() ?? '';
+    
+    try {
+      final parsed = jsonDecode(responseText);
+      if (parsed['crossings'] == null || (parsed['crossings'] as List).isEmpty) {
+         throw Exception('La IA no encontró cruces legibles en el archivo.');
+      }
+      return parsed;
+    } catch (e) {
+      debugPrint('Gemini Extraction Error: \$e\\nResponse: \$responseText');
+      throw Exception('Gemini no pudo interpretar correctamente el formato de la boleta.');
+    }
+  }
+
   Future<void> _runAiAudit({
     required List<Map<String, dynamic>> extractedCrossings,
     required List<TripHistory> trips,
@@ -747,240 +807,286 @@ Instrucciones para redactar el "aiReport":
       final fileNameLower = file.name.toLowerCase();
 
       // 1. EXTRACCIÓN Y LECTURA
-      if (fileNameLower.endsWith('.csv')) {
-        concessionaire = 'Autopista Central';
-        final csvText = utf8.decode(fileBytes);
-        final lines = const LineSplitter().convert(csvText);
+      try {
+        if (fileNameLower.endsWith('.csv')) {
+          concessionaire = 'Autopista Central';
+          final csvText = utf8.decode(fileBytes);
+          final lines = const LineSplitter().convert(csvText);
 
-        if (lines.length <= 1) {
-          throw Exception('El archivo CSV está vacío o no contiene suficientes filas.');
-        }
-
-        final sample = lines.first;
-        final delimiter = sample.contains(';') ? ';' : ',';
-
-        // Omitir cabecera (index 0)
-        for (int i = 1; i < lines.length; i++) {
-          final line = lines[i].trim();
-          if (line.isEmpty) continue;
-
-          final fields = line.split(delimiter);
-          if (fields.length >= 11) {
-            final String fPatent = fields[3].trim();
-            final String fPortico = fields[4].trim();
-            final String fDate = fields[7].trim(); // YYYY-MM-DD
-            final String fTime = fields[8].trim(); // HH:MM:SS
-            final String fCostRaw = fields[10].trim(); // Costo (512,34)
-
-            patent = fPatent;
-            final double cost = double.parse(fCostRaw.replaceAll('.', '').replaceAll(',', '.'));
-
-            extractedCrossings.add({
-              'date': fDate,
-              'time': fTime,
-              'portico': fPortico,
-              'cost': cost,
-            });
-          }
-        }
-      } else if (fileNameLower.endsWith('.xlsx')) {
-        concessionaire = 'Vespucio Norte';
-        final excel = Excel.decodeBytes(fileBytes);
-        for (var table in excel.tables.keys) {
-          final sheet = excel.tables[table]!;
-          if (sheet.maxRows <= 1) continue;
-
-          final headerRow = sheet.rows.first;
-          int idxPatent = -1;
-          int idxDate = -1;
-          int idxTime = -1;
-          int idxPortico = -1;
-          int idxConcession = -1;
-          int idxCost = -1;
-
-          for (int i = 0; i < headerRow.length; i++) {
-            final val = headerRow[i]?.value?.toString().toLowerCase().trim() ?? '';
-            if (val.contains('patente')) idxPatent = i;
-            else if (val.contains('fecha')) idxDate = i;
-            else if (val.contains('hora')) idxTime = i;
-            else if (val.contains('portico') || val.contains('pórtico')) idxPortico = i;
-            else if (val.contains('concesionaria')) idxConcession = i;
-            else if (val.contains('valor') || val.contains('monto') || val.contains('importe')) idxCost = i;
+          if (lines.length <= 1) {
+            throw Exception('El archivo CSV está vacío o no contiene suficientes filas.');
           }
 
-          if (idxPatent == -1) idxPatent = 0;
-          if (idxDate == -1) idxDate = 1;
-          if (idxTime == -1) idxTime = 2;
-          if (idxPortico == -1) idxPortico = 4;
-          if (idxConcession == -1) idxConcession = 6;
-          if (idxCost == -1) idxCost = 8;
+          final sample = lines.first;
+          final delimiter = sample.contains(';') ? ';' : ',';
 
-          for (int i = 1; i < sheet.rows.length; i++) {
-            final row = sheet.rows[i];
-            if (row.isEmpty || row.length <= idxCost) continue;
-
-            final String fPatent = row[idxPatent]?.value?.toString().trim() ?? '';
-            final String fDate = row[idxDate]?.value?.toString().trim() ?? '';
-            final String fTime = row[idxTime]?.value?.toString().trim() ?? '';
-            final String fPortico = row[idxPortico]?.value?.toString().trim() ?? '';
-            final String fConcession = idxConcession < row.length ? (row[idxConcession]?.value?.toString().trim() ?? '') : '';
-            final String fCostRaw = row[idxCost]?.value?.toString().trim() ?? '';
-
-            if (fPatent.isEmpty || fDate.isEmpty || fCostRaw.isEmpty) continue;
-
-            patent = fPatent;
-            if (fConcession.isNotEmpty) {
-              if (fConcession.toUpperCase() == 'AVN') {
-                concessionaire = 'Vespucio Norte';
-              } else if (fConcession.toUpperCase() == 'AVS') {
-                concessionaire = 'Vespucio Sur';
-              }
-            }
-
-            final double cost = double.parse(fCostRaw.replaceAll('.', '').replaceAll(',', '.'));
-
-            String formattedDate = fDate;
-            if (fDate.contains('-')) {
-              final dateParts = fDate.split('-');
-              if (dateParts[0].length == 4) {
-                formattedDate = fDate;
-              } else {
-                formattedDate = '${dateParts[2]}-${dateParts[1]}-${dateParts[0]}';
-              }
-            } else if (fDate.contains('/')) {
-              final dateParts = fDate.split('/');
-              if (dateParts[0].length == 4) {
-                formattedDate = fDate.replaceAll('/', '-');
-              } else {
-                formattedDate = '${dateParts[2]}-${dateParts[1]}-${dateParts[0]}';
-              }
-            }
-
-            extractedCrossings.add({
-              'date': formattedDate,
-              'time': fTime.length == 5 ? '$fTime:00' : fTime,
-              'portico': fPortico,
-              'cost': cost,
-            });
-          }
-        }
-      } else if (fileNameLower.endsWith('.pdf')) {
-        // Cargar documento PDF localmente
-        final PdfDocument document = PdfDocument(inputBytes: fileBytes);
-        final PdfTextExtractor extractor = PdfTextExtractor(document);
-        final String text = extractor.extractText();
-        document.dispose();
-
-        final lines = const LineSplitter().convert(text);
-
-        // Detectar tipo de boleta en base a su contenido
-        if (text.contains('CN ') || text.contains('COSTANERA') || fileNameLower.contains('costanera')) {
-          concessionaire = 'Costanera Norte';
-          
-          for (int i = 0; i < lines.length; i++) {
+          // Omitir cabecera (index 0)
+          for (int i = 1; i < lines.length; i++) {
             final line = lines[i].trim();
-            // Formato de fecha y hora: DD/MM/AAAA HH:MM
-            if (RegExp(r'^\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2}$').hasMatch(line)) {
-              if (i + 5 < lines.length) {
-                final String dateTimeStr = line;
-                final String fPortico = lines[i + 2].trim();
-                final String fCostRaw = lines[i + 4].trim();
-                final String fPatent = lines[i + 5].trim();
+            if (line.isEmpty) continue;
 
-                if (fCostRaw.contains('\$') && fPatent.length == 6) {
-                  final dateParts = dateTimeStr.split(' ')[0].split('/');
-                  final formattedDate = '${dateParts[2]}-${dateParts[1]}-${dateParts[0]}';
-                  final String fTime = '${dateTimeStr.split(' ')[1]}:00';
-                  
-                  final double cost = double.parse(
-                    fCostRaw.replaceAll('\$', '').replaceAll('.', '').replaceAll(',', '.').trim()
-                  );
+            final fields = line.split(delimiter);
+            if (fields.length >= 11) {
+              final String fPatent = fields[3].trim();
+              final String fPortico = fields[4].trim();
+              final String fDate = fields[7].trim(); // YYYY-MM-DD
+              final String fTime = fields[8].trim(); // HH:MM:SS
+              final String fCostRaw = fields[10].trim(); // Costo (512,34)
 
-                  patent = fPatent;
-                  extractedCrossings.add({
-                    'date': formattedDate,
-                    'time': fTime,
-                    'portico': fPortico,
-                    'cost': cost,
-                  });
+              patent = fPatent;
+              final double cost = double.parse(fCostRaw.replaceAll('.', '').replaceAll(',', '.'));
 
-                  i += 5; // Saltar líneas procesadas
-                }
-              }
+              extractedCrossings.add({
+                'date': fDate,
+                'time': fTime,
+                'portico': fPortico,
+                'cost': cost,
+              });
             }
           }
-        } else if (text.contains('VESPUCIO SUR') || text.contains('VS ') || fileNameLower.contains('vespucio_sur') || fileNameLower.contains('vespucio sur')) {
-          concessionaire = 'Vespucio Sur';
-
-          for (int i = 0; i < lines.length; i++) {
-            final line = lines[i].trim();
-            // Formato de fecha y hora: DD/MM/AAAA HH:MM
-            if (RegExp(r'^\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2}$').hasMatch(line)) {
-              if (i + 5 < lines.length) {
-                final String dateTimeStr = line;
-                final String fPortico = lines[i + 2].trim();
-                final String fCostRaw = lines[i + 4].trim();
-                final String fPatent = lines[i + 5].trim();
-
-                if (fCostRaw.contains('\$') && fPatent.length == 6) {
-                  final dateParts = dateTimeStr.split(' ')[0].split('/');
-                  final formattedDate = '${dateParts[2]}-${dateParts[1]}-${dateParts[0]}';
-                  final String fTime = '${dateTimeStr.split(' ')[1]}:00';
-                  
-                  final double cost = double.parse(
-                    fCostRaw.replaceAll('\$', '').replaceAll('.', '').replaceAll(',', '.').trim()
-                  );
-
-                  patent = fPatent;
-                  extractedCrossings.add({
-                    'date': formattedDate,
-                    'time': fTime,
-                    'portico': fPortico,
-                    'cost': cost,
-                  });
-
-                  i += 5; // Saltar líneas procesadas
-                }
-              }
-            }
-          }
-        } else if (text.contains('VESPUCIO NORTE') || fileNameLower.contains('vespucio_norte') || fileNameLower.contains('vespucio norte')) {
+        } else if (fileNameLower.endsWith('.xlsx')) {
           concessionaire = 'Vespucio Norte';
+          final excel = Excel.decodeBytes(fileBytes);
+          for (var table in excel.tables.keys) {
+            final sheet = excel.tables[table]!;
+            if (sheet.maxRows <= 1) continue;
 
-          // Expresión regular global sin espacios para el texto corrido de Syncfusion
-          final regex = RegExp(
-            r'([A-Z0-9]{6})(\d{2}-\d{2}-\d{4})(\d{2}:\d{2}:\d{2})(O-P|P-O)(\d+)(Laboral|Domingo|Sábado)(TBFP|TBP|TS)Normal\$\s*([\d\.,]+)'
-          );
+            final headerRow = sheet.rows.first;
+            int idxPatent = -1;
+            int idxDate = -1;
+            int idxTime = -1;
+            int idxPortico = -1;
+            int idxConcession = -1;
+            int idxCost = -1;
 
-          for (final Match match in regex.allMatches(text)) {
-            final String fPatent = match.group(1)!;
-            final String fDate = match.group(2)!;
-            final String fTime = match.group(3)!;
-            final String fPortico = match.group(5)!;
-            final String fCostRaw = match.group(8)!;
+            for (int i = 0; i < headerRow.length; i++) {
+              final val = headerRow[i]?.value?.toString().toLowerCase().trim() ?? '';
+              if (val.contains('patente')) idxPatent = i;
+              else if (val.contains('fecha')) idxDate = i;
+              else if (val.contains('hora')) idxTime = i;
+              else if (val.contains('portico') || val.contains('pórtico')) idxPortico = i;
+              else if (val.contains('concesionaria')) idxConcession = i;
+              else if (val.contains('valor') || val.contains('monto') || val.contains('importe')) idxCost = i;
+            }
 
-            patent = fPatent;
-            final double cost = double.parse(
-              fCostRaw.replaceAll('.', '').replaceAll(',', '.').trim()
+            if (idxPatent == -1) idxPatent = 0;
+            if (idxDate == -1) idxDate = 1;
+            if (idxTime == -1) idxTime = 2;
+            if (idxPortico == -1) idxPortico = 4;
+            if (idxConcession == -1) idxConcession = 6;
+            if (idxCost == -1) idxCost = 8;
+
+            for (int i = 1; i < sheet.rows.length; i++) {
+              final row = sheet.rows[i];
+              if (row.isEmpty || row.length <= idxCost) continue;
+
+              final String fPatent = row[idxPatent]?.value?.toString().trim() ?? '';
+              final String fDate = row[idxDate]?.value?.toString().trim() ?? '';
+              final String fTime = row[idxTime]?.value?.toString().trim() ?? '';
+              final String fPortico = row[idxPortico]?.value?.toString().trim() ?? '';
+              final String fConcession = idxConcession < row.length ? (row[idxConcession]?.value?.toString().trim() ?? '') : '';
+              final String fCostRaw = row[idxCost]?.value?.toString().trim() ?? '';
+
+              if (fPatent.isEmpty || fDate.isEmpty || fCostRaw.isEmpty) continue;
+
+              patent = fPatent;
+              if (fConcession.isNotEmpty) {
+                if (fConcession.toUpperCase() == 'AVN') {
+                  concessionaire = 'Vespucio Norte';
+                } else if (fConcession.toUpperCase() == 'AVS') {
+                  concessionaire = 'Vespucio Sur';
+                }
+              }
+
+              final double cost = double.parse(fCostRaw.replaceAll('.', '').replaceAll(',', '.'));
+
+              String formattedDate = fDate;
+              if (fDate.contains('-')) {
+                final dateParts = fDate.split('-');
+                if (dateParts[0].length == 4) {
+                  formattedDate = fDate;
+                } else {
+                  formattedDate = '\${dateParts[2]}-\${dateParts[1]}-\${dateParts[0]}';
+                }
+              } else if (fDate.contains('/')) {
+                final dateParts = fDate.split('/');
+                if (dateParts[0].length == 4) {
+                  formattedDate = fDate.replaceAll('/', '-');
+                } else {
+                  formattedDate = '\${dateParts[2]}-\${dateParts[1]}-\${dateParts[0]}';
+                }
+              }
+
+              extractedCrossings.add({
+                'date': formattedDate,
+                'time': fTime.length == 5 ? '\$fTime:00' : fTime,
+                'portico': fPortico,
+                'cost': cost,
+              });
+            }
+          }
+        } else if (fileNameLower.endsWith('.pdf')) {
+          // Cargar documento PDF localmente
+          final PdfDocument document = PdfDocument(inputBytes: fileBytes);
+          final PdfTextExtractor extractor = PdfTextExtractor(document);
+          final String text = extractor.extractText();
+          document.dispose();
+
+          final lines = const LineSplitter().convert(text);
+
+          // Detectar tipo de boleta en base a su contenido
+          if (text.contains('CN ') || text.contains('COSTANERA') || fileNameLower.contains('costanera')) {
+            concessionaire = 'Costanera Norte';
+            
+            for (int i = 0; i < lines.length; i++) {
+              final line = lines[i].trim();
+              // Formato de fecha y hora: DD/MM/AAAA HH:MM
+              if (RegExp(r'^\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2}\$').hasMatch(line)) {
+                if (i + 5 < lines.length) {
+                  final String dateTimeStr = line;
+                  final String fPortico = lines[i + 2].trim();
+                  final String fCostRaw = lines[i + 4].trim();
+                  final String fPatent = lines[i + 5].trim();
+
+                  if (fCostRaw.contains('\$') && fPatent.length == 6) {
+                    final dateParts = dateTimeStr.split(' ')[0].split('/');
+                    final formattedDate = '\${dateParts[2]}-\${dateParts[1]}-\${dateParts[0]}';
+                    final String fTime = '\${dateTimeStr.split(' ')[1]}:00';
+                    
+                    final double cost = double.parse(
+                      fCostRaw.replaceAll('\$', '').replaceAll('.', '').replaceAll(',', '.').trim()
+                    );
+
+                    patent = fPatent;
+                    extractedCrossings.add({
+                      'date': formattedDate,
+                      'time': fTime,
+                      'portico': fPortico,
+                      'cost': cost,
+                    });
+
+                    i += 5; // Saltar líneas procesadas
+                  }
+                }
+              }
+            }
+          } else if (text.contains('VESPUCIO SUR') || text.contains('VS ') || fileNameLower.contains('vespucio_sur') || fileNameLower.contains('vespucio sur')) {
+            concessionaire = 'Vespucio Sur';
+
+            for (int i = 0; i < lines.length; i++) {
+              final line = lines[i].trim();
+              // Formato de fecha y hora: DD/MM/AAAA HH:MM
+              if (RegExp(r'^\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2}\$').hasMatch(line)) {
+                if (i + 5 < lines.length) {
+                  final String dateTimeStr = line;
+                  final String fPortico = lines[i + 2].trim();
+                  final String fCostRaw = lines[i + 4].trim();
+                  final String fPatent = lines[i + 5].trim();
+
+                  if (fCostRaw.contains('\$') && fPatent.length == 6) {
+                    final dateParts = dateTimeStr.split(' ')[0].split('/');
+                    final formattedDate = '\${dateParts[2]}-\${dateParts[1]}-\${dateParts[0]}';
+                    final String fTime = '\${dateTimeStr.split(' ')[1]}:00';
+                    
+                    final double cost = double.parse(
+                      fCostRaw.replaceAll('\$', '').replaceAll('.', '').replaceAll(',', '.').trim()
+                    );
+
+                    patent = fPatent;
+                    extractedCrossings.add({
+                      'date': formattedDate,
+                      'time': fTime,
+                      'portico': fPortico,
+                      'cost': cost,
+                    });
+
+                    i += 5; // Saltar líneas procesadas
+                  }
+                }
+              }
+            }
+          } else if (text.contains('VESPUCIO NORTE') || fileNameLower.contains('vespucio_norte') || fileNameLower.contains('vespucio norte')) {
+            concessionaire = 'Vespucio Norte';
+
+            // Expresión regular global sin espacios para el texto corrido de Syncfusion
+            final regex = RegExp(
+              r'([A-Z0-9]{6})(\d{2}-\d{2}-\d{4})(\d{2}:\d{2}:\d{2})(O-P|P-O)(\d+)(Laboral|Domingo|Sábado)(TBFP|TBP|TS)Normal\$\s*([\d\.,]+)'
             );
 
-            final dateParts = fDate.split('-');
-            final formattedDate = '${dateParts[2]}-${dateParts[1]}-${dateParts[0]}';
+            for (final Match match in regex.allMatches(text)) {
+              final String fPatent = match.group(1)!;
+              final String fDate = match.group(2)!;
+              final String fTime = match.group(3)!;
+              final String fPortico = match.group(5)!;
+              final String fCostRaw = match.group(8)!;
 
-            extractedCrossings.add({
-              'date': formattedDate,
-              'time': fTime,
-              'portico': fPortico,
-              'cost': cost,
-            });
+              patent = fPatent;
+              final double cost = double.parse(
+                fCostRaw.replaceAll('.', '').replaceAll(',', '.').trim()
+              );
+
+              final dateParts = fDate.split('-');
+              final formattedDate = '\${dateParts[2]}-\${dateParts[1]}-\${dateParts[0]}';
+
+              extractedCrossings.add({
+                'date': formattedDate,
+                'time': fTime,
+                'portico': fPortico,
+                'cost': cost,
+              });
+            }
+          } else {
+            throw Exception('No se pudo identificar la estructura de la autopista en el documento.');
           }
-        } else {
-          throw Exception('No se pudo identificar la estructura de la autopista en el documento. Asegúrate de subir boletas del cliente válidas de Autopista Central, Costanera Norte, Vespucio Norte o Vespucio Sur.');
         }
-      }
 
-      if (extractedCrossings.isEmpty) {
-        throw Exception('No se detectaron transacciones de peaje legibles. Verifica el formato del archivo subido.');
+        if (extractedCrossings.isEmpty) {
+          throw Exception('No se detectaron transacciones legibles localmente.');
+        }
+
+      } catch (localParsingError) {
+        if (_useAI) {
+          // ==========================================
+          // FALLBACK A GEMINI (EXTRACCIÓN INTELIGENTE)
+          // ==========================================
+          if (mounted) {
+             ScaffoldMessenger.of(context).showSnackBar(
+               const SnackBar(
+                 content: Text('Formato no reconocido. Analizando con Inteligencia Artificial...'),
+                 backgroundColor: Color(0xFF8B5CF6),
+                 duration: Duration(seconds: 3),
+               ),
+             );
+          }
+          
+          String rawText = '';
+          if (fileNameLower.endsWith('.pdf')) {
+            final PdfDocument document = PdfDocument(inputBytes: fileBytes);
+            rawText = PdfTextExtractor(document).extractText();
+            document.dispose();
+          } else if (fileNameLower.endsWith('.csv')) {
+            rawText = utf8.decode(fileBytes);
+          } else if (fileNameLower.endsWith('.xlsx')) {
+            final excel = Excel.decodeBytes(fileBytes);
+            for (var table in excel.tables.keys) {
+              final sheet = excel.tables[table]!;
+              for (var row in sheet.rows) {
+                rawText += row.map((c) => c?.value?.toString() ?? '').join(' ') + '\\n';
+              }
+            }
+          }
+
+          if (rawText.isEmpty) throw Exception('No se pudo leer el contenido del archivo.');
+
+          final aiExtracted = await _extractDataWithGemini(rawText, file.name);
+          extractedCrossings = (aiExtracted['crossings'] as List).map((e) => Map<String, dynamic>.from(e)).toList();
+          patent = aiExtracted['patent'] ?? 'Desconocida';
+          concessionaire = aiExtracted['concessionaire'] ?? 'Autopista Genérica';
+          
+        } else {
+          // Re-throw the original error if AI is disabled
+          throw Exception('Error local: \$localParsingError. Activa "Auditar con IA" para soportar formatos desconocidos.');
+        }
       }
 
       // 1.5. AUDITAR DE MANERA REAL CON HISTORIAL GPS EXISTENTE

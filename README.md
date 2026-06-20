@@ -1,13 +1,14 @@
 # Tag OK 🚗💨
 
-**Tu copiloto inteligente para el control de gastos de TAG y navegación en tiempo real.**
+**Tu copiloto inteligente para el control de gastos de TAG, navegación en tiempo real y auditoría con Inteligencia Artificial.**
 
-> Optimiza tus rutas, gestiona tu presupuesto mensual y nunca más te sorprendas con la cuenta del TAG.
+> Optimiza tus rutas, gestiona tu presupuesto mensual, administra las tarifas remotamente y nunca más te sorprendas con cobros indebidos en tu cuenta del TAG.
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.41.9-blue.svg)](https://flutter.dev/)
 [![Dart](https://img.shields.io/badge/Dart-3.11.5-blue.svg)](https://dart.dev/)
 [![Firebase](https://img.shields.io/badge/Firebase-Cloud%20Firestore-orange.svg)](https://firebase.google.com/)
 [![Mapbox](https://img.shields.io/badge/Mapbox-GL%20Maps-000000.svg)](https://www.mapbox.com/)
+[![Gemini](https://img.shields.io/badge/Gemini-AI-blueviolet.svg)](https://deepmind.google/technologies/gemini/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ---
@@ -18,76 +19,78 @@
 - [Descripción](#descripcion)
 - [Características Principales](#caracteristicas-principales)
 - [Dashboard & Visualización](#dashboard-visualizacion)
-- [Gestión de Vehículos](#gestion-de-vehiculos)
-- [Control de Presupuesto](#control-de-presupuesto)
+- [Auditoría Inteligente & IA](#auditoria-inteligente)
+- [Panel de Administración (Admin)](#panel-admin)
+- [Instalación y Ejecución Rápida](#instalacion-ejecucion)
 - [Stack Tecnológico](#stack-tecnologico)
-- [Instalación y Configuración](#instalacion-configuracion)
 - [Estructura del Proyecto](#estructura-proyecto)
-- [Documentación de Base de Datos](#base-de-datos)
 
 ---
 
 <a id="descripcion" name="descripcion"></a>
 ## 📝 Descripción
 
-**Tag OK** es una aplicación móvil diseñada para el conductor moderno que transita por las autopistas urbanas concesionadas de Chile. A diferencia de un GPS convencional, Tag OK integra un motor de cálculo de tarifas actualizado al año **2026**, permitiendo conocer el costo exacto de cada viaje antes de encender el motor.
-
-Con una interfaz **Glassmorphism** premium y notificaciones inteligentes de presupuesto, la app te ayuda a mantener tus finanzas bajo control mientras navegas con precisión.
+**Tag OK** es una suite completa diseñada para los conductores chilenos y las empresas operadoras. A diferencia de un GPS convencional, Tag OK integra un motor de cálculo de tarifas dinámico y permite saber el costo exacto de tu viaje en tiempo real.
+Además, la suite incluye un **Panel de Administración Web** para actualizar precios y pórticos dinámicamente, y un motor de **Auditoría con IA (Gemini)** que analiza boletas reales (PDF/CSV) para detectar cobros fantasmas o sobreprecios.
 
 ---
 
 <a id="caracteristicas-principales" name="caracteristicas-principales"></a>
 ## ✨ Características Principales
 
-### 🛰️ Navegación Inteligente
-- Cálculo de rutas óptimas utilizando la API de Mapbox.
-- Detección automática de pórticos de TAG en el trayecto.
-- Visualización de tarifas dinámicas: TBFP (Base), TBP (Punta) y TS (Saturación).
+### 🛰️ Navegación en Tiempo Real
+- Cálculo de rutas óptimas (Mapbox API).
+- Detección satelital de pórticos en el trayecto.
+- Cobros dinámicos en tiempo real según el tipo de tarifa: TBFP (Base), TBP (Punta) y TS (Saturación).
+- Mantiene la sesión activa e ininterrumpida utilizando `StreamBuilder` con Firebase Auth.
 
-### 📊 Auditoría y Historial
-- Registro detallado de cada viaje: hora, distancia, duración y costo exacto.
-- Desglose de cada pórtico atravesado con su respectiva tarifa y hora de paso.
-- Historial vinculado a la **patente específica** del vehículo utilizado.
-
-### 🚗 Gestión de Flotas
-- Registro ilimitado de vehículos (Marca, Modelo, Patente).
-- Confirmación obligatoria del vehículo antes de iniciar cada navegación para asegurar la trazabilidad del gasto.
-- Identificación visual de vehículos mediante badges de patentes.
+### 🚗 Gestión de Flota y Presupuesto
+- Identificación visual de vehículos (Autos, Motos, Camionetas) y registro de patentes.
+- Semaforización de presupuesto: Alertas dinámicas al 50%, 75%, 90% y 100% de gasto mensual.
 
 ---
 
-<a id="dashboard-visualizacion" name="dashboard-visualizacion"></a>
-## 🖼️ Dashboard & Visualización
+<a id="auditoria-inteligente" name="auditoria-inteligente"></a>
+## 🤖 Auditoría Inteligente & IA
 
-El nuevo **Centro de Control** utiliza un diseño de vanguardia con:
-- **Glassmorphism**: Paneles flotantes con desenfoque de fondo (`BackdropFilter`) para una estética premium.
-- **Widgets de Estado**: Saludo personalizado y estado de protección activa en tiempo real.
-- **Monitor de Gasto**: Acceso rápido al porcentaje de presupuesto consumido directamente desde el mapa.
-
----
-
-<a id="gestion-de-vehiculos" name="gestion-de-vehiculos"></a>
-## 🚗 Gestión de Vehículos
-
-Mantenemos un control exhaustivo de tu flota:
-- Vinculación de vehículos a tu cuenta personal.
-- Selección dinámica de vehículo activo para el cálculo de tarifas (Motos, Autos, Camionetas).
-- Persistencia de datos en la nube para acceder desde cualquier dispositivo.
+Olvídate de revisar boletas a mano. El sistema cruza automáticamente los datos que te cobran las autopistas versus tus viajes reales almacenados en el historial de tu GPS.
+- **Motor Multi-Formato NATIVO**:
+  - Lee planillas Excel (`.csv`) de Autopista Central de manera nativa.
+  - Posee un analizador de texto avanzado (`PdfTextExtractor`) capaz de **leer directamente** los PDFs oficiales de Costanera Norte, Vespucio Sur y Vespucio Norte sin depender de servidores externos, de forma **100% offline y gratuita**.
+- **Análisis con Gemini AI**: En su modo avanzado, procesa grandes volúmenes de datos utilizando la IA de Google Gemini para cruzar transacciones y emitir juicios claros sobre la legitimidad de las boletas.
+- **Modo Contingencia**: Si la IA no está disponible, el sistema cambia instantáneamente a un motor algorítmico local ultra rápido para mostrar las discrepancias matemáticas.
 
 ---
 
-<a id="control-de-presupuesto" name="control-de-presupuesto"></a>
-## 💰 Control de Presupuesto
+<a id="panel-admin" name="panel-admin"></a>
+## ⚙️ Panel de Administración Web (Admin)
 
-Implementamos un sistema de alertas dinámicas para evitar exceder tus límites mensuales:
-- **Alertas de Umbral**: Notificaciones automáticas al alcanzar el **50%**, **75%**, **90%** y **100%** del presupuesto definido.
-- **Memoria de Notificaciones**: El sistema recuerda qué alertas ya has visto este mes para evitar interrupciones innecesarias en cada viaje.
-- **Semaforización Visual**:
-  - 🟣 **Violeta**: Gasto normal (< 50%).
-  - 🟢 **Verde**: Alerta informativa (50%).
-  - 🟡 **Amarillo**: Precaución (75%).
-  - 🟠 **Naranja**: Crítico (90%).
-  - 🔴 **Rojo**: Límite excedido (100%).
+Junto a la aplicación móvil, el repositorio incluye un **Backoffice de gestión** para operar el negocio:
+- Dashboard de estadísticas generales en vivo.
+- ABM (Alta/Baja/Modificación) en tiempo real de Tarifas Base, Punta y Saturación, pórticos y vehículos.
+- Gestión de Usuarios (Restablecimiento de contraseñas, edición de presupuestos y eliminación).
+- Se conecta en tiempo real a la misma base de datos `Firestore` que los clientes, reflejando cambios instantáneamente en las rutas.
+
+---
+
+<a id="instalacion-ejecucion" name="instalacion-ejecucion"></a>
+## 🚀 Instalación y Ejecución Rápida (Zero Config)
+
+Gracias a nuestro sistema de encriptación **Base64 en Memoria**, ya no necesitas configurar engorrosos archivos `.env`. Las claves (Mapbox, Firebase y Gemini) viajan protegidas y se inyectan en RAM automáticamente. ¡Solo descarga y corre!
+
+1. **Clonar o descargar el repositorio:**
+   ```bash
+   git clone https://github.com/leo-onate/TAG-OK.git
+   ```
+
+2. **Ejecutar el instalador interactivo (`setup.bat`):**
+   Abre la carpeta `Producto` y haz doble clic en el archivo `setup.bat`. 
+   Este asistente inteligente:
+   - Descargará todas las dependencias necesarias de Flutter (tanto para `tag_ok` como para `admin`).
+   - Te desplegará un **Menú Interactivo**.
+   - Te permitirá elegir qué aplicación quieres encender (App Móvil o Backoffice Admin) y en qué plataforma (Windows Desktop o Chrome).
+   
+   ¡Simplemente escribe un número del 1 al 5 y la magia sucederá sola!
 
 ---
 
@@ -96,68 +99,28 @@ Implementamos un sistema de alertas dinámicas para evitar exceder tus límites 
 
 | Componente | Tecnología |
 | :--- | :--- |
-| **Framework** | Flutter 3.41.9 (Stable) |
-| **Lenguaje** | Dart 3.11.5 |
+| **Framework Base** | Flutter (Multiplataforma) |
 | **Base de Datos** | Firebase Cloud Firestore |
-| **Autenticación** | Firebase Auth |
+| **Autenticación** | Firebase Auth (Persistencia Nativa) |
 | **Mapas** | Flutter Map + Mapbox API |
-| **Estado** | Riverpod / StateNotifier |
-| **Estilos** | Custom Glassmorphism System |
-
----
-
-<a id="instalacion-configuracion" name="instalacion-configuracion"></a>
-## 🚀 Instalación y Configuración
-
-### Prerrequisitos
-- Flutter SDK instalado en el equipo.
-- Cuenta en Mapbox para obtener un Access Token.
-- Proyecto en Firebase con Firestore habilitado.
-
-### Instalación Rápida (Recomendado para nuevos equipos)
-1. **Clonar o descargar el repositorio:**
-   ```bash
-   git clone https://github.com/tu-usuario/TAG-OK.git
-   ```
-
-2. **Instalar dependencias automáticamente:**
-   Simplemente haz doble clic en el archivo `setup.bat` (en Windows) que se encuentra en la raíz del proyecto. Este script instalará automáticamente todas las librerías necesarias tanto para la app principal (`tag_ok`) como para el panel de administración (`admin`).
-
-3. **Configurar variables de entorno:**
-   Debes crear un archivo `.env` dentro de **ambas** carpetas (`Producto/tag_ok/.env` y `Producto/admin/.env`) con el siguiente formato:
-   ```env
-   MAPBOX_ACCESS_TOKEN=tu_token_aqui
-   ```
-
-4. **Ejecutar las aplicaciones:**
-   - Para abrir la **App Principal**: Abre la carpeta `Producto/tag_ok` en tu editor y presiona "Run", o ejecuta `flutter run` en la terminal.
-   - Para abrir la **App Administrador**: Abre la carpeta `Producto/admin` en tu editor y presiona "Run", o ejecuta `flutter run` en la terminal.
+| **Inteligencia Artificial**| Google Gemini API (`google_generative_ai`) |
+| **Procesamiento de Archivos**| `file_picker`, `syncfusion_flutter_pdf`, `csv` |
 
 ---
 
 <a id="estructura-proyecto" name="estructura-proyecto"></a>
-## 📂 Estructura del Proyecto
+## 📂 Estructura del Repositorio
 
 ```bash
-lib/
-├── data/
-│   ├── models/       # Modelos de datos (Trip, Vehicle, Route)
-│   ├── mock/         # Base de datos de pórticos 2026
-│   └── services/     # Lógica de Firebase, Mapas y Cálculo
-├── screens/          # Vistas (Home, Audit, Profile, Vehicles)
-├── widgets/          # Componentes reutilizables
-└── main.dart         # Punto de entrada y configuración de Firebase
+TAG-OK/
+├── Producto/
+│   ├── setup.bat         # 🚀 ASISTENTE DE EJECUCIÓN (Ejecutar este archivo)
+│   ├── tag_ok/           # Código fuente de la Aplicación Móvil
+│   ├── admin/            # Código fuente del Panel de Administración
+│   └── Base de datos/    # Esquemas, reportes y JSON de Firestore
+├── Documentacion/        # Manuales y Mockups
+└── Gestion/              # Trello, Cronogramas y Backlogs
 ```
 
 ---
-
-<a id="base-de-datos" name="base-de-datos"></a>
-## 🗄️ Documentación de Base de Datos
-
-Para una revisión técnica profunda del esquema de datos y la arquitectura NoSQL, consulta los siguientes recursos:
-
-- 📄 [Informe de Arquitectura de Datos](Producto/Base%20de%20datos/DOCUMENTACION_BASE_DE_DATOS.md)
-- 📂 [Exportación Completa (JSON)](Producto/Base%20de%20datos/EXPORTACION_BASE_DE_DATOS.json)
-
----
-*Desarrollado con ❤️ para el ecosistema vial chileno.*
+*Desarrollado con ❤️ para transformar las autopistas concesionadas en Chile.*
