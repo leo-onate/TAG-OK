@@ -9,7 +9,19 @@ echo.
 rem Ir al directorio donde se encuentra este script
 cd /d "%~dp0"
 
-echo [1/2] Instalar/Actualizar dependencias del proyecto...
+echo [1/3] Creando archivos .env vacios (requerido por Flutter)...
+echo.
+if not exist "tag_ok\.env" (
+    echo. > "tag_ok\.env"
+    echo - Creado tag_ok\.env vacio
+)
+if not exist "admin\.env" (
+    echo. > "admin\.env"
+    echo - Creado admin\.env vacio
+)
+echo.
+
+echo [2/3] Instalar/Actualizar dependencias del proyecto...
 echo.
 echo Instalando dependencias de la app principal (tag_ok)...
 cd tag_ok

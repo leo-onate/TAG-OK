@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../data/services/simulated_toll_service.dart';
 import '../data/services/geocoding_service.dart';
+import '../data/services/history_service.dart';
 
 class RouteSetupScreen extends StatefulWidget {
   final LatLng? initialOrigin;
@@ -23,12 +24,13 @@ class _RouteSetupScreenState extends State<RouteSetupScreen> {
   final Color surfaceBorder = const Color(0x1AFFFFFF);
   final Color navBgColor = const Color(0xFF1E293B);
 
-  String? _selectedVehicle;
+  Map<String, dynamic>? _selectedVehicleMap;
   bool _isLoading = false;
   
   // Inicializamos el nuevo servicio de simulación gratuito
   final SimulatedTollService _tollService = SimulatedTollService();
   final GeocodingService _geocodingService = GeocodingService();
+  final HistoryService _historyService = HistoryService();
 
   // Coordenadas seleccionadas
   LatLng? _originLocation;
@@ -53,21 +55,53 @@ class _RouteSetupScreenState extends State<RouteSetupScreen> {
   }
 
   Future<void> _cargarVehiculoPrincipal() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-
-    final doc = await FirebaseFirestore.instance.collection('usuarios').doc(user.uid).get();
-    
+    final vehiculo = await _historyService.getPrincipalVehicleInfo();
     if (mounted) {
       setState(() {
-        if (doc.exists && doc.data()!.containsKey('vehiculo_principal_id')) {
-          _selectedVehicle = doc.data()!['vehiculo_principal_id'];
-          if (_selectedVehicle != null && _selectedVehicle!.isEmpty) {
-            _selectedVehicle = null;
-          }
-        }
+        _selectedVehicleMap = vehiculo;
       });
     }
+  }
+
+  Future<void> _seleccionarVehiculo() async {
+    final vehicles = await _historyService.getUserVehicles();
+    if (!mounted) return;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: navBgColor,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text('Seleccionar Vehículo', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+              ),
+              if (vehicles.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text('No tienes vehículos registrados.', style: TextStyle(color: Colors.white70)),
+                )
+              else
+                ...vehicles.map((v) => ListTile(
+                  leading: const Icon(Icons.directions_car, color: Colors.white70),
+                  title: Text(v['patente'] ?? '', style: const TextStyle(color: Colors.white)),
+                  subtitle: Text(v['marca'] ?? '', style: TextStyle(color: textMuted)),
+                  onTap: () {
+                    setState(() {
+                      _selectedVehicleMap = v;
+                    });
+                    Navigator.pop(context);
+                  },
+                )),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -142,28 +176,34 @@ class _RouteSetupScreenState extends State<RouteSetupScreen> {
                 style: TextStyle(color: textMuted, fontSize: 14, fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 8),
-              Container(
-                decoration: BoxDecoration(
-                  color: inputBg,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: surfaceBorder),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                child: Row(
-                  children: [
-                    Icon(Icons.directions_car_outlined, color: primaryColor),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Text(
-                        _selectedVehicle ?? 'Ningún vehículo principal asignado',
-                        style: TextStyle(
-                          color: _selectedVehicle != null ? textMain : Colors.orange, 
-                          fontSize: 16,
-                          fontWeight: _selectedVehicle != null ? FontWeight.bold : FontWeight.normal,
+              GestureDetector(
+                onTap: _seleccionarVehiculo,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: inputBg,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: surfaceBorder),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  child: Row(
+                    children: [
+                      Icon(Icons.directions_car_outlined, color: primaryColor),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Text(
+                          _selectedVehicleMap != null 
+                            ? '${_selectedVehicleMap!['marca']} (${_selectedVehicleMap!['patente']})' 
+                            : 'Selecciona un vehículo',
+                          style: TextStyle(
+                            color: _selectedVehicleMap != null ? textMain : Colors.orange, 
+                            fontSize: 16,
+                            fontWeight: _selectedVehicleMap != null ? FontWeight.bold : FontWeight.normal,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                      Icon(Icons.arrow_drop_down, color: textMuted),
+                    ],
+                  ),
                 ),
               ),
 
@@ -239,10 +279,10 @@ class _RouteSetupScreenState extends State<RouteSetupScreen> {
       return;
     }
 
-    if (_selectedVehicle == null || _selectedVehicle!.isEmpty) {
+    if (_selectedVehicleMap == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('No tienes un vehículo principal asignado. Configúralo en tu perfil.'),
+          content: Text('Por favor selecciona un vehículo.'),
           backgroundColor: Colors.orange,
         )
       );
@@ -259,8 +299,11 @@ class _RouteSetupScreenState extends State<RouteSetupScreen> {
       
       if (!mounted) return;
 
-      // Retornar datos directamente ya que el servicio simulado nos entrega RouteData listo
-      Navigator.pop(context, routeData);
+      // Retornar datos junto con el vehículo
+      Navigator.pop(context, {
+        'route': routeData,
+        'vehicle': _selectedVehicleMap,
+      });
       
     } catch (e) {
       if (!mounted) return;
