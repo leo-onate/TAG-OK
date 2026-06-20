@@ -73,31 +73,45 @@ class _RouteSetupScreenState extends State<RouteSetupScreen> {
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) {
         return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Text('Seleccionar Vehículo', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-              ),
-              if (vehicles.isEmpty)
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.6,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
                 const Padding(
                   padding: EdgeInsets.all(16.0),
-                  child: Text('No tienes vehículos registrados.', style: TextStyle(color: Colors.white70)),
-                )
-              else
-                ...vehicles.map((v) => ListTile(
-                  leading: const Icon(Icons.directions_car, color: Colors.white70),
-                  title: Text(v['patente'] ?? '', style: const TextStyle(color: Colors.white)),
-                  subtitle: Text(v['marca'] ?? '', style: TextStyle(color: textMuted)),
-                  onTap: () {
-                    setState(() {
-                      _selectedVehicleMap = v;
-                    });
-                    Navigator.pop(context);
-                  },
-                )),
-            ],
+                  child: Text('Seleccionar Vehículo', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                ),
+                if (vehicles.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Text('No tienes vehículos registrados.', style: TextStyle(color: Colors.white70)),
+                  )
+                else
+                  Flexible(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: vehicles.length,
+                      itemBuilder: (context, index) {
+                        final v = vehicles[index];
+                        return ListTile(
+                          leading: const Icon(Icons.directions_car, color: Colors.white70),
+                          title: Text(v['patente'] ?? '', style: const TextStyle(color: Colors.white)),
+                          subtitle: Text(v['marca'] ?? '', style: TextStyle(color: textMuted)),
+                          onTap: () {
+                            setState(() {
+                              _selectedVehicleMap = v;
+                            });
+                            Navigator.pop(context);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+              ],
+            ),
           ),
         );
       },

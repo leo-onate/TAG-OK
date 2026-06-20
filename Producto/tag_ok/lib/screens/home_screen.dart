@@ -1013,8 +1013,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         title: const Text("Seleccionar Vehículo", style: TextStyle(color: Colors.white)),
         content: SizedBox(
           width: double.maxFinite,
+          height: math.min(vehicles.length * 72.0, MediaQuery.of(context).size.height * 0.6),
           child: ListView.builder(
-            shrinkWrap: true,
             itemCount: vehicles.length,
             itemBuilder: (context, index) {
               final v = vehicles[index];

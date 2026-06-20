@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../presentation/providers/auth_provider.dart';
 import 'home_screen.dart';
@@ -294,7 +295,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         backgroundColor: const Color(0xFF1E293B),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text('Recuperar contraseña', style: TextStyle(color: Colors.white)),
@@ -321,7 +322,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text('Cancelar', style: TextStyle(color: Color(0xFF94A3B8))),
           ),
           ElevatedButton(
@@ -333,7 +334,35 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               final email = resetEmailController.text.trim();
               if (email.isEmpty) return;
               
-              Navigator.pop(context); // Cerrar el diálogo
+              Navigator.pop(dialogContext); // Cerrar el diálogo
+              
+              // Validar contra Firestore para verificar si el correo está registrado
+              bool emailExists = true;
+              try {
+                final querySnapshot = await FirebaseFirestore.instance
+                    .collection('usuarios')
+                    .where('email', isEqualTo: email)
+                    .limit(1)
+                    .get();
+                if (querySnapshot.docs.isEmpty) {
+                  emailExists = false;
+                }
+              } catch (e) {
+                // Si falla por reglas de seguridad u otra razón, permitimos que continúe con FirebaseAuth
+                debugPrint('No se pudo verificar el correo en Firestore: $e');
+              }
+
+              if (!emailExists) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Error: El correo electrónico ingresado no está registrado.'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+                return;
+              }
               
               try {
                 await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
@@ -344,8 +373,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 }
               } catch (e) {
                 if (mounted) {
+                  String errorMessage = 'No se pudo enviar el correo de recuperación. Inténtalo más tarde.';
+                  if (e is FirebaseAuthException) {
+                    if (e.code == 'user-not-found') {
+                      errorMessage = 'El correo electrónico ingresado no está registrado.';
+                    } else if (e.code == 'invalid-email') {
+                      errorMessage = 'El correo electrónico ingresado no es válido.';
+                    }
+                  }
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Error: No se pudo enviar el correo. Revisa si el email es correcto.'), backgroundColor: Colors.red),
+                    SnackBar(content: Text('Error: $errorMessage'), backgroundColor: Colors.red),
                   );
                 }
               }
