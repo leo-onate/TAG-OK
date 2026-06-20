@@ -1,11 +1,11 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+import 'file_downloader.dart';
 
 import 'login_screen.dart';
 import 'admin_firestore_service.dart';
@@ -1112,19 +1112,16 @@ class _ReportsPageState extends State<ReportsPage> {
         csvBuffer.writeln('$highway,${cost.toStringAsFixed(0)},${pct.toStringAsFixed(2)}%');
       });
 
-      const String path = 'C:/Users/igna_/Downloads/reporte_tag_ok.csv';
-      final File file = File(path);
-      final Directory directory = Directory('C:/Users/igna_/Downloads');
-      if (!await directory.exists()) {
-        await directory.create(recursive: true);
-      }
-      
-      await file.writeAsString(csvBuffer.toString(), encoding: utf8);
+      saveFile(csvBuffer.toString(), 'reporte_tag_ok.csv');
 
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Reporte exportado exitosamente a: C:/Users/igna_/Downloads/reporte_tag_ok.csv'),
+            content: Text(
+              kIsWeb
+                  ? 'Reporte descargado exitosamente'
+                  : 'Reporte exportado exitosamente a: C:/Users/igna_/Downloads/reporte_tag_ok.csv',
+            ),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 5),
             action: SnackBarAction(
