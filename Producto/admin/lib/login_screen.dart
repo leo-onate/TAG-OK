@@ -37,6 +37,7 @@ class AdminCheck extends StatefulWidget {
 class _AdminCheckState extends State<AdminCheck> {
   bool _isLoading = true;
   bool _isAdmin = false;
+  String _role = 'super_admin';
 
   @override
   void initState() {
@@ -49,7 +50,10 @@ class _AdminCheckState extends State<AdminCheck> {
       // Va a buscar a la colección "administradores" el ID de este usuario
       final doc = await FirebaseFirestore.instance.collection('administradores').doc(widget.user.uid).get();
       if (doc.exists) {
+        final data = doc.data() ?? {};
+        final String role = (data['rol'] ?? data['role'] ?? 'super_admin').toString();
         setState(() {
+          _role = role;
           _isAdmin = true;
           _isLoading = false;
         });
@@ -73,8 +77,8 @@ class _AdminCheckState extends State<AdminCheck> {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     if (_isAdmin) {
-      // Todo perfecto, lo dejamos entrar al panel de administración
-      return const AdminShell();
+      // Todo perfecto, lo dejamos entrar al panel de administración con su rol
+      return AdminShell(role: _role);
     }
     // Fue expulsado, mostrar mensaje
     return const LoginScreen(errorMessage: 'Acceso denegado. Tu cuenta no tiene permisos de administrador.');
