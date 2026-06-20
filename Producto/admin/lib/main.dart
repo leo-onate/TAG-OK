@@ -340,62 +340,212 @@ class DashboardPage extends StatelessWidget {
   }
 }
 
-class UsersPage extends StatelessWidget {
+class UsersPage extends StatefulWidget {
   const UsersPage({super.key, required this.service});
 
   final AdminFirestoreService service;
+
+  @override
+  State<UsersPage> createState() => _UsersPageState();
+}
+
+class _UsersPageState extends State<UsersPage> {
+  final TextEditingController _searchCtrl = TextEditingController();
+  String _searchQuery = '';
+  String _selectedBudgetFilter = 'Todos'; // 'Todos', '> 50.000', '< = 50.000'
+
+  @override
+  void initState() {
+    super.initState();
+    _searchCtrl.addListener(() {
+      setState(() {
+        _searchQuery = _searchCtrl.text.toLowerCase().trim();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
+  bool _matchesFilters(Map<String, dynamic> data) {
+    final nombre = (data['nombre_mostrar'] ?? '').toString().toLowerCase();
+    final correo = (data['email'] ?? '').toString().toLowerCase();
+    if (_searchQuery.isNotEmpty && !nombre.contains(_searchQuery) && !correo.contains(_searchQuery)) {
+      return false;
+    }
+
+    final int presupuesto = int.tryParse(data['limite_presupuesto_mensual']?.toString() ?? '0') ?? 0;
+    if (_selectedBudgetFilter == '> 50.000' && presupuesto <= 50000) {
+      return false;
+    }
+    if (_selectedBudgetFilter == '< = 50.000' && presupuesto > 50000) {
+      return false;
+    }
+
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
     return _AdminPageScaffold(
       title: 'Usuarios',
       subtitle: 'Gestión de cuentas. (Por seguridad de Firebase, las contraseñas están encriptadas. Usa las acciones para resetearlas).',
-      child: _FirestoreTable(
-        stream: service.streamUsers(),
-        emptyMessage: 'No hay usuarios aún.',
-        columns: const ['Nombre', 'Correo', 'Presupuesto', 'Vehículo Principal', 'Acciones'],
-        rowBuilder: (doc) {
-          final Map<String, dynamic> data = doc.data();
-          final String docId = doc.id;
-          final String nombre = (data['nombre_mostrar'] ?? 'Sin nombre').toString();
-          final String correo = (data['email'] ?? 'Sin correo').toString();
-          final int presupuesto = int.tryParse(data['limite_presupuesto_mensual']?.toString() ?? '0') ?? 0;
-
-          return [
-            DataCell(Text(nombre)),
-            DataCell(Text(correo)),
-            DataCell(Text('\$$presupuesto')),
-            DataCell(Text((data['vehiculo_principal_id'] ?? 'Ninguno').toString())),
-            DataCell(
-              Row(
-                mainAxisSize: MainAxisSize.min,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Card(
+            margin: const EdgeInsets.only(bottom: 16),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.edit_outlined, color: Colors.blue, size: 20),
-                    tooltip: 'Editar Presupuesto',
-                    onPressed: () {
-                      _mostrarDialogoEdicion(context, docId, nombre, presupuesto);
-                    },
+                  Expanded(
+                    flex: 3,
+                    child: TextField(
+                      controller: _searchCtrl,
+                      decoration: InputDecoration(
+                        isDense: true,
+                        labelText: 'Buscar usuario...',
+                        hintText: 'Buscar por nombre o correo',
+                        prefixIcon: const Icon(Icons.search, size: 20),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.lock_reset_outlined, color: Colors.orange, size: 20),
-                    tooltip: 'Restablecer Contraseña',
-                    onPressed: () {
-                      _enviarResetPassword(context, correo);
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
-                    tooltip: 'Eliminar Usuario',
-                    onPressed: () {
-                      _mostrarDialogoEliminar(context, docId, nombre);
-                    },
+                  const SizedBox(width: 16),
+                  Expanded(
+                    flex: 2,
+                    child: DropdownButtonFormField<String>(
+                      initialValue: _selectedBudgetFilter,
+                      decoration: InputDecoration(
+                        isDense: true,
+                        labelText: 'Presupuesto Mensual',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      items: const [
+                        DropdownMenuItem(value: 'Todos', child: Text('Todos los presupuestos')),
+                        DropdownMenuItem(value: '> 50.000', child: Text('> \$50.000')),
+                        DropdownMenuItem(value: '< = 50.000', child: Text('≤ \$50.000')),
+                      ],
+                      onChanged: (val) {
+                        if (val != null) {
+                          setState(() {
+                            _selectedBudgetFilter = val;
+                          });
+                        }
+                      },
+                    ),
                   ),
                 ],
               ),
             ),
-          ];
-        },
+          ),
+          Expanded(
+            child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+              stream: widget.service.streamUsers(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Text('Error al leer Firestore: ${snapshot.error}');
+                }
+
+                if (!snapshot.hasData) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(32),
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
+
+                final docs = snapshot.data!.docs;
+                final filteredDocs = docs.where((doc) => _matchesFilters(doc.data())).toList();
+
+                if (filteredDocs.isEmpty) {
+                  return const Card(
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(32),
+                        child: Text('No se encontraron usuarios con los filtros aplicados.'),
+                      ),
+                    ),
+                  );
+                }
+
+                return Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: DataTable(
+                          columns: const [
+                            DataColumn(label: Text('Nombre')),
+                            DataColumn(label: Text('Correo')),
+                            DataColumn(label: Text('Presupuesto')),
+                            DataColumn(label: Text('Vehículo Principal')),
+                            DataColumn(label: Text('Acciones')),
+                          ],
+                          rows: filteredDocs.map((doc) {
+                            final Map<String, dynamic> data = doc.data();
+                            final String docId = doc.id;
+                            final String nombre = (data['nombre_mostrar'] ?? 'Sin nombre').toString();
+                            final String correo = (data['email'] ?? 'Sin correo').toString();
+                            final int presupuesto = int.tryParse(data['limite_presupuesto_mensual']?.toString() ?? '0') ?? 0;
+
+                            return DataRow(
+                              cells: [
+                                DataCell(Text(nombre)),
+                                DataCell(Text(correo)),
+                                DataCell(Text('\$$presupuesto')),
+                                DataCell(Text((data['vehiculo_principal_id'] ?? 'Ninguno').toString())),
+                                DataCell(
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(Icons.edit_outlined, color: Colors.blue, size: 20),
+                                        tooltip: 'Editar Presupuesto',
+                                        onPressed: () {
+                                          _mostrarDialogoEdicion(context, docId, nombre, presupuesto);
+                                        },
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.lock_reset_outlined, color: Colors.orange, size: 20),
+                                        tooltip: 'Restablecer Contraseña',
+                                        onPressed: () {
+                                          _enviarResetPassword(context, correo);
+                                        },
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                                        tooltip: 'Eliminar Usuario',
+                                        onPressed: () {
+                                          _mostrarDialogoEliminar(context, docId, nombre);
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -471,7 +621,7 @@ class UsersPage extends StatelessWidget {
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0EA5E9)),
             onPressed: () {
               FirebaseFirestore.instance.collection('usuarios').doc(docId).delete();
               Navigator.pop(context); // Cierra el diálogo
@@ -484,64 +634,263 @@ class UsersPage extends StatelessWidget {
   }
 }
 
-class PorticosPage extends StatelessWidget {
+class PorticosPage extends StatefulWidget {
   const PorticosPage({super.key, required this.service});
 
   final AdminFirestoreService service;
+
+  @override
+  State<PorticosPage> createState() => _PorticosPageState();
+}
+
+class _PorticosPageState extends State<PorticosPage> {
+  final TextEditingController _searchCtrl = TextEditingController();
+  String _searchQuery = '';
+  String _selectedHighwayFilter = 'Todas';
+  String _selectedDirectionFilter = 'Todos';
+
+  @override
+  void initState() {
+    super.initState();
+    _searchCtrl.addListener(() {
+      setState(() {
+        _searchQuery = _searchCtrl.text.toLowerCase().trim();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
+  bool _matchesFilters(Map<String, dynamic> rawData) {
+    final Map<String, dynamic> data = (rawData.containsKey('datos') && rawData['datos'] is Map)
+        ? Map<String, dynamic>.from(rawData['datos'])
+        : rawData;
+
+    final nombre = (data['nombre'] ?? data['autopista'] ?? '').toString().toLowerCase();
+    if (_searchQuery.isNotEmpty && !nombre.contains(_searchQuery)) {
+      return false;
+    }
+
+    final autopista = (data['autopista'] ?? '').toString();
+    if (_selectedHighwayFilter != 'Todas' && autopista != _selectedHighwayFilter) {
+      return false;
+    }
+
+    final sentido = (data['sentido'] ?? '').toString();
+    if (_selectedDirectionFilter != 'Todos' && sentido != _selectedDirectionFilter) {
+      return false;
+    }
+
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
     return _AdminPageScaffold(
       title: 'Pórticos',
       subtitle: 'Catálogo operativo compartido con la app final. Administra las tarifas aquí.',
-      child: _FirestoreTable(
-        stream: service.streamPorticos(),
-        emptyMessage: 'No hay pórticos cargados.',
-        columns: const ['Nombre', 'Sentido', 'Tarifa Base', 'Tarifa Punta', 'Tarifa Saturación', 'Acciones'],
-        rowBuilder: (doc) {
-          final Map<String, dynamic> rawData = doc.data();
-          final String docId = doc.id;
-          
-          // Extraer información si está anidada dentro de un mapa llamado 'datos'
-          final bool isNested = rawData.containsKey('datos') && rawData['datos'] is Map;
-          final Map<String, dynamic> data = (rawData.containsKey('datos') && rawData['datos'] is Map)
-              ? Map<String, dynamic>.from(rawData['datos'])
-              : rawData;
+      child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+        stream: widget.service.streamPorticos(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Text('Error al leer Firestore: ${snapshot.error}');
+          }
 
-          final String nombre = (data['nombre'] ?? data['autopista'] ?? 'Sin nombre').toString();
-          final String sentido = (data['sentido'] ?? '-').toString();
-          final String base = (data['tarifa_base'] ?? data['costo'] ?? data['Tarifa_Base'] ?? data['Tarifa Base'] ?? '0').toString();
-          final String punta = (data['tarifa_punta'] ?? data['costoPunta'] ?? data['Tarifa_Punta'] ?? data['Tarifa Punta'] ?? '0').toString();
-          final String saturacion = (data['tarifa_saturacion'] ?? data['costoSaturacion'] ?? data['Tarifa_Saturacion'] ?? data['Tarifa Saturacion'] ?? '0').toString();
-
-          return [
-            DataCell(Text(nombre)),
-            DataCell(Text(sentido)),
-            DataCell(Text('\$$base')),
-            DataCell(Text('\$$punta')),
-            DataCell(Text('\$$saturacion')),
-            DataCell(
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.edit_outlined, color: Colors.blue, size: 20),
-                    tooltip: 'Editar Tarifas',
-                    onPressed: () {
-                      _mostrarDialogoEdicion(context, docId, nombre, base, punta, saturacion, isNested);
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
-                    tooltip: 'Eliminar Pórtico',
-                    onPressed: () {
-                      _mostrarDialogoEliminar(context, docId, nombre);
-                    },
-                  ),
-                ],
+          if (!snapshot.hasData) {
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.all(32),
+                child: CircularProgressIndicator(),
               ),
-            ),
-          ];
+            );
+          }
+
+          final docs = snapshot.data!.docs;
+
+          final Set<String> highwaysSet = {};
+          for (var doc in docs) {
+            final rawData = doc.data();
+            final data = (rawData.containsKey('datos') && rawData['datos'] is Map)
+                ? Map<String, dynamic>.from(rawData['datos'])
+                : rawData;
+            final String h = (data['autopista'] ?? '').toString();
+            if (h.isNotEmpty) {
+              highwaysSet.add(h);
+            }
+          }
+          final List<String> uniqueHighways = highwaysSet.toList()..sort();
+
+          if (_selectedHighwayFilter != 'Todas' && !highwaysSet.contains(_selectedHighwayFilter)) {
+            _selectedHighwayFilter = 'Todas';
+          }
+
+          final filteredDocs = docs.where((doc) => _matchesFilters(doc.data())).toList();
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Card(
+                margin: const EdgeInsets.only(bottom: 16),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: TextField(
+                          controller: _searchCtrl,
+                          decoration: InputDecoration(
+                            isDense: true,
+                            labelText: 'Buscar pórtico...',
+                            hintText: 'Buscar por nombre',
+                            prefixIcon: const Icon(Icons.search, size: 20),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        flex: 2,
+                        child: DropdownButtonFormField<String>(
+                          initialValue: _selectedHighwayFilter,
+                          decoration: InputDecoration(
+                            isDense: true,
+                            labelText: 'Autopista',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          items: [
+                            const DropdownMenuItem(value: 'Todas', child: Text('Todas las autopistas')),
+                            ...uniqueHighways.map((h) => DropdownMenuItem(value: h, child: Text(h))),
+                          ],
+                          onChanged: (val) {
+                            if (val != null) {
+                              setState(() {
+                                _selectedHighwayFilter = val;
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        flex: 1,
+                        child: DropdownButtonFormField<String>(
+                          initialValue: _selectedDirectionFilter,
+                          decoration: InputDecoration(
+                            isDense: true,
+                            labelText: 'Sentido',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          items: const [
+                            DropdownMenuItem(value: 'Todos', child: Text('Todos')),
+                            DropdownMenuItem(value: 'N-S', child: Text('N-S')),
+                            DropdownMenuItem(value: 'S-N', child: Text('S-N')),
+                            DropdownMenuItem(value: 'O-P', child: Text('O-P')),
+                            DropdownMenuItem(value: 'P-O', child: Text('P-O')),
+                          ],
+                          onChanged: (val) {
+                            if (val != null) {
+                              setState(() {
+                                _selectedDirectionFilter = val;
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                child: filteredDocs.isEmpty
+                    ? const Card(
+                        child: Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(32),
+                            child: Text('No se encontraron pórticos con los filtros aplicados.'),
+                          ),
+                        ),
+                      )
+                    : Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: DataTable(
+                                columns: const [
+                                  DataColumn(label: Text('Nombre')),
+                                  DataColumn(label: Text('Sentido')),
+                                  DataColumn(label: Text('Tarifa Base')),
+                                  DataColumn(label: Text('Tarifa Punta')),
+                                  DataColumn(label: Text('Tarifa Saturación')),
+                                  DataColumn(label: Text('Acciones')),
+                                ],
+                                rows: filteredDocs.map((doc) {
+                                  final Map<String, dynamic> rawData = doc.data();
+                                  final String docId = doc.id;
+                                  
+                                  final bool isNested = rawData.containsKey('datos') && rawData['datos'] is Map;
+                                  final Map<String, dynamic> data = isNested
+                                      ? Map<String, dynamic>.from(rawData['datos'])
+                                      : rawData;
+
+                                  final String nombre = (data['nombre'] ?? data['autopista'] ?? 'Sin nombre').toString();
+                                  final String sentido = (data['sentido'] ?? '-').toString();
+                                  final String base = (data['tarifa_base'] ?? data['costo'] ?? data['Tarifa_Base'] ?? data['Tarifa Base'] ?? '0').toString();
+                                  final String punta = (data['tarifa_punta'] ?? data['costoPunta'] ?? data['Tarifa_Punta'] ?? data['Tarifa Punta'] ?? '0').toString();
+                                  final String saturacion = (data['tarifa_saturacion'] ?? data['costoSaturacion'] ?? data['Tarifa_Saturacion'] ?? data['Tarifa Saturacion'] ?? '0').toString();
+
+                                  return DataRow(
+                                    cells: [
+                                      DataCell(Text(nombre)),
+                                      DataCell(Text(sentido)),
+                                      DataCell(Text('\$$base')),
+                                      DataCell(Text('\$$punta')),
+                                      DataCell(Text('\$$saturacion')),
+                                      DataCell(
+                                        Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            IconButton(
+                                              icon: const Icon(Icons.edit_outlined, color: Colors.blue, size: 20),
+                                              tooltip: 'Editar Tarifas',
+                                              onPressed: () {
+                                                _mostrarDialogoEdicion(context, docId, nombre, base, punta, saturacion, isNested);
+                                              },
+                                            ),
+                                            IconButton(
+                                              icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                                              tooltip: 'Eliminar Pórtico',
+                                              onPressed: () {
+                                                _mostrarDialogoEliminar(context, docId, nombre);
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+              ),
+            ],
+          );
         },
       ),
     );
@@ -586,7 +935,6 @@ class PorticosPage extends StatelessWidget {
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0EA5E9)),
             onPressed: () {
-              // Reemplazamos comas por puntos por si el administrador escribe "700,50"
               final double? nBase = double.tryParse(baseCtrl.text.replaceAll(',', '.'));
               final double? nPunta = double.tryParse(puntaCtrl.text.replaceAll(',', '.'));
               final double? nSaturacion = double.tryParse(saturacionCtrl.text.replaceAll(',', '.'));
@@ -820,69 +1168,6 @@ class _QuickAction extends StatelessWidget {
   }
 } 
 
-
-class _FirestoreTable extends StatelessWidget {
-  const _FirestoreTable({
-    required this.stream,
-    required this.emptyMessage,
-    required this.columns,
-    required this.rowBuilder,
-  });
-
-  final Stream<QuerySnapshot<Map<String, dynamic>>> stream;
-  final String emptyMessage;
-  final List<String> columns;
-  final List<DataCell> Function(QueryDocumentSnapshot<Map<String, dynamic>>) rowBuilder;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-          stream: stream,
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return Text('Error al leer Firestore: ${snapshot.error}');
-            }
-
-            if (!snapshot.hasData) {
-              return const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(32),
-                  child: CircularProgressIndicator(),
-                ),
-              );
-            }
-
-            final List<QueryDocumentSnapshot<Map<String, dynamic>>> docs = snapshot.data!.docs;
-            if (docs.isEmpty) {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(32),
-                  child: Text(emptyMessage),
-                ),
-              );
-            }
-
-            return SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: DataTable(
-                  columns: columns.map((String column) => DataColumn(label: Text(column))).toList(),
-                  rows: docs.map((doc) {
-                    return DataRow(cells: rowBuilder(doc));
-                  }).toList(),
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
 
 class _FirestoreListTable extends StatelessWidget {
   const _FirestoreListTable({
