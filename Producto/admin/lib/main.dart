@@ -65,8 +65,21 @@ class TagOkAdminApp extends StatelessWidget {
   }
 }
 
+class SidebarItem {
+  final String title;
+  final IconData icon;
+  final Widget Function(AdminFirestoreService service) pageBuilder;
+
+  const SidebarItem({
+    required this.title,
+    required this.icon,
+    required this.pageBuilder,
+  });
+}
+
 class AdminShell extends StatefulWidget {
-  const AdminShell({super.key});
+  final String role;
+  const AdminShell({super.key, required this.role});
 
   @override
   State<AdminShell> createState() => _AdminShellState();
@@ -75,24 +88,72 @@ class AdminShell extends StatefulWidget {
 class _AdminShellState extends State<AdminShell> {
   final AdminFirestoreService _service = AdminFirestoreService();
   int _selectedIndex = 0;
+  late final List<SidebarItem> _sidebarItems;
 
-  static const List<String> _pages = <String>[
-    'Dashboard',
-    'Usuarios',
-    'Pórticos',
-    'Tarifas',
-    'Reportes',
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _sidebarItems = _getSidebarItems(widget.role);
+  }
+
+  List<SidebarItem> _getSidebarItems(String role) {
+    final String r = role.toLowerCase().trim();
+    final bool isSuper = r == 'super_admin' || r == 'super_administrador' || r == 'superadmin' || r == 'super administrador';
+
+    final List<SidebarItem> all = [
+      SidebarItem(
+        title: 'Dashboard',
+        icon: Icons.dashboard_outlined,
+        pageBuilder: (s) => DashboardPage(service: s),
+      ),
+      SidebarItem(
+        title: 'Usuarios',
+        icon: Icons.people_alt_outlined,
+        pageBuilder: (s) => UsersPage(service: s),
+      ),
+      SidebarItem(
+        title: 'Pórticos',
+        icon: Icons.toll_outlined,
+        pageBuilder: (s) => PorticosPage(service: s),
+      ),
+      SidebarItem(
+        title: 'Tarifas',
+        icon: Icons.payments_outlined,
+        pageBuilder: (s) => TariffsPage(service: s),
+      ),
+      SidebarItem(
+        title: 'Reportes',
+        icon: Icons.bar_chart_outlined,
+        pageBuilder: (s) => ReportsPage(service: s),
+      ),
+      SidebarItem(
+        title: 'Auditoría',
+        icon: Icons.receipt_long_outlined,
+        pageBuilder: (s) => AuditLogPage(service: s),
+      ),
+    ];
+
+    if (isSuper) {
+      return all;
+    } else {
+      // Operator gets Dashboard, Pórticos, Tarifas, Reportes
+      return all.where((item) => 
+        item.title == 'Dashboard' || 
+        item.title == 'Pórticos' || 
+        item.title == 'Tarifas' || 
+        item.title == 'Reportes'
+      ).toList();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final Widget content = switch (_selectedIndex) {
-      0 => DashboardPage(service: _service),
-      1 => UsersPage(service: _service),
-      2 => PorticosPage(service: _service),
-      3 => TariffsPage(service: _service),
-      _ => ReportsPage(service: _service),
-    };
+    if (_selectedIndex >= _sidebarItems.length) {
+      _selectedIndex = 0;
+    }
+    
+    final item = _sidebarItems[_selectedIndex];
+    final Widget content = item.pageBuilder(_service);
 
     return Scaffold(
       body: Row(
@@ -129,9 +190,10 @@ class _AdminShellState extends State<AdminShell> {
                   Expanded(
                     child: ListView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
-                      itemCount: _pages.length,
+                      itemCount: _sidebarItems.length,
                       itemBuilder: (context, index) {
                         final bool selected = _selectedIndex == index;
+                        final sidebarItem = _sidebarItems[index];
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: ListTile(
@@ -142,8 +204,8 @@ class _AdminShellState extends State<AdminShell> {
                             selectedTileColor: const Color(0xFF1E293B),
                             iconColor: selected ? const Color(0xFF38BDF8) : const Color(0xFFCBD5E1),
                             textColor: selected ? Colors.white : const Color(0xFFCBD5E1),
-                            leading: Icon(_iconFor(index)),
-                            title: Text(_pages[index]),
+                            leading: Icon(sidebarItem.icon),
+                            title: Text(sidebarItem.title),
                             onTap: () => setState(() => _selectedIndex = index),
                           ),
                         );
@@ -151,6 +213,10 @@ class _AdminShellState extends State<AdminShell> {
                     ),
                   ),
                   const Divider(color: Color(0xFF1E293B)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    child: _UserProfileCard(role: widget.role),
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     child: ListTile(
@@ -167,7 +233,7 @@ class _AdminShellState extends State<AdminShell> {
                     ),
                   ),
                   const Padding(
-                    padding: EdgeInsets.all(24),
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     child: _AdminHintCard(),
                   ),
                 ],
@@ -178,16 +244,6 @@ class _AdminShellState extends State<AdminShell> {
         ],
       ),
     );
-  }
-
-  IconData _iconFor(int index) {
-    return switch (index) {
-      0 => Icons.dashboard_outlined,
-      1 => Icons.people_alt_outlined,
-      2 => Icons.toll_outlined,
-      3 => Icons.payments_outlined,
-      _ => Icons.bar_chart_outlined,
-    };
   }
 }
 
@@ -262,6 +318,72 @@ class _AdminHintCard extends StatelessWidget {
           Text(
             'Este panel comparte el mismo Firestore que la app final. Usa roles para restringir edición y publicación.',
             style: TextStyle(color: Color(0xFFCBD5E1), fontSize: 12, height: 1.4),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _UserProfileCard extends StatelessWidget {
+  final String role;
+  const _UserProfileCard({required this.role});
+
+  @override
+  Widget build(BuildContext context) {
+    final String email = FirebaseAuth.instance.currentUser?.email ?? 'admin@tagok.cl';
+    final String r = role.toLowerCase().trim();
+    final bool isSuper = r == 'super_admin' || r == 'super_administrador' || r == 'superadmin' || r == 'super administrador';
+    
+    final String roleLabel = isSuper ? 'Super Administrador' : 'Administrador Operacional';
+    final Color badgeBg = isSuper ? const Color(0xFF0EA5E9).withValues(alpha: 0.12) : const Color(0xFFF59E0B).withValues(alpha: 0.12);
+    final Color badgeText = isSuper ? const Color(0xFF38BDF8) : const Color(0xFFFBBF24);
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E293B),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFF334155), width: 1),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            backgroundColor: badgeBg,
+            radius: 16,
+            child: Icon(
+              isSuper ? Icons.admin_panel_settings : Icons.person_outline, 
+              color: badgeText, 
+              size: 18
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  email,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  roleLabel,
+                  style: TextStyle(
+                    color: badgeText,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -688,6 +810,11 @@ class _UsersPageState extends State<UsersPage> {
                 'nombre_mostrar': nombreCtrl.text,
                 'limite_presupuesto_mensual': nuevoLimite,
               });
+              widget.service.logAction(
+                action: 'EDIT_USER',
+                target: nombreActual,
+                details: 'Presupuesto: \$${_formatNumber(limiteActual)} -> \$${_formatNumber(nuevoLimite)}. Nombre: $nombreActual -> ${nombreCtrl.text}.',
+              );
               Navigator.pop(context);
             },
             child: const Text('Guardar', style: TextStyle(color: Colors.white)),
@@ -701,6 +828,11 @@ class _UsersPageState extends State<UsersPage> {
     if (correo == 'Sin correo') return;
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: correo);
+      widget.service.logAction(
+        action: 'RESET_PASSWORD',
+        target: correo,
+        details: 'Se envió un correo de restablecimiento de contraseña.',
+      );
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Correo de restablecimiento enviado a $correo'), backgroundColor: Colors.green),
@@ -728,6 +860,11 @@ class _UsersPageState extends State<UsersPage> {
             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0EA5E9)),
             onPressed: () {
               FirebaseFirestore.instance.collection('usuarios').doc(docId).delete();
+              widget.service.logAction(
+                action: 'DELETE_USER',
+                target: nombre,
+                details: 'Se eliminó definitivamente el usuario y sus datos.',
+              );
               Navigator.pop(context);
             },
             child: const Text('Sí, Eliminar', style: TextStyle(color: Colors.white)),
@@ -977,17 +1114,58 @@ class _PorticosPageState extends State<PorticosPage> {
                                         final String punta = (data['tarifa_punta'] ?? data['costoPunta'] ?? data['Tarifa_Punta'] ?? data['Tarifa Punta'] ?? '0').toString();
                                         final String saturacion = (data['tarifa_saturacion'] ?? data['costoSaturacion'] ?? data['Tarifa_Saturacion'] ?? data['Tarifa Saturacion'] ?? '0').toString();
 
+                                        final String lat = (data['lat'] ?? (data['location'] is Map ? data['location']['lat'] : '') ?? (data['ubicacion'] is GeoPoint ? (data['ubicacion'] as GeoPoint).latitude : '') ?? '').toString();
+                                        final String lng = (data['lng'] ?? (data['location'] is Map ? data['location']['lng'] : '') ?? (data['ubicacion'] is GeoPoint ? (data['ubicacion'] as GeoPoint).longitude : '') ?? '').toString();
+                                        final String grupo = (data['grupo'] ?? data['group'] ?? '').toString();
+                                        final String secuencia = (data['secuencia'] ?? data['sequence'] ?? '').toString();
+
                                         return DataRow(
                                           cells: [
                                             DataCell(
-                                              Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: [
-                                                  Text(nombre, style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-                                                  const SizedBox(height: 4),
-                                                  _getHighwayBadge(autopista),
-                                                ],
+                                              Padding(
+                                                padding: const EdgeInsets.symmetric(vertical: 6),
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(nombre, style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                                                    const SizedBox(height: 4),
+                                                    Wrap(
+                                                      spacing: 4,
+                                                      runSpacing: 4,
+                                                      crossAxisAlignment: WrapCrossAlignment.center,
+                                                      children: [
+                                                        _getHighwayBadge(autopista),
+                                                        if (grupo.isNotEmpty)
+                                                          Container(
+                                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                                            decoration: BoxDecoration(
+                                                              color: const Color(0xFFF1F5F9),
+                                                              borderRadius: BorderRadius.circular(6),
+                                                            ),
+                                                            child: Text(grupo, style: const TextStyle(fontSize: 10, color: Color(0xFF64748B), fontWeight: FontWeight.bold)),
+                                                          ),
+                                                        if (secuencia.isNotEmpty)
+                                                          Container(
+                                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                                            decoration: BoxDecoration(
+                                                              color: const Color(0xFFF8FAFC),
+                                                              border: Border.all(color: const Color(0xFFE2E8F0)),
+                                                              borderRadius: BorderRadius.circular(6),
+                                                            ),
+                                                            child: Text('Seq: $secuencia', style: const TextStyle(fontSize: 10, color: Color(0xFF64748B), fontWeight: FontWeight.bold)),
+                                                          ),
+                                                      ],
+                                                    ),
+                                                    if (lat.isNotEmpty && lng.isNotEmpty) ...[
+                                                      const SizedBox(height: 4),
+                                                      Text(
+                                                        '$lat, $lng',
+                                                        style: const TextStyle(fontSize: 10, color: Color(0xFF94A3B8), fontFamily: 'monospace'),
+                                                      ),
+                                                    ],
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                             DataCell(
@@ -1012,9 +1190,14 @@ class _PorticosPageState extends State<PorticosPage> {
                                                 children: [
                                                   IconButton(
                                                     icon: const Icon(Icons.edit_outlined, color: Colors.blue, size: 20),
-                                                    tooltip: 'Editar Tarifas',
+                                                    tooltip: 'Editar Pórtico',
                                                     onPressed: () {
-                                                      _mostrarDialogoEdicion(context, docId, nombre, base, punta, saturacion, isNested);
+                                                      _mostrarDialogoEdicion(
+                                                        context,
+                                                        docId,
+                                                        rawData,
+                                                        isNested,
+                                                      );
                                                     },
                                                   ),
                                                   IconButton(
@@ -1061,39 +1244,125 @@ class _PorticosPageState extends State<PorticosPage> {
     );
   }
 
-  void _mostrarDialogoEdicion(BuildContext context, String docId, String nombre, String baseActual, String puntaActual, String saturacionActual, bool isNested) {
+  void _mostrarDialogoEdicion(
+    BuildContext context,
+    String docId,
+    Map<String, dynamic> rawData,
+    bool isNested,
+  ) {
+    final Map<String, dynamic> data = isNested
+        ? Map<String, dynamic>.from(rawData['datos'] ?? {})
+        : rawData;
+
+    final String nombreActual = (data['nombre'] ?? data['autopista'] ?? 'Sin nombre').toString();
+    final String autopistaActual = (data['autopista'] ?? '').toString();
+    final String sentidoActual = (data['sentido'] ?? '').toString();
+    final String baseActual = (data['tarifa_base'] ?? data['costo'] ?? data['cost'] ?? data['Tarifa_Base'] ?? data['Tarifa Base'] ?? '0').toString();
+    final String puntaActual = (data['tarifa_punta'] ?? data['costoPunta'] ?? data['Tarifa_Punta'] ?? data['Tarifa Punta'] ?? '0').toString();
+    final String saturacionActual = (data['tarifa_saturacion'] ?? data['costoSaturacion'] ?? data['Tarifa_Saturacion'] ?? data['Tarifa Saturacion'] ?? '0').toString();
+
+    final String latActual = (data['lat'] ?? (data['location'] is Map ? data['location']['lat'] : '') ?? (data['ubicacion'] is GeoPoint ? (data['ubicacion'] as GeoPoint).latitude : '') ?? '').toString();
+    final String lngActual = (data['lng'] ?? (data['location'] is Map ? data['location']['lng'] : '') ?? (data['ubicacion'] is GeoPoint ? (data['ubicacion'] as GeoPoint).longitude : '') ?? '').toString();
+    final String grupoActual = (data['grupo'] ?? data['group'] ?? '').toString();
+    final String secuenciaActual = (data['secuencia'] ?? data['sequence'] ?? '').toString();
+
+    final TextEditingController nombreCtrl = TextEditingController(text: nombreActual);
+    final TextEditingController autopistaCtrl = TextEditingController(text: autopistaActual);
     final TextEditingController baseCtrl = TextEditingController(text: baseActual);
     final TextEditingController puntaCtrl = TextEditingController(text: puntaActual);
     final TextEditingController saturacionCtrl = TextEditingController(text: saturacionActual);
+    final TextEditingController latCtrl = TextEditingController(text: latActual);
+    final TextEditingController lngCtrl = TextEditingController(text: lngActual);
+    final TextEditingController grupoCtrl = TextEditingController(text: grupoActual);
+    final TextEditingController secuenciaCtrl = TextEditingController(text: secuenciaActual);
+    String selectedSentido = sentidoActual;
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Colors.white,
-        title: const Text('Editar Tarifas'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('Pórtico: $nombre', style: const TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            TextField(
-              controller: baseCtrl,
-              decoration: const InputDecoration(labelText: 'Tarifa Base (\$)'),
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: puntaCtrl,
-              decoration: const InputDecoration(labelText: 'Tarifa Punta (\$)'),
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: saturacionCtrl,
-              decoration: const InputDecoration(labelText: 'Tarifa Saturación (\$)'),
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            ),
-          ],
+        title: const Text('Editar Pórtico'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Identificación', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF64748B))),
+              const SizedBox(height: 8),
+              TextField(
+                controller: nombreCtrl,
+                decoration: const InputDecoration(labelText: 'Nombre del Pórtico'),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: autopistaCtrl,
+                decoration: const InputDecoration(labelText: 'Autopista'),
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                initialValue: ['N-S', 'S-N', 'O-P', 'P-O'].contains(selectedSentido) ? selectedSentido : null,
+                decoration: const InputDecoration(labelText: 'Sentido de Circulación'),
+                items: const [
+                  DropdownMenuItem(value: 'N-S', child: Text('N-S')),
+                  DropdownMenuItem(value: 'S-N', child: Text('S-N')),
+                  DropdownMenuItem(value: 'O-P', child: Text('O-P')),
+                  DropdownMenuItem(value: 'P-O', child: Text('P-O')),
+                ],
+                onChanged: (val) {
+                  if (val != null) {
+                    selectedSentido = val;
+                  }
+                },
+              ),
+              const Divider(height: 32),
+              const Text('Ubicación Geográfica', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF64748B))),
+              const SizedBox(height: 8),
+              TextField(
+                controller: latCtrl,
+                decoration: const InputDecoration(labelText: 'Latitud'),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: lngCtrl,
+                decoration: const InputDecoration(labelText: 'Longitud'),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              ),
+              const Divider(height: 32),
+              const Text('Clasificación Operativa', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF64748B))),
+              const SizedBox(height: 8),
+              TextField(
+                controller: grupoCtrl,
+                decoration: const InputDecoration(labelText: 'Grupo / Concesión'),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: secuenciaCtrl,
+                decoration: const InputDecoration(labelText: 'Secuencia (Orden)'),
+                keyboardType: TextInputType.number,
+              ),
+              const Divider(height: 32),
+              const Text('Tarifas Especiales', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF64748B))),
+              const SizedBox(height: 8),
+              TextField(
+                controller: baseCtrl,
+                decoration: const InputDecoration(labelText: 'Tarifa Base (\$)'),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: puntaCtrl,
+                decoration: const InputDecoration(labelText: 'Tarifa Punta (\$)'),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: saturacionCtrl,
+                decoration: const InputDecoration(labelText: 'Tarifa Saturación (\$)'),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              ),
+            ],
+          ),
         ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
@@ -1104,21 +1373,94 @@ class _PorticosPageState extends State<PorticosPage> {
               final double? nPunta = double.tryParse(puntaCtrl.text.replaceAll(',', '.'));
               final double? nSaturacion = double.tryParse(saturacionCtrl.text.replaceAll(',', '.'));
 
+              final double? nLat = double.tryParse(latCtrl.text.replaceAll(',', '.'));
+              final double? nLng = double.tryParse(lngCtrl.text.replaceAll(',', '.'));
+
+              final String newNombre = nombreCtrl.text.trim();
+              final String newAutopista = autopistaCtrl.text.trim();
+              final String newSentido = selectedSentido;
+              final String newGrupo = grupoCtrl.text.trim();
+              final int? newSecuencia = int.tryParse(secuenciaCtrl.text.trim());
+
               final Map<String, dynamic> updates = {};
               
-              if (nBase != null) {
-                updates[isNested ? 'datos.tarifa_base' : 'tarifa_base'] = nBase;
-              }
-              if (nPunta != null) {
-                updates[isNested ? 'datos.tarifa_punta' : 'tarifa_punta'] = nPunta;
-              }
-              if (nSaturacion != null) {
-                updates[isNested ? 'datos.tarifa_saturacion' : 'tarifa_saturacion'] = nSaturacion;
+              // 1. Coordinates update strategy
+              if (nLat != null && nLng != null) {
+                if (data.containsKey('ubicacion') || data['ubicacion'] is GeoPoint) {
+                  updates[isNested ? 'datos.ubicacion' : 'ubicacion'] = GeoPoint(nLat, nLng);
+                } else if (data.containsKey('location') || data['location'] is Map) {
+                  updates[isNested ? 'datos.location.lat' : 'location.lat'] = nLat;
+                  updates[isNested ? 'datos.location.lng' : 'location.lng'] = nLng;
+                } else {
+                  updates[isNested ? 'datos.lat' : 'lat'] = nLat;
+                  updates[isNested ? 'datos.lng' : 'lng'] = nLng;
+                }
               }
 
-              if (updates.isNotEmpty) {
-                FirebaseFirestore.instance.collection('porticos').doc(docId).update(updates);
+              // 2. Fares update strategy
+              final String baseKey = isNested 
+                  ? (Map<String, dynamic>.from(rawData['datos'] ?? {}).containsKey('costo') ? 'datos.costo' : (Map<String, dynamic>.from(rawData['datos'] ?? {}).containsKey('cost') ? 'datos.cost' : 'datos.tarifa_base'))
+                  : (rawData.containsKey('costo') ? 'costo' : (rawData.containsKey('cost') ? 'cost' : 'tarifa_base'));
+
+              final String puntaKey = isNested 
+                  ? (Map<String, dynamic>.from(rawData['datos'] ?? {}).containsKey('costoPunta') ? 'datos.costoPunta' : 'datos.tarifa_punta')
+                  : (rawData.containsKey('costoPunta') ? 'costoPunta' : 'tarifa_punta');
+
+              final String satKey = isNested 
+                  ? (Map<String, dynamic>.from(rawData['datos'] ?? {}).containsKey('costoSaturacion') ? 'datos.costoSaturacion' : 'datos.tarifa_saturacion')
+                  : (rawData.containsKey('costoSaturacion') ? 'costoSaturacion' : 'tarifa_saturacion');
+
+              if (nBase != null) updates[baseKey] = nBase;
+              if (nPunta != null) updates[puntaKey] = nPunta;
+              if (nSaturacion != null) updates[satKey] = nSaturacion;
+
+              // 3. Identification and classification keys
+              final String nombreKey = isNested ? 'datos.nombre' : 'nombre';
+              final String autopistaKey = isNested 
+                  ? (Map<String, dynamic>.from(rawData['datos'] ?? {}).containsKey('highway') ? 'datos.highway' : 'datos.autopista')
+                  : (rawData.containsKey('highway') ? 'highway' : 'autopista');
+
+              final String sentidoKey = isNested 
+                  ? (Map<String, dynamic>.from(rawData['datos'] ?? {}).containsKey('direction') ? 'datos.direction' : 'datos.sentido')
+                  : (rawData.containsKey('direction') ? 'direction' : 'sentido');
+
+              final String grupoKey = isNested
+                  ? (Map<String, dynamic>.from(rawData['datos'] ?? {}).containsKey('group') ? 'datos.group' : 'datos.grupo')
+                  : (rawData.containsKey('group') ? 'group' : 'grupo');
+
+              final String secuenciaKey = isNested
+                  ? (Map<String, dynamic>.from(rawData['datos'] ?? {}).containsKey('sequence') ? 'datos.sequence' : 'datos.secuencia')
+                  : (rawData.containsKey('sequence') ? 'sequence' : 'secuencia');
+
+              updates[nombreKey] = newNombre;
+              updates[autopistaKey] = newAutopista;
+              updates[sentidoKey] = newSentido;
+              updates[grupoKey] = newGrupo;
+              updates[secuenciaKey] = newSecuencia;
+
+              final StringBuffer logDetails = StringBuffer();
+              logDetails.write('Edición de pórtico.');
+              if (nombreActual != newNombre) logDetails.write(' Nombre: $nombreActual -> $newNombre.');
+              if (autopistaActual != newAutopista) logDetails.write(' Autopista: $autopistaActual -> $newAutopista.');
+              if (sentidoActual != newSentido) logDetails.write(' Sentido: $sentidoActual -> $newSentido.');
+              if (latActual != latCtrl.text || lngActual != lngCtrl.text) {
+                logDetails.write(' Ubicación: $latActual, $lngActual -> ${latCtrl.text}, ${lngCtrl.text}.');
               }
+              if (grupoActual != newGrupo) logDetails.write(' Grupo: $grupoActual -> $newGrupo.');
+              if (secuenciaActual != secuenciaCtrl.text) logDetails.write(' Secuencia: $secuenciaActual -> ${secuenciaCtrl.text}.');
+              
+              logDetails.write(' Tarifa Base: \$$baseActual -> \$${baseCtrl.text}.');
+              logDetails.write(' Tarifa Punta: \$$puntaActual -> \$${puntaCtrl.text}.');
+              logDetails.write(' Tarifa Sat.: \$$saturacionActual -> \$${saturacionCtrl.text}.');
+
+              FirebaseFirestore.instance.collection('porticos').doc(docId).update(updates);
+
+              widget.service.logAction(
+                action: 'EDIT_TARIFF',
+                target: newNombre,
+                details: logDetails.toString(),
+              );
+
               Navigator.pop(context);
             },
             child: const Text('Guardar', style: TextStyle(color: Colors.white)),
@@ -1141,6 +1483,11 @@ class _PorticosPageState extends State<PorticosPage> {
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () {
               FirebaseFirestore.instance.collection('porticos').doc(docId).delete();
+              widget.service.logAction(
+                action: 'DELETE_PORTICO',
+                target: nombre,
+                details: 'Se eliminó el pórtico master de la base de datos.',
+              );
               Navigator.pop(context);
             },
             child: const Text('Sí, Eliminar', style: TextStyle(color: Colors.white)),
@@ -1950,6 +2297,319 @@ class _StatCard extends StatelessWidget {
               Text(label, style: const TextStyle(color: Color(0xFF64748B))),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class AuditLogPage extends StatefulWidget {
+  const AuditLogPage({super.key, required this.service});
+
+  final AdminFirestoreService service;
+
+  @override
+  State<AuditLogPage> createState() => _AuditLogPageState();
+}
+
+class _AuditLogPageState extends State<AuditLogPage> {
+  final TextEditingController _searchCtrl = TextEditingController();
+  String _searchQuery = '';
+  String _selectedActionFilter = 'Todos';
+  int _currentPage = 0;
+  int _rowsPerPage = 10;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchCtrl.addListener(() {
+      setState(() {
+        _searchQuery = _searchCtrl.text.toLowerCase().trim();
+        _currentPage = 0;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
+  bool _matchesFilters(Map<String, dynamic> data) {
+    final String adminEmail = (data['adminEmail'] ?? '').toString().toLowerCase();
+    final String target = (data['target'] ?? '').toString().toLowerCase();
+    final String details = (data['details'] ?? '').toString().toLowerCase();
+    final String action = (data['action'] ?? '').toString();
+
+    if (_searchQuery.isNotEmpty &&
+        !adminEmail.contains(_searchQuery) &&
+        !target.contains(_searchQuery) &&
+        !details.contains(_searchQuery)) {
+      return false;
+    }
+
+    if (_selectedActionFilter != 'Todos' && action != _selectedActionFilter) {
+      return false;
+    }
+
+    return true;
+  }
+
+  String _formatFecha(dynamic dateVal) {
+    if (dateVal == null) return '-';
+    if (dateVal is Timestamp) {
+      final date = dateVal.toDate();
+      final y = date.year;
+      final m = date.month.toString().padLeft(2, '0');
+      final d = date.day.toString().padLeft(2, '0');
+      final h = date.hour.toString().padLeft(2, '0');
+      final min = date.minute.toString().padLeft(2, '0');
+      return '$y-$m-$d $h:$min';
+    }
+    return dateVal.toString();
+  }
+
+  Widget _getActionBadge(String action) {
+    Color bgColor;
+    Color textColor;
+    String label;
+    switch (action) {
+      case 'EDIT_USER':
+        bgColor = const Color(0xFFE0E7FF);
+        textColor = const Color(0xFF4338CA);
+        label = 'Editar Usuario';
+        break;
+      case 'RESET_PASSWORD':
+        bgColor = const Color(0xFFFEF3C7);
+        textColor = const Color(0xFFD97706);
+        label = 'Resetear Clave';
+        break;
+      case 'DELETE_USER':
+        bgColor = const Color(0xFFFEE2E2);
+        textColor = const Color(0xFFDC2626);
+        label = 'Eliminar Usuario';
+        break;
+      case 'EDIT_TARIFF':
+        bgColor = const Color(0xFFDBEAFE);
+        textColor = const Color(0xFF1D4ED8);
+        label = 'Editar Tarifas';
+        break;
+      case 'DELETE_PORTICO':
+        bgColor = const Color(0xFFFFEDD5);
+        textColor = const Color(0xFFEA580C);
+        label = 'Eliminar Pórtico';
+        break;
+      default:
+        bgColor = const Color(0xFFF1F5F9);
+        textColor = const Color(0xFF475569);
+        label = action;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: textColor.withValues(alpha: 0.15)),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(fontWeight: FontWeight.bold, color: textColor, fontSize: 12),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _AdminPageScaffold(
+      title: 'Bitácora de Auditoría',
+      subtitle: 'Historial irreversible de cambios y acciones realizadas por administradores.',
+      child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+        stream: widget.service.streamAuditLogs(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Text('Error al leer Firestore: ${snapshot.error}');
+          }
+
+          if (!snapshot.hasData) {
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.all(32),
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+
+          final docs = snapshot.data!.docs;
+          final filteredDocs = docs.where((doc) => _matchesFilters(doc.data())).toList();
+
+          if (filteredDocs.isEmpty) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildFiltersCard(),
+                const Expanded(
+                  child: Card(
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(32),
+                        child: Text('No hay registros de auditoría que coincidan con los filtros.'),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }
+
+          final int totalPages = (filteredDocs.length / _rowsPerPage).ceil();
+          if (_currentPage >= totalPages && totalPages > 0) {
+            _currentPage = totalPages - 1;
+          }
+
+          final int startIndex = _currentPage * _rowsPerPage;
+          final int endIndex = (startIndex + _rowsPerPage) > filteredDocs.length
+              ? filteredDocs.length
+              : (startIndex + _rowsPerPage);
+          final pageDocs = filteredDocs.sublist(startIndex, endIndex);
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildFiltersCard(),
+              Expanded(
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: DataTable(
+                                columns: const [
+                                  DataColumn(label: Text('Fecha')),
+                                  DataColumn(label: Text('Administrador')),
+                                  DataColumn(label: Text('Acción')),
+                                  DataColumn(label: Text('Objetivo')),
+                                  DataColumn(label: Text('Detalles')),
+                                ],
+                                rows: pageDocs.map((doc) {
+                                  final data = doc.data();
+                                  final String fechaStr = _formatFecha(data['fecha']);
+                                  final String adminEmail = (data['adminEmail'] ?? 'Sistema').toString();
+                                  final String action = (data['action'] ?? '').toString();
+                                  final String target = (data['target'] ?? '').toString();
+                                  final String details = (data['details'] ?? '').toString();
+
+                                  return DataRow(
+                                    cells: [
+                                      DataCell(Text(fechaStr, style: const TextStyle(fontWeight: FontWeight.w500))),
+                                      DataCell(Text(adminEmail)),
+                                      DataCell(_getActionBadge(action)),
+                                      DataCell(Text(target, style: const TextStyle(fontWeight: FontWeight.bold))),
+                                      DataCell(
+                                        Container(
+                                          constraints: const BoxConstraints(maxWidth: 350),
+                                          child: Text(
+                                            details,
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 2,
+                                            style: const TextStyle(fontSize: 12, color: Color(0xFF475569)),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const Divider(),
+                        _TablePaginationControls(
+                          currentPage: _currentPage,
+                          rowsPerPage: _rowsPerPage,
+                          totalItems: filteredDocs.length,
+                          totalPages: totalPages,
+                          startIndex: startIndex,
+                          endIndex: endIndex,
+                          onPageChanged: (page) => setState(() => _currentPage = page),
+                          onRowsPerPageChanged: (rows) => setState(() {
+                            _rowsPerPage = rows;
+                            _currentPage = 0;
+                          }),
+                          itemLabel: 'registros',
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildFiltersCard() {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Expanded(
+              flex: 3,
+              child: TextField(
+                controller: _searchCtrl,
+                decoration: InputDecoration(
+                  isDense: true,
+                  labelText: 'Buscar en bitácora...',
+                  hintText: 'Buscar por admin, objetivo o detalle',
+                  prefixIcon: const Icon(Icons.search, size: 20),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              flex: 2,
+              child: DropdownButtonFormField<String>(
+                initialValue: _selectedActionFilter,
+                decoration: InputDecoration(
+                  isDense: true,
+                  labelText: 'Tipo de Acción',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                items: const [
+                  DropdownMenuItem(value: 'Todos', child: Text('Todas las acciones')),
+                  DropdownMenuItem(value: 'EDIT_USER', child: Text('Editar Usuario')),
+                  DropdownMenuItem(value: 'RESET_PASSWORD', child: Text('Restablecer Clave')),
+                  DropdownMenuItem(value: 'DELETE_USER', child: Text('Eliminar Usuario')),
+                  DropdownMenuItem(value: 'EDIT_TARIFF', child: Text('Editar Tarifas')),
+                  DropdownMenuItem(value: 'DELETE_PORTICO', child: Text('Eliminar Pórtico')),
+                ],
+                onChanged: (val) {
+                  if (val != null) {
+                    setState(() {
+                      _selectedActionFilter = val;
+                      _currentPage = 0;
+                    });
+                  }
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );

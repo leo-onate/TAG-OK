@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -48,6 +49,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   bool _isNavigating = false; // Estado de navegación activa
   bool _hasStartedTrip = false; // Indica si el viaje actual ya fue confirmado y comenzó
   bool _isFollowingUser = true; // Si el mapa debe seguir al usuario
+  double _currentSpeedKmH = 0.0; // Velocidad actual
   Map<String, dynamic>? _selectedVehicle; // Vehículo para el viaje actual
 
   // Notificaciones y Ciclo de vida
@@ -71,6 +73,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _positionStreamSubscription?.cancel();
+    WakelockPlus.disable();
     _mapController.dispose();
     super.dispose();
   }
@@ -136,6 +139,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             _remainingPolyline = List<LatLng>.from(route.polyline);
             _passedPolyline = [];
           });
+          WakelockPlus.enable();
           
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (_currentPosition != null) {
@@ -206,6 +210,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       (Position position) {
         setState(() {
           _currentPosition = LatLng(position.latitude, position.longitude);
+          _currentSpeedKmH = position.speed > 0 ? position.speed * 3.6 : 0.0;
         });
         
         // Si estamos navegando, el mapa sigue al usuario automáticamente y recorta la ruta recorrida
@@ -405,23 +410,33 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               MaterialPageRoute(builder: (context) => RouteSetupScreen(initialOrigin: _currentPosition)),
             );
             
-            if (result is RouteData) {
+            if (result is Map) {
+              final routeData = result['route'] as RouteData;
+              final vehicleMap = result['vehicle'] as Map<String, dynamic>?;
+
               setState(() {
-                _currentRoute = result;
-                _remainingPolyline = List<LatLng>.from(result.polyline);
+                _currentRoute = routeData;
+                _remainingPolyline = List<LatLng>.from(routeData.polyline);
                 _passedPolyline = [];
-                _hasStartedTrip = false; // Reseteamos al cargar nueva ruta
+                _selectedVehicle = vehicleMap;
+                
+                // Iniciar el viaje automáticamente al regresar
+                _isNavigating = true;
+                _hasStartedTrip = true;
               });
               
-              if (result.polyline.isNotEmpty) {
-                // Enfocar el mapa en la ruta
-                final bounds = LatLngBounds.fromPoints(result.polyline);
+              WakelockPlus.enable();
+              _saveNavigationState();
+              
+              if (_currentPosition != null) {
+                _mapController.move(_currentPosition!, 17.0);
+              } else if (routeData.polyline.isNotEmpty) {
+                final bounds = LatLngBounds.fromPoints(routeData.polyline);
                 _mapController.fitCamera(CameraFit.bounds(
                   bounds: bounds,
                   padding: const EdgeInsets.all(50.0),
                 ));
               }
-              // Aún no guardamos en cache hasta que el usuario le de a "SÍ, COMENZAR"
             }
           },
           backgroundColor: primaryColor,
@@ -705,6 +720,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           setState(() {
                             _isNavigating = true;
                           });
+                          WakelockPlus.enable();
                           _saveNavigationState();
                         } else {
                           _confirmVehicleAndStart(context);
@@ -741,6 +757,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               setState(() {
                                 _isNavigating = !_isNavigating;
                               });
+                              if (_isNavigating) {
+                                WakelockPlus.enable();
+                              } else {
+                                WakelockPlus.disable();
+                              }
                               _saveNavigationState();
                             },
                             child: Container(
@@ -808,7 +829,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 _currentRoute = null;
                                 _remainingPolyline = [];
                                 _passedPolyline = [];
+                                _selectedVehicle = null;
                               });
+                              WakelockPlus.disable();
                               _saveNavigationState(); // Limpia la caché
                               _centerOnUser();
                             },
@@ -853,6 +876,38 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             ),
           ),
         ),
+        
+        // 4. Velocímetro
+        if (_isNavigating)
+          Positioned(
+            bottom: 250,
+            right: 16,
+            child: Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: navBgColor.withValues(alpha: 0.9),
+                shape: BoxShape.circle,
+                border: Border.all(color: primaryColor.withValues(alpha: 0.5), width: 2),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 4)),
+                ],
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    _currentSpeedKmH.toStringAsFixed(0),
+                    style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, height: 1.1),
+                  ),
+                  const Text(
+                    'km/h',
+                    style: TextStyle(color: Color(0xFF94A3B8), fontSize: 10, height: 1.1),
+                  ),
+                ],
+              ),
+            ),
+          ),
       ],
     );
   }
@@ -870,6 +925,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         _isNavigating = true;
         _hasStartedTrip = true;
       });
+      WakelockPlus.enable();
       _mapController.move(_currentPosition ?? _currentRoute!.polyline.first, 17.0);
       return;
     }
@@ -932,6 +988,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 _isNavigating = true;
                 _hasStartedTrip = true;
               });
+              WakelockPlus.enable();
               _saveNavigationState();
               _mapController.move(_currentPosition ?? _currentRoute!.polyline.first, 17.0);
             },
