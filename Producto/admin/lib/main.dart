@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -83,7 +86,7 @@ class _AdminShellState extends State<AdminShell> {
       1 => UsersPage(service: _service),
       2 => PorticosPage(service: _service),
       3 => TariffsPage(service: _service),
-      _ => const ReportsPage(),
+      _ => ReportsPage(service: _service),
     };
 
     return Scaffold(
@@ -1044,19 +1047,515 @@ class TariffsPage extends StatelessWidget {
   }
 }
 
-class ReportsPage extends StatelessWidget {
-  const ReportsPage({super.key});
+class ReportsPage extends StatefulWidget {
+  const ReportsPage({super.key, required this.service});
+
+  final AdminFirestoreService service;
+
+  @override
+  State<ReportsPage> createState() => _ReportsPageState();
+}
+
+class _ReportsPageState extends State<ReportsPage> {
+  late Future<ReportMetrics> _metricsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _metricsFuture = widget.service.fetchReportMetrics();
+  }
+
+  void _refresh() {
+    setState(() {
+      _metricsFuture = widget.service.fetchReportMetrics();
+    });
+  }
+
+  String _formatCurrency(double val) {
+    final int value = val.round();
+    final String str = value.toString();
+    final StringBuffer buffer = StringBuffer();
+    int count = 0;
+    for (int i = str.length - 1; i >= 0; i--) {
+      buffer.write(str[i]);
+      count++;
+      if (count % 3 == 0 && i != 0) {
+        buffer.write('.');
+      }
+    }
+    return '\$${buffer.toString().split('').reversed.join('')}';
+  }
+
+  Future<void> _exportToCSV(BuildContext context, ReportMetrics metrics) async {
+    try {
+      final StringBuffer csvBuffer = StringBuffer();
+      csvBuffer.write('\uFEFF');
+      
+      csvBuffer.writeln('REPORTE GENERAL DE MÉTRICAS Y ESTADÍSTICAS - TAG OK');
+      csvBuffer.writeln('Fecha de Generación: ${DateTime.now().toLocal()}');
+      csvBuffer.writeln();
+      
+      csvBuffer.writeln('MÉTRICA,VALOR');
+      csvBuffer.writeln('Total Usuarios,${metrics.totalUsers}');
+      csvBuffer.writeln('Total Vehículos,${metrics.totalVehicles}');
+      csvBuffer.writeln('Total Viajes,${metrics.totalTrips}');
+      csvBuffer.writeln('Costo Total Peajes (\$),${metrics.totalTollCost.toStringAsFixed(0)}');
+      csvBuffer.writeln('Costo Promedio por Viaje (\$),${metrics.averageCostPerTrip.toStringAsFixed(0)}');
+      csvBuffer.writeln();
+      
+      csvBuffer.writeln('DISTRIBUCIÓN POR AUTOPISTA');
+      csvBuffer.writeln('Autopista,Costo Total (\$),Porcentaje (%)');
+      
+      final double total = metrics.totalTollCost;
+      metrics.costByHighway.forEach((highway, cost) {
+        final double pct = total > 0 ? (cost / total) * 100 : 0.0;
+        csvBuffer.writeln('$highway,${cost.toStringAsFixed(0)},${pct.toStringAsFixed(2)}%');
+      });
+
+      const String path = 'C:/Users/igna_/Downloads/reporte_tag_ok.csv';
+      final File file = File(path);
+      final Directory directory = Directory('C:/Users/igna_/Downloads');
+      if (!await directory.exists()) {
+        await directory.create(recursive: true);
+      }
+      
+      await file.writeAsString(csvBuffer.toString(), encoding: utf8);
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Reporte exportado exitosamente a: C:/Users/igna_/Downloads/reporte_tag_ok.csv'),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 5),
+            action: SnackBarAction(
+              label: 'CERRAR',
+              textColor: Colors.white,
+              onPressed: () {},
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al exportar CSV: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  List<Color> _getGradientForHighway(String highway) {
+    switch (highway) {
+      case 'Autopista Central':
+        return [const Color(0xFF0EA5E9), const Color(0xFF2563EB)];
+      case 'Costanera Norte':
+        return [const Color(0xFF10B981), const Color(0xFF059669)];
+      case 'Vespucio Norte':
+        return [const Color(0xFFF59E0B), const Color(0xFFD97706)];
+      case 'Vespucio Sur':
+        return [const Color(0xFFEC4899), const Color(0xFFD946EF)];
+      case 'Vespucio Oriente (AVO)':
+        return [const Color(0xFF8B5CF6), const Color(0xFF7C3AED)];
+      default:
+        return [const Color(0xFF64748B), const Color(0xFF475569)];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const _AdminPageScaffold(
-      title: 'Reportes',
-      subtitle: 'KPIs, exportación y trazabilidad operativa.',
-      child: _InfoCard(
-        title: 'Próxima fase',
-        child: Text(
-          'Aquí se conectarán gráficos, filtros por fecha y exportaciones.\n\nSiguiente paso natural: bitácora de cambios y reporte de pórticos/tarifas.',
-        ),
+    return _AdminPageScaffold(
+      title: 'Reportes y Estadísticas',
+      subtitle: 'Monitoreo consolidado de ingresos por peaje, uso de vías y descargas de informes.',
+      child: FutureBuilder<ReportMetrics>(
+        future: _metricsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Card(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(Icons.error_outline, color: Colors.red, size: 24),
+                        SizedBox(width: 8),
+                        Text(
+                          'Error al cargar reportes',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      '${snapshot.error}',
+                      style: const TextStyle(color: Color(0xFF64748B)),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton.icon(
+                      onPressed: _refresh,
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Reintentar'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('Cargando y consolidando métricas desde Firestore...', style: TextStyle(color: Color(0xFF64748B))),
+                ],
+              ),
+            );
+          }
+
+          final metrics = snapshot.data;
+          if (metrics == null) {
+            return const Card(
+              child: Center(
+                child: Padding(
+                  padding: EdgeInsets.all(32),
+                  child: Text('No hay datos disponibles.'),
+                ),
+              ),
+            );
+          }
+
+          final sortedHighways = metrics.costByHighway.entries.toList()
+            ..sort((a, b) => b.value.compareTo(a.value));
+
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF0EA5E9),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 1,
+                      ),
+                      onPressed: () => _exportToCSV(context, metrics),
+                      icon: const Icon(Icons.download_rounded, size: 20),
+                      label: const Text(
+                        'Exportar Resumen a CSV',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                      ),
+                    ),
+                    IconButton.filledTonal(
+                      onPressed: _refresh,
+                      icon: const Icon(Icons.refresh),
+                      tooltip: 'Actualizar Datos',
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+
+                Wrap(
+                  spacing: 16,
+                  runSpacing: 16,
+                  children: [
+                    _ReportStatCard(
+                      title: 'Usuarios',
+                      value: metrics.totalUsers.toString(),
+                      icon: Icons.people_outline_rounded,
+                      iconColor: const Color(0xFF0EA5E9),
+                      gradientColors: const [Color(0xFF0EA5E9), Color(0xFF38BDF8)],
+                    ),
+                    _ReportStatCard(
+                      title: 'Vehículos',
+                      value: metrics.totalVehicles.toString(),
+                      icon: Icons.directions_car_outlined,
+                      iconColor: const Color(0xFF10B981),
+                      gradientColors: const [Color(0xFF10B981), Color(0xFF34D399)],
+                    ),
+                    _ReportStatCard(
+                      title: 'Total Viajes',
+                      value: metrics.totalTrips.toString(),
+                      icon: Icons.route_outlined,
+                      iconColor: const Color(0xFFF59E0B),
+                      gradientColors: const [Color(0xFFF59E0B), Color(0xFFFBBF24)],
+                    ),
+                    _ReportStatCard(
+                      title: 'Total Peajes',
+                      value: _formatCurrency(metrics.totalTollCost),
+                      icon: Icons.monetization_on_outlined,
+                      iconColor: const Color(0xFF8B5CF6),
+                      gradientColors: const [Color(0xFF8B5CF6), Color(0xFFA78BFA)],
+                    ),
+                    _ReportStatCard(
+                      title: 'Promedio por Viaje',
+                      value: _formatCurrency(metrics.averageCostPerTrip),
+                      icon: Icons.analytics_outlined,
+                      iconColor: const Color(0xFFEC4899),
+                      gradientColors: const [Color(0xFFEC4899), Color(0xFFF472B6)],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 32),
+
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final bool isNarrow = constraints.maxWidth < 900;
+                    
+                    final Widget chartWidget = Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Distribución de Costos por Autopista',
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                            ),
+                            const SizedBox(height: 24),
+                            ...sortedHighways.map((entry) {
+                              final double pct = metrics.totalTollCost > 0 ? (entry.value / metrics.totalTollCost) : 0.0;
+                              final List<Color> colors = _getGradientForHighway(entry.key);
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 20),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          entry.key,
+                                          style: const TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF334155)),
+                                        ),
+                                        Text(
+                                          '${_formatCurrency(entry.value)} (${(pct * 100).toStringAsFixed(1)}%)',
+                                          style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Container(
+                                      height: 12,
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFF1F5F9),
+                                        borderRadius: BorderRadius.circular(6),
+                                      ),
+                                      alignment: Alignment.centerLeft,
+                                      child: FractionallySizedBox(
+                                        widthFactor: pct,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: colors,
+                                              begin: Alignment.centerLeft,
+                                              end: Alignment.centerRight,
+                                            ),
+                                            borderRadius: BorderRadius.circular(6),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: colors[0].withValues(alpha: 0.2),
+                                                blurRadius: 4,
+                                                offset: const Offset(0, 1),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }),
+                          ],
+                        ),
+                      ),
+                    );
+
+                    final Widget tableWidget = Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Resumen Tabular de Ingresos',
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                            ),
+                            const SizedBox(height: 16),
+                            Table(
+                              columnWidths: const {
+                                0: FlexColumnWidth(2),
+                                1: FlexColumnWidth(1),
+                                2: FlexColumnWidth(1),
+                              },
+                              border: const TableBorder(
+                                horizontalInside: BorderSide(color: Color(0xFFE2E8F0), width: 1),
+                              ),
+                              children: [
+                                const TableRow(
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(vertical: 12),
+                                      child: Text('Autopista', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF64748B))),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(vertical: 12),
+                                      child: Text('Gasto', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF64748B))),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(vertical: 12),
+                                      child: Text('Porcentaje', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF64748B))),
+                                    ),
+                                  ],
+                                ),
+                                ...sortedHighways.map((entry) {
+                                  final double pct = metrics.totalTollCost > 0 ? (entry.value / metrics.totalTollCost) * 100 : 0.0;
+                                  return TableRow(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 12),
+                                        child: Text(entry.key, style: const TextStyle(color: Color(0xFF334155), fontWeight: FontWeight.w500)),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 12),
+                                        child: Text(_formatCurrency(entry.value), style: const TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.bold)),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 12),
+                                        child: Text('${pct.toStringAsFixed(1)}%', style: const TextStyle(color: Color(0xFF64748B))),
+                                      ),
+                                    ],
+                                  );
+                                }),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+
+                    if (isNarrow) {
+                      return Column(
+                        children: [
+                          chartWidget,
+                          const SizedBox(height: 24),
+                          tableWidget,
+                        ],
+                      );
+                    }
+
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(flex: 3, child: chartWidget),
+                        const SizedBox(width: 24),
+                        Expanded(flex: 2, child: tableWidget),
+                      ],
+                    );
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _ReportStatCard extends StatelessWidget {
+  const _ReportStatCard({
+    required this.title,
+    required this.value,
+    required this.icon,
+    required this.iconColor,
+    required this.gradientColors,
+  });
+
+  final String title;
+  final String value;
+  final IconData icon;
+  final Color iconColor;
+  final List<Color> gradientColors;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 215,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF000000).withValues(alpha: 0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    color: Color(0xFF64748B),
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      gradientColors[0].withValues(alpha: 0.15),
+                      gradientColors[1].withValues(alpha: 0.05),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: iconColor, size: 20),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF0F172A),
+              letterSpacing: -0.5,
+            ),
+          ),
+        ],
       ),
     );
   }
