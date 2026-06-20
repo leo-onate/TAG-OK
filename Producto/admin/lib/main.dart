@@ -1032,7 +1032,17 @@ class _PorticosPageState extends State<PorticosPage> {
                                                     icon: const Icon(Icons.edit_outlined, color: Colors.blue, size: 20),
                                                     tooltip: 'Editar Tarifas',
                                                     onPressed: () {
-                                                      _mostrarDialogoEdicion(context, docId, nombre, base, punta, saturacion, isNested);
+                                                      _mostrarDialogoEdicion(
+                                                        context,
+                                                        docId,
+                                                        nombre,
+                                                        autopista,
+                                                        sentido,
+                                                        base,
+                                                        punta,
+                                                        saturacion,
+                                                        isNested,
+                                                      );
                                                     },
                                                   ),
                                                   IconButton(
@@ -1079,39 +1089,80 @@ class _PorticosPageState extends State<PorticosPage> {
     );
   }
 
-  void _mostrarDialogoEdicion(BuildContext context, String docId, String nombre, String baseActual, String puntaActual, String saturacionActual, bool isNested) {
+  void _mostrarDialogoEdicion(
+    BuildContext context,
+    String docId,
+    String nombreActual,
+    String autopistaActual,
+    String sentidoActual,
+    String baseActual,
+    String puntaActual,
+    String saturacionActual,
+    bool isNested,
+  ) {
+    final TextEditingController nombreCtrl = TextEditingController(text: nombreActual);
+    final TextEditingController autopistaCtrl = TextEditingController(text: autopistaActual);
     final TextEditingController baseCtrl = TextEditingController(text: baseActual);
     final TextEditingController puntaCtrl = TextEditingController(text: puntaActual);
     final TextEditingController saturacionCtrl = TextEditingController(text: saturacionActual);
+    String selectedSentido = sentidoActual;
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Colors.white,
-        title: const Text('Editar Tarifas'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('Pórtico: $nombre', style: const TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            TextField(
-              controller: baseCtrl,
-              decoration: const InputDecoration(labelText: 'Tarifa Base (\$)'),
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: puntaCtrl,
-              decoration: const InputDecoration(labelText: 'Tarifa Punta (\$)'),
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: saturacionCtrl,
-              decoration: const InputDecoration(labelText: 'Tarifa Saturación (\$)'),
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            ),
-          ],
+        title: const Text('Editar Pórtico'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nombreCtrl,
+                decoration: const InputDecoration(labelText: 'Nombre del Pórtico'),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: autopistaCtrl,
+                decoration: const InputDecoration(labelText: 'Autopista'),
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                value: ['N-S', 'S-N', 'O-P', 'P-O'].contains(selectedSentido) ? selectedSentido : null,
+                decoration: const InputDecoration(labelText: 'Sentido de Circulación'),
+                items: const [
+                  DropdownMenuItem(value: 'N-S', child: Text('N-S')),
+                  DropdownMenuItem(value: 'S-N', child: Text('S-N')),
+                  DropdownMenuItem(value: 'O-P', child: Text('O-P')),
+                  DropdownMenuItem(value: 'P-O', child: Text('P-O')),
+                ],
+                onChanged: (val) {
+                  if (val != null) {
+                    selectedSentido = val;
+                  }
+                },
+              ),
+              const Divider(height: 32),
+              const Text('Tarifas Especiales', style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 12),
+              TextField(
+                controller: baseCtrl,
+                decoration: const InputDecoration(labelText: 'Tarifa Base (\$)'),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: puntaCtrl,
+                decoration: const InputDecoration(labelText: 'Tarifa Punta (\$)'),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: saturacionCtrl,
+                decoration: const InputDecoration(labelText: 'Tarifa Saturación (\$)'),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              ),
+            ],
+          ),
         ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
@@ -1122,26 +1173,38 @@ class _PorticosPageState extends State<PorticosPage> {
               final double? nPunta = double.tryParse(puntaCtrl.text.replaceAll(',', '.'));
               final double? nSaturacion = double.tryParse(saturacionCtrl.text.replaceAll(',', '.'));
 
+              final String newNombre = nombreCtrl.text.trim();
+              final String newAutopista = autopistaCtrl.text.trim();
+              final String newSentido = selectedSentido;
+
               final Map<String, dynamic> updates = {};
               
-              if (nBase != null) {
-                updates[isNested ? 'datos.tarifa_base' : 'tarifa_base'] = nBase;
-              }
-              if (nPunta != null) {
-                updates[isNested ? 'datos.tarifa_punta' : 'tarifa_punta'] = nPunta;
-              }
-              if (nSaturacion != null) {
-                updates[isNested ? 'datos.tarifa_saturacion' : 'tarifa_saturacion'] = nSaturacion;
-              }
+              if (nBase != null) updates[isNested ? 'datos.tarifa_base' : 'tarifa_base'] = nBase;
+              if (nPunta != null) updates[isNested ? 'datos.tarifa_punta' : 'tarifa_punta'] = nPunta;
+              if (nSaturacion != null) updates[isNested ? 'datos.tarifa_saturacion' : 'tarifa_saturacion'] = nSaturacion;
 
-              if (updates.isNotEmpty) {
-                FirebaseFirestore.instance.collection('porticos').doc(docId).update(updates);
-                widget.service.logAction(
-                  action: 'EDIT_TARIFF',
-                  target: nombre,
-                  details: 'Tarifas editadas. Base: \$$baseActual -> \$${baseCtrl.text}. Punta: \$$puntaActual -> \$${puntaCtrl.text}. Sat: \$$saturacionActual -> \$${saturacionCtrl.text}.',
-                );
-              }
+              updates[isNested ? 'datos.nombre' : 'nombre'] = newNombre;
+              updates[isNested ? 'datos.autopista' : 'autopista'] = newAutopista;
+              updates[isNested ? 'datos.sentido' : 'sentido'] = newSentido;
+
+              final StringBuffer logDetails = StringBuffer();
+              logDetails.write('Edición de pórtico.');
+              if (nombreActual != newNombre) logDetails.write(' Nombre: $nombreActual -> $newNombre.');
+              if (autopistaActual != newAutopista) logDetails.write(' Autopista: $autopistaActual -> $newAutopista.');
+              if (sentidoActual != newSentido) logDetails.write(' Sentido: $sentidoActual -> $newSentido.');
+              
+              logDetails.write(' Tarifa Base: \$$baseActual -> \$${baseCtrl.text}.');
+              logDetails.write(' Tarifa Punta: \$$puntaActual -> \$${puntaCtrl.text}.');
+              logDetails.write(' Tarifa Sat.: \$$saturacionActual -> \$${saturacionCtrl.text}.');
+
+              FirebaseFirestore.instance.collection('porticos').doc(docId).update(updates);
+
+              widget.service.logAction(
+                action: 'EDIT_TARIFF',
+                target: newNombre,
+                details: logDetails.toString(),
+              );
+
               Navigator.pop(context);
             },
             child: const Text('Guardar', style: TextStyle(color: Colors.white)),
