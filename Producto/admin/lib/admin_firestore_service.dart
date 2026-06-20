@@ -52,6 +52,18 @@ class AdminFirestoreService {
     return _firestore.collection('tarifas').orderBy('fecha_actualizacion', descending: true).snapshots();
   }
 
+  Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>> streamUserTrips() {
+    return _firestore.collectionGroup('trips').snapshots().map((snapshot) {
+      final list = List<QueryDocumentSnapshot<Map<String, dynamic>>>.from(snapshot.docs);
+      list.sort((a, b) {
+        final aDate = a.data()['date']?.toString() ?? '';
+        final bDate = b.data()['date']?.toString() ?? '';
+        return bDate.compareTo(aDate);
+      });
+      return list;
+    });
+  }
+
   Future<int> _count(String collection) async {
     final snapshot = await _firestore.collection(collection).get();
     return snapshot.size;

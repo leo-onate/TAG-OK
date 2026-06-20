@@ -643,21 +643,52 @@ class TariffsPage extends StatelessWidget {
 
   final AdminFirestoreService service;
 
+  String _formatFecha(dynamic dateVal) {
+    if (dateVal == null) return '-';
+    if (dateVal is Timestamp) {
+      final date = dateVal.toDate();
+      final y = date.year;
+      final m = date.month.toString().padLeft(2, '0');
+      final d = date.day.toString().padLeft(2, '0');
+      final h = date.hour.toString().padLeft(2, '0');
+      final min = date.minute.toString().padLeft(2, '0');
+      return '$y-$m-$d $h:$min';
+    }
+    final String str = dateVal.toString();
+    if (str.length >= 16) {
+      return str.substring(0, 16).replaceAll('T', ' ');
+    }
+    return str;
+  }
+
   @override
   Widget build(BuildContext context) {
     return _AdminPageScaffold(
-      title: 'Tarifas',
-      subtitle: 'Vigencias, edición y publicación controlada.',
-      child: _FirestoreTable(
-        stream: service.streamTariffs(),
-        emptyMessage: 'Todavía no existe la colección tarifas.',
-        columns: const ['Nombre', 'Vigencia', 'Estado'],
+      title: 'Tarifas y Viajes de Usuarios',
+      subtitle: 'Historial de cobros y viajes de los usuarios registrado por GPS.',
+      child: _FirestoreListTable(
+        stream: service.streamUserTrips(),
+        emptyMessage: 'No hay viajes registrados aún.',
+        columns: const ['Vehículo', 'Fecha', 'Distancia', 'Duración', 'Cobro Total'],
         rowBuilder: (doc) {
           final Map<String, dynamic> data = doc.data();
+          final String vehiculo = (data['vehicleName'] ?? 'Desconocido').toString();
+          final String fecha = _formatFecha(data['date']);
+          final double distance = double.tryParse(data['distanceKm']?.toString() ?? '0') ?? 0.0;
+          final String distanciaStr = '${distance.toStringAsFixed(1)} km';
+          final String duracion = (data['duration'] ?? '-').toString();
+          final int totalCost = int.tryParse(data['totalCost']?.toString() ?? '0') ?? 0;
+          final String cobroStr = '\$$totalCost';
+
           return [
-            DataCell(Text((data['nombre'] ?? 'Tarifa').toString())),
-            DataCell(Text((data['vigencia'] ?? data['fecha_actualizacion'] ?? '-').toString())),
-            DataCell(Text((data['estado'] ?? 'borrador').toString())),
+            DataCell(Text(vehiculo)),
+            DataCell(Text(fecha)),
+            DataCell(Text(distanciaStr)),
+            DataCell(Text(duracion)),
+            DataCell(Text(
+              cobroStr,
+              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
+            )),
           ];
         },
       ),
@@ -825,6 +856,69 @@ class _FirestoreTable extends StatelessWidget {
             }
 
             final List<QueryDocumentSnapshot<Map<String, dynamic>>> docs = snapshot.data!.docs;
+            if (docs.isEmpty) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(32),
+                  child: Text(emptyMessage),
+                ),
+              );
+            }
+
+            return SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  columns: columns.map((String column) => DataColumn(label: Text(column))).toList(),
+                  rows: docs.map((doc) {
+                    return DataRow(cells: rowBuilder(doc));
+                  }).toList(),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _FirestoreListTable extends StatelessWidget {
+  const _FirestoreListTable({
+    required this.stream,
+    required this.emptyMessage,
+    required this.columns,
+    required this.rowBuilder,
+  });
+
+  final Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>> stream;
+  final String emptyMessage;
+  final List<String> columns;
+  final List<DataCell> Function(QueryDocumentSnapshot<Map<String, dynamic>>) rowBuilder;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: StreamBuilder<List<QueryDocumentSnapshot<Map<String, dynamic>>>>(
+          stream: stream,
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Text('Error al leer Firestore: ${snapshot.error}');
+            }
+
+            if (!snapshot.hasData) {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(32),
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+
+            final List<QueryDocumentSnapshot<Map<String, dynamic>>> docs = snapshot.data!;
             if (docs.isEmpty) {
               return Center(
                 child: Padding(
