@@ -110,32 +110,28 @@ Implementamos un sistema de alertas dinámicas para evitar exceder tus límites 
 ## 🚀 Instalación y Configuración
 
 ### Prerrequisitos
-- Flutter SDK instalado.
+- Flutter SDK instalado en el equipo.
 - Cuenta en Mapbox para obtener un Access Token.
 - Proyecto en Firebase con Firestore habilitado.
 
-### Configuración
-1. **Clonar el repositorio:**
+### Instalación Rápida (Recomendado para nuevos equipos)
+1. **Clonar o descargar el repositorio:**
    ```bash
    git clone https://github.com/tu-usuario/TAG-OK.git
-   cd TAG-OK/Producto/tag_ok
    ```
 
-2. **Configurar variables de entorno:**
-   Crea un archivo `.env` en la raíz del proyecto:
+2. **Instalar dependencias automáticamente:**
+   Simplemente haz doble clic en el archivo `setup.bat` (en Windows) que se encuentra en la raíz del proyecto. Este script instalará automáticamente todas las librerías necesarias tanto para la app principal (`tag_ok`) como para el panel de administración (`admin`).
+
+3. **Configurar variables de entorno:**
+   Debes crear un archivo `.env` dentro de **ambas** carpetas (`Producto/tag_ok/.env` y `Producto/admin/.env`) con el siguiente formato:
    ```env
    MAPBOX_ACCESS_TOKEN=tu_token_aqui
    ```
 
-3. **Instalar dependencias:**
-   ```bash
-   flutter pub get
-   ```
-
-4. **Ejecutar:**
-   ```bash
-   flutter run
-   ```
+4. **Ejecutar las aplicaciones:**
+   - Para abrir la **App Principal**: Abre la carpeta `Producto/tag_ok` en tu editor y presiona "Run", o ejecuta `flutter run` en la terminal.
+   - Para abrir la **App Administrador**: Abre la carpeta `Producto/admin` en tu editor y presiona "Run", o ejecuta `flutter run` en la terminal.
 
 ---
 
