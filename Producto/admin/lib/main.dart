@@ -356,6 +356,8 @@ class _UsersPageState extends State<UsersPage> {
   final TextEditingController _searchCtrl = TextEditingController();
   String _searchQuery = '';
   String _selectedBudgetFilter = 'Todos'; // 'Todos', '> 50.000', '< = 50.000'
+  int _currentPage = 0;
+  int _rowsPerPage = 10;
 
   @override
   void initState() {
@@ -363,6 +365,7 @@ class _UsersPageState extends State<UsersPage> {
     _searchCtrl.addListener(() {
       setState(() {
         _searchQuery = _searchCtrl.text.toLowerCase().trim();
+        _currentPage = 0;
       });
     });
   }
@@ -441,6 +444,7 @@ class _UsersPageState extends State<UsersPage> {
                         if (val != null) {
                           setState(() {
                             _selectedBudgetFilter = val;
+                            _currentPage = 0;
                           });
                         }
                       },
@@ -481,67 +485,159 @@ class _UsersPageState extends State<UsersPage> {
                   );
                 }
 
+                final int totalPages = (filteredDocs.length / _rowsPerPage).ceil();
+                if (_currentPage >= totalPages && totalPages > 0) {
+                  _currentPage = totalPages - 1;
+                }
+
+                final int startIndex = _currentPage * _rowsPerPage;
+                final int endIndex = (startIndex + _rowsPerPage) > filteredDocs.length
+                    ? filteredDocs.length
+                    : (startIndex + _rowsPerPage);
+                final pageDocs = filteredDocs.sublist(startIndex, endIndex);
+
                 return Card(
                   child: Padding(
                     padding: const EdgeInsets.all(16),
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: DataTable(
-                          columns: const [
-                            DataColumn(label: Text('Nombre')),
-                            DataColumn(label: Text('Correo')),
-                            DataColumn(label: Text('Presupuesto')),
-                            DataColumn(label: Text('Vehículo Principal')),
-                            DataColumn(label: Text('Acciones')),
-                          ],
-                          rows: filteredDocs.map((doc) {
-                            final Map<String, dynamic> data = doc.data();
-                            final String docId = doc.id;
-                            final String nombre = (data['nombre_mostrar'] ?? 'Sin nombre').toString();
-                            final String correo = (data['email'] ?? 'Sin correo').toString();
-                            final int presupuesto = int.tryParse(data['limite_presupuesto_mensual']?.toString() ?? '0') ?? 0;
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: DataTable(
+                                columns: const [
+                                  DataColumn(label: Text('Usuario')),
+                                  DataColumn(label: Text('Presupuesto')),
+                                  DataColumn(label: Text('Vehículo Principal')),
+                                  DataColumn(label: Text('Acciones')),
+                                ],
+                                rows: pageDocs.map((doc) {
+                                  final Map<String, dynamic> data = doc.data();
+                                  final String docId = doc.id;
+                                  final String nombre = (data['nombre_mostrar'] ?? 'Sin nombre').toString();
+                                  final String correo = (data['email'] ?? 'Sin correo').toString();
+                                  final int presupuesto = int.tryParse(data['limite_presupuesto_mensual']?.toString() ?? '0') ?? 0;
+                                  final String vehiculoPrincipal = (data['vehiculo_principal_id'] ?? 'Ninguno').toString();
 
-                            return DataRow(
-                              cells: [
-                                DataCell(Text(nombre)),
-                                DataCell(Text(correo)),
-                                DataCell(Text('\$$presupuesto')),
-                                DataCell(Text((data['vehiculo_principal_id'] ?? 'Ninguno').toString())),
-                                DataCell(
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      IconButton(
-                                        icon: const Icon(Icons.edit_outlined, color: Colors.blue, size: 20),
-                                        tooltip: 'Editar Presupuesto',
-                                        onPressed: () {
-                                          _mostrarDialogoEdicion(context, docId, nombre, presupuesto);
-                                        },
+                                  return DataRow(
+                                    cells: [
+                                      DataCell(
+                                        Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            CircleAvatar(
+                                              radius: 18,
+                                              backgroundColor: _getColorFromName(nombre),
+                                              child: Text(
+                                                nombre.isNotEmpty ? nombre[0].toUpperCase() : 'U',
+                                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 12),
+                                            Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Text(nombre, style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                                                Text(correo, style: const TextStyle(color: Color(0xFF64748B), fontSize: 12)),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                      IconButton(
-                                        icon: const Icon(Icons.lock_reset_outlined, color: Colors.orange, size: 20),
-                                        tooltip: 'Restablecer Contraseña',
-                                        onPressed: () {
-                                          _enviarResetPassword(context, correo);
-                                        },
+                                      DataCell(
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                          decoration: BoxDecoration(
+                                            color: presupuesto > 50000 
+                                                ? const Color(0xFFEEF2FF)
+                                                : const Color(0xFFF1F5F9),
+                                            borderRadius: BorderRadius.circular(12),
+                                            border: Border.all(
+                                              color: presupuesto > 50000 
+                                                  ? const Color(0xFFC7D2FE) 
+                                                  : const Color(0xFFE2E8F0),
+                                            ),
+                                          ),
+                                          child: Text(
+                                            '\$${_formatNumber(presupuesto)}',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: presupuesto > 50000 
+                                                  ? const Color(0xFF4F46E5) 
+                                                  : const Color(0xFF475569),
+                                              fontSize: 13,
+                                            ),
+                                          ),
+                                        ),
                                       ),
-                                      IconButton(
-                                        icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
-                                        tooltip: 'Eliminar Usuario',
-                                        onPressed: () {
-                                          _mostrarDialogoEliminar(context, docId, nombre);
-                                        },
+                                      DataCell(
+                                        Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Icon(Icons.directions_car_filled_outlined, size: 16, color: Color(0xFF64748B)),
+                                            const SizedBox(width: 6),
+                                            Text(
+                                              vehiculoPrincipal,
+                                              style: const TextStyle(color: Color(0xFF334155), fontWeight: FontWeight.w500),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            IconButton(
+                                              icon: const Icon(Icons.edit_outlined, color: Colors.blue, size: 20),
+                                              tooltip: 'Editar Presupuesto',
+                                              onPressed: () {
+                                                _mostrarDialogoEdicion(context, docId, nombre, presupuesto);
+                                              },
+                                            ),
+                                            IconButton(
+                                              icon: const Icon(Icons.lock_reset_outlined, color: Colors.orange, size: 20),
+                                              tooltip: 'Restablecer Contraseña',
+                                              onPressed: () {
+                                                _enviarResetPassword(context, correo);
+                                              },
+                                            ),
+                                            IconButton(
+                                              icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                                              tooltip: 'Eliminar Usuario',
+                                              onPressed: () {
+                                                _mostrarDialogoEliminar(context, docId, nombre);
+                                              },
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ],
-                                  ),
-                                ),
-                              ],
-                            );
-                          }).toList(),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                        const Divider(),
+                        _TablePaginationControls(
+                          currentPage: _currentPage,
+                          rowsPerPage: _rowsPerPage,
+                          totalItems: filteredDocs.length,
+                          totalPages: totalPages,
+                          startIndex: startIndex,
+                          endIndex: endIndex,
+                          onPageChanged: (page) => setState(() => _currentPage = page),
+                          onRowsPerPageChanged: (rows) => setState(() {
+                            _rowsPerPage = rows;
+                            _currentPage = 0;
+                          }),
+                          itemLabel: 'usuarios',
+                        ),
+                      ],
                     ),
                   ),
                 );
@@ -587,7 +683,7 @@ class _UsersPageState extends State<UsersPage> {
                 'nombre_mostrar': nombreCtrl.text,
                 'limite_presupuesto_mensual': nuevoLimite,
               });
-              Navigator.pop(context); // Cierra el diálogo
+              Navigator.pop(context);
             },
             child: const Text('Guardar', style: TextStyle(color: Colors.white)),
           ),
@@ -627,7 +723,7 @@ class _UsersPageState extends State<UsersPage> {
             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0EA5E9)),
             onPressed: () {
               FirebaseFirestore.instance.collection('usuarios').doc(docId).delete();
-              Navigator.pop(context); // Cierra el diálogo
+              Navigator.pop(context);
             },
             child: const Text('Sí, Eliminar', style: TextStyle(color: Colors.white)),
           ),
@@ -651,6 +747,8 @@ class _PorticosPageState extends State<PorticosPage> {
   String _searchQuery = '';
   String _selectedHighwayFilter = 'Todas';
   String _selectedDirectionFilter = 'Todos';
+  int _currentPage = 0;
+  int _rowsPerPage = 10;
 
   @override
   void initState() {
@@ -658,6 +756,7 @@ class _PorticosPageState extends State<PorticosPage> {
     _searchCtrl.addListener(() {
       setState(() {
         _searchQuery = _searchCtrl.text.toLowerCase().trim();
+        _currentPage = 0;
       });
     });
   }
@@ -733,6 +832,17 @@ class _PorticosPageState extends State<PorticosPage> {
 
           final filteredDocs = docs.where((doc) => _matchesFilters(doc.data())).toList();
 
+          final int totalPages = (filteredDocs.length / _rowsPerPage).ceil();
+          if (_currentPage >= totalPages && totalPages > 0) {
+            _currentPage = totalPages - 1;
+          }
+
+          final int startIndex = _currentPage * _rowsPerPage;
+          final int endIndex = (startIndex + _rowsPerPage) > filteredDocs.length
+              ? filteredDocs.length
+              : (startIndex + _rowsPerPage);
+          final pageDocs = filteredDocs.sublist(startIndex, endIndex);
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -777,6 +887,7 @@ class _PorticosPageState extends State<PorticosPage> {
                             if (val != null) {
                               setState(() {
                                 _selectedHighwayFilter = val;
+                                _currentPage = 0;
                               });
                             }
                           },
@@ -805,6 +916,7 @@ class _PorticosPageState extends State<PorticosPage> {
                             if (val != null) {
                               setState(() {
                                 _selectedDirectionFilter = val;
+                                _currentPage = 0;
                               });
                             }
                           },
@@ -827,67 +939,112 @@ class _PorticosPageState extends State<PorticosPage> {
                     : Card(
                         child: Padding(
                           padding: const EdgeInsets.all(16),
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.vertical,
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: DataTable(
-                                columns: const [
-                                  DataColumn(label: Text('Nombre')),
-                                  DataColumn(label: Text('Sentido')),
-                                  DataColumn(label: Text('Tarifa Base')),
-                                  DataColumn(label: Text('Tarifa Punta')),
-                                  DataColumn(label: Text('Tarifa Saturación')),
-                                  DataColumn(label: Text('Acciones')),
-                                ],
-                                rows: filteredDocs.map((doc) {
-                                  final Map<String, dynamic> rawData = doc.data();
-                                  final String docId = doc.id;
-                                  
-                                  final bool isNested = rawData.containsKey('datos') && rawData['datos'] is Map;
-                                  final Map<String, dynamic> data = isNested
-                                      ? Map<String, dynamic>.from(rawData['datos'])
-                                      : rawData;
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Expanded(
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.vertical,
+                                  child: SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: DataTable(
+                                      columns: const [
+                                        DataColumn(label: Text('Pórtico')),
+                                        DataColumn(label: Text('Sentido')),
+                                        DataColumn(label: Text('Tarifa Base')),
+                                        DataColumn(label: Text('Tarifa Punta')),
+                                        DataColumn(label: Text('Tarifa Saturación')),
+                                        DataColumn(label: Text('Acciones')),
+                                      ],
+                                      rows: pageDocs.map((doc) {
+                                        final Map<String, dynamic> rawData = doc.data();
+                                        final String docId = doc.id;
+                                        
+                                        final bool isNested = rawData.containsKey('datos') && rawData['datos'] is Map;
+                                        final Map<String, dynamic> data = isNested
+                                            ? Map<String, dynamic>.from(rawData['datos'])
+                                            : rawData;
 
-                                  final String nombre = (data['nombre'] ?? data['autopista'] ?? 'Sin nombre').toString();
-                                  final String sentido = (data['sentido'] ?? '-').toString();
-                                  final String base = (data['tarifa_base'] ?? data['costo'] ?? data['Tarifa_Base'] ?? data['Tarifa Base'] ?? '0').toString();
-                                  final String punta = (data['tarifa_punta'] ?? data['costoPunta'] ?? data['Tarifa_Punta'] ?? data['Tarifa Punta'] ?? '0').toString();
-                                  final String saturacion = (data['tarifa_saturacion'] ?? data['costoSaturacion'] ?? data['Tarifa_Saturacion'] ?? data['Tarifa Saturacion'] ?? '0').toString();
+                                        final String nombre = (data['nombre'] ?? data['autopista'] ?? 'Sin nombre').toString();
+                                        final String autopista = (data['autopista'] ?? '').toString();
+                                        final String sentido = (data['sentido'] ?? '-').toString();
+                                        final String base = (data['tarifa_base'] ?? data['costo'] ?? data['Tarifa_Base'] ?? data['Tarifa Base'] ?? '0').toString();
+                                        final String punta = (data['tarifa_punta'] ?? data['costoPunta'] ?? data['Tarifa_Punta'] ?? data['Tarifa Punta'] ?? '0').toString();
+                                        final String saturacion = (data['tarifa_saturacion'] ?? data['costoSaturacion'] ?? data['Tarifa_Saturacion'] ?? data['Tarifa Saturacion'] ?? '0').toString();
 
-                                  return DataRow(
-                                    cells: [
-                                      DataCell(Text(nombre)),
-                                      DataCell(Text(sentido)),
-                                      DataCell(Text('\$$base')),
-                                      DataCell(Text('\$$punta')),
-                                      DataCell(Text('\$$saturacion')),
-                                      DataCell(
-                                        Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            IconButton(
-                                              icon: const Icon(Icons.edit_outlined, color: Colors.blue, size: 20),
-                                              tooltip: 'Editar Tarifas',
-                                              onPressed: () {
-                                                _mostrarDialogoEdicion(context, docId, nombre, base, punta, saturacion, isNested);
-                                              },
+                                        return DataRow(
+                                          cells: [
+                                            DataCell(
+                                              Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  Text(nombre, style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                                                  const SizedBox(height: 4),
+                                                  _getHighwayBadge(autopista),
+                                                ],
+                                              ),
                                             ),
-                                            IconButton(
-                                              icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
-                                              tooltip: 'Eliminar Pórtico',
-                                              onPressed: () {
-                                                _mostrarDialogoEliminar(context, docId, nombre);
-                                              },
+                                            DataCell(
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                decoration: BoxDecoration(
+                                                  color: const Color(0xFFF1F5F9),
+                                                  borderRadius: BorderRadius.circular(8),
+                                                ),
+                                                child: Text(
+                                                  sentido,
+                                                  style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF475569), fontSize: 12),
+                                                ),
+                                              ),
+                                            ),
+                                            DataCell(_buildTariffBadge('Base', _formatNumber(double.tryParse(base)?.round() ?? 0), const Color(0xFFEFF6FF), const Color(0xFF1D4ED8))),
+                                            DataCell(_buildTariffBadge('Punta', _formatNumber(double.tryParse(punta)?.round() ?? 0), const Color(0xFFFFF7ED), const Color(0xFFC2410C))),
+                                            DataCell(_buildTariffBadge('Sat.', _formatNumber(double.tryParse(saturacion)?.round() ?? 0), const Color(0xFFFFF1F2), const Color(0xFFBE123C))),
+                                            DataCell(
+                                              Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  IconButton(
+                                                    icon: const Icon(Icons.edit_outlined, color: Colors.blue, size: 20),
+                                                    tooltip: 'Editar Tarifas',
+                                                    onPressed: () {
+                                                      _mostrarDialogoEdicion(context, docId, nombre, base, punta, saturacion, isNested);
+                                                    },
+                                                  ),
+                                                  IconButton(
+                                                    icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                                                    tooltip: 'Eliminar Pórtico',
+                                                    onPressed: () {
+                                                      _mostrarDialogoEliminar(context, docId, nombre);
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ],
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                }).toList(),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
+                              const Divider(),
+                              _TablePaginationControls(
+                                currentPage: _currentPage,
+                                rowsPerPage: _rowsPerPage,
+                                totalItems: filteredDocs.length,
+                                totalPages: totalPages,
+                                startIndex: startIndex,
+                                endIndex: endIndex,
+                                onPageChanged: (page) => setState(() => _currentPage = page),
+                                onRowsPerPageChanged: (rows) => setState(() {
+                                  _rowsPerPage = rows;
+                                  _currentPage = 0;
+                                }),
+                                itemLabel: 'pórticos',
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -957,7 +1114,7 @@ class _PorticosPageState extends State<PorticosPage> {
               if (updates.isNotEmpty) {
                 FirebaseFirestore.instance.collection('porticos').doc(docId).update(updates);
               }
-              Navigator.pop(context); // Cierra el diálogo
+              Navigator.pop(context);
             },
             child: const Text('Guardar', style: TextStyle(color: Colors.white)),
           ),
@@ -979,7 +1136,7 @@ class _PorticosPageState extends State<PorticosPage> {
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () {
               FirebaseFirestore.instance.collection('porticos').doc(docId).delete();
-              Navigator.pop(context); // Cierra el diálogo
+              Navigator.pop(context);
             },
             child: const Text('Sí, Eliminar', style: TextStyle(color: Colors.white)),
           ),
@@ -1012,6 +1169,106 @@ class TariffsPage extends StatelessWidget {
     return str;
   }
 
+  void _mostrarDetalleViaje(BuildContext context, Map<String, dynamic> tripData) {
+    final List<dynamic> tollsList = tripData['tolls'] as List<dynamic>? ?? [];
+    final String vehiculo = (tripData['vehicleName'] ?? 'Desconocido').toString();
+    final String fecha = _formatFecha(tripData['date']);
+    final int totalCost = int.tryParse(tripData['totalCost']?.toString() ?? '0') ?? 0;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            const Icon(Icons.route_outlined, color: Color(0xFF0EA5E9), size: 24),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'Detalle de Peajes - $vehiculo',
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+            ),
+          ],
+        ),
+        content: SizedBox(
+          width: 500,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Fecha: $fecha', style: const TextStyle(color: Color(0xFF64748B), fontWeight: FontWeight.w500)),
+              const SizedBox(height: 4),
+              Text(
+                'Costo Total: \$${_formatNumber(totalCost)}',
+                style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0F172A), fontSize: 16),
+              ),
+              const Divider(height: 24),
+              const Text(
+                'Pórticos Cruzados:',
+                style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF475569)),
+              ),
+              const SizedBox(height: 12),
+              if (tollsList.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: Text(
+                    'No hay pórticos registrados en este viaje.',
+                    style: TextStyle(fontStyle: FontStyle.italic, color: Color(0xFF94A3B8)),
+                  ),
+                )
+              else
+                Flexible(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: tollsList.length,
+                    itemBuilder: (context, index) {
+                      final toll = tollsList[index];
+                      if (toll is! Map) return const SizedBox();
+                      final String name = (toll['name'] ?? 'Pórtico').toString();
+                      final int cost = int.tryParse(toll['cost']?.toString() ?? '0') ?? 0;
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                name,
+                                style: const TextStyle(color: Color(0xFF334155), fontWeight: FontWeight.w500),
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF1F5F9),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                '\$${_formatNumber(cost)}',
+                                style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0F172A), fontSize: 12),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cerrar', style: TextStyle(color: Color(0xFF0EA5E9), fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return _AdminPageScaffold(
@@ -1020,26 +1277,96 @@ class TariffsPage extends StatelessWidget {
       child: _FirestoreListTable(
         stream: service.streamUserTrips(),
         emptyMessage: 'No hay viajes registrados aún.',
-        columns: const ['Vehículo', 'Fecha', 'Distancia', 'Duración', 'Cobro Total'],
+        itemLabel: 'viajes',
+        columns: const ['Vehículo', 'Fecha', 'Distancia', 'Duración', 'Cobro Total', 'Acciones'],
         rowBuilder: (doc) {
           final Map<String, dynamic> data = doc.data();
           final String vehiculo = (data['vehicleName'] ?? 'Desconocido').toString();
           final String fecha = _formatFecha(data['date']);
           final double distance = double.tryParse(data['distanceKm']?.toString() ?? '0') ?? 0.0;
-          final String distanciaStr = '${distance.toStringAsFixed(1)} km';
           final String duracion = (data['duration'] ?? '-').toString();
           final int totalCost = int.tryParse(data['totalCost']?.toString() ?? '0') ?? 0;
-          final String cobroStr = '\$$totalCost';
 
           return [
-            DataCell(Text(vehiculo)),
-            DataCell(Text(fecha)),
-            DataCell(Text(distanciaStr)),
-            DataCell(Text(duracion)),
-            DataCell(Text(
-              cobroStr,
-              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
-            )),
+            DataCell(
+              Row(
+                children: [
+                  const Icon(Icons.directions_car_filled_outlined, size: 18, color: Color(0xFF0EA5E9)),
+                  const SizedBox(width: 8),
+                  Text(
+                    vehiculo,
+                    style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                  ),
+                ],
+              ),
+            ),
+            DataCell(
+              Text(
+                fecha,
+                style: const TextStyle(color: Color(0xFF475569), fontWeight: FontWeight.w500),
+              ),
+            ),
+            DataCell(
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF1F5F9),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.linear_scale_rounded, size: 14, color: Color(0xFF64748B)),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${distance.toStringAsFixed(1)} km',
+                      style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF475569), fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            DataCell(
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.access_time_rounded, size: 14, color: Color(0xFF64748B)),
+                  const SizedBox(width: 4),
+                  Text(duracion, style: const TextStyle(color: Color(0xFF334155))),
+                ],
+              ),
+            ),
+            DataCell(
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFECFDF5),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFA7F3D0)),
+                ),
+                child: Text(
+                  '\$${_formatNumber(totalCost)}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF065F46),
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+            ),
+            DataCell(
+              Builder(
+                builder: (context) {
+                  return IconButton(
+                    icon: const Icon(Icons.info_outline_rounded, color: Color(0xFF0EA5E9)),
+                    tooltip: 'Ver Detalle de Peajes',
+                    onPressed: () {
+                      _mostrarDetalleViaje(context, data);
+                    },
+                  );
+                }
+              ),
+            ),
           ];
         },
       ),
@@ -1665,18 +1992,116 @@ class _QuickAction extends StatelessWidget {
 } 
 
 
-class _FirestoreListTable extends StatelessWidget {
+class _TablePaginationControls extends StatelessWidget {
+  const _TablePaginationControls({
+    required this.currentPage,
+    required this.rowsPerPage,
+    required this.totalItems,
+    required this.totalPages,
+    required this.startIndex,
+    required this.endIndex,
+    required this.onPageChanged,
+    required this.onRowsPerPageChanged,
+    required this.itemLabel,
+  });
+
+  final int currentPage;
+  final int rowsPerPage;
+  final int totalItems;
+  final int totalPages;
+  final int startIndex;
+  final int endIndex;
+  final ValueChanged<int> onPageChanged;
+  final ValueChanged<int> onRowsPerPageChanged;
+  final String itemLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Mostrando ${totalItems == 0 ? 0 : startIndex + 1} - $endIndex de $totalItems $itemLabel',
+            style: const TextStyle(color: Color(0xFF64748B), fontSize: 13, fontWeight: FontWeight.w500),
+          ),
+          Row(
+            children: [
+              const Text('Filas por página: ', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
+              const SizedBox(width: 8),
+              DropdownButton<int>(
+                value: rowsPerPage,
+                items: [5, 10, 20, 50].map((int val) {
+                  return DropdownMenuItem<int>(
+                    value: val,
+                    child: Text('$val', style: const TextStyle(fontSize: 13)),
+                  );
+                }).toList(),
+                onChanged: (int? newValue) {
+                  if (newValue != null) {
+                    onRowsPerPageChanged(newValue);
+                  }
+                },
+                underline: const SizedBox(),
+              ),
+              const SizedBox(width: 24),
+              IconButton(
+                icon: const Icon(Icons.first_page_rounded),
+                onPressed: currentPage > 0 ? () => onPageChanged(0) : null,
+                tooltip: 'Primera página',
+              ),
+              IconButton(
+                icon: const Icon(Icons.chevron_left_rounded),
+                onPressed: currentPage > 0 ? () => onPageChanged(currentPage - 1) : null,
+                tooltip: 'Página anterior',
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Pág. ${currentPage + 1} de ${totalPages == 0 ? 1 : totalPages}',
+                style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0F172A), fontSize: 13),
+              ),
+              const SizedBox(width: 8),
+              IconButton(
+                icon: const Icon(Icons.chevron_right_rounded),
+                onPressed: currentPage < totalPages - 1 ? () => onPageChanged(currentPage + 1) : null,
+                tooltip: 'Siguiente página',
+              ),
+              IconButton(
+                icon: const Icon(Icons.last_page_rounded),
+                onPressed: currentPage < totalPages - 1 ? () => onPageChanged(totalPages - 1) : null,
+                tooltip: 'Última página',
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FirestoreListTable extends StatefulWidget {
   const _FirestoreListTable({
     required this.stream,
     required this.emptyMessage,
     required this.columns,
     required this.rowBuilder,
+    required this.itemLabel,
   });
 
   final Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>> stream;
   final String emptyMessage;
   final List<String> columns;
   final List<DataCell> Function(QueryDocumentSnapshot<Map<String, dynamic>>) rowBuilder;
+  final String itemLabel;
+
+  @override
+  State<_FirestoreListTable> createState() => _FirestoreListTableState();
+}
+
+class _FirestoreListTableState extends State<_FirestoreListTable> {
+  int _currentPage = 0;
+  int _rowsPerPage = 10;
 
   @override
   Widget build(BuildContext context) {
@@ -1684,7 +2109,7 @@ class _FirestoreListTable extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: StreamBuilder<List<QueryDocumentSnapshot<Map<String, dynamic>>>>(
-          stream: stream,
+          stream: widget.stream,
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Text('Error al leer Firestore: ${snapshot.error}');
@@ -1704,26 +2129,144 @@ class _FirestoreListTable extends StatelessWidget {
               return Center(
                 child: Padding(
                   padding: const EdgeInsets.all(32),
-                  child: Text(emptyMessage),
+                  child: Text(widget.emptyMessage),
                 ),
               );
             }
 
-            return SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: DataTable(
-                  columns: columns.map((String column) => DataColumn(label: Text(column))).toList(),
-                  rows: docs.map((doc) {
-                    return DataRow(cells: rowBuilder(doc));
-                  }).toList(),
+            final int totalPages = (docs.length / _rowsPerPage).ceil();
+            if (_currentPage >= totalPages && totalPages > 0) {
+              _currentPage = totalPages - 1;
+            }
+
+            final int startIndex = _currentPage * _rowsPerPage;
+            final int endIndex = (startIndex + _rowsPerPage) > docs.length
+                ? docs.length
+                : (startIndex + _rowsPerPage);
+            final pageDocs = docs.sublist(startIndex, endIndex);
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: DataTable(
+                        columns: widget.columns.map((String column) => DataColumn(label: Text(column))).toList(),
+                        rows: pageDocs.map((doc) {
+                          return DataRow(cells: widget.rowBuilder(doc));
+                        }).toList(),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+                const Divider(),
+                _TablePaginationControls(
+                  currentPage: _currentPage,
+                  rowsPerPage: _rowsPerPage,
+                  totalItems: docs.length,
+                  totalPages: totalPages,
+                  startIndex: startIndex,
+                  endIndex: endIndex,
+                  onPageChanged: (page) => setState(() => _currentPage = page),
+                  onRowsPerPageChanged: (rows) => setState(() {
+                    _rowsPerPage = rows;
+                    _currentPage = 0;
+                  }),
+                  itemLabel: widget.itemLabel,
+                ),
+              ],
             );
           },
         ),
       ),
     );
   }
+}
+
+String _formatNumber(int val) {
+  final String str = val.toString();
+  final StringBuffer buffer = StringBuffer();
+  int count = 0;
+  for (int i = str.length - 1; i >= 0; i--) {
+    buffer.write(str[i]);
+    count++;
+    if (count % 3 == 0 && i != 0) {
+      buffer.write('.');
+    }
+  }
+  return buffer.toString().split('').reversed.join('');
+}
+
+Color _getColorFromName(String name) {
+  final int hash = name.hashCode;
+  final List<Color> colors = [
+    const Color(0xFF0EA5E9),
+    const Color(0xFF10B981),
+    const Color(0xFF6366F1),
+    const Color(0xFF8B5CF6),
+    const Color(0xFFEC4899),
+    const Color(0xFFF59E0B),
+  ];
+  return colors[hash.abs() % colors.length];
+}
+
+Widget _getHighwayBadge(String highway) {
+  Color bgColor;
+  Color textColor;
+  switch (highway) {
+    case 'Autopista Central':
+      bgColor = const Color(0xFFEFF6FF);
+      textColor = const Color(0xFF1D4ED8);
+      break;
+    case 'Costanera Norte':
+      bgColor = const Color(0xFFECFDF5);
+      textColor = const Color(0xFF047857);
+      break;
+    case 'Vespucio Norte':
+      bgColor = const Color(0xFFFFFBEB);
+      textColor = const Color(0xFFB45309);
+      break;
+    case 'Vespucio Sur':
+      bgColor = const Color(0xFFFDF2F8);
+      textColor = const Color(0xFFBE185D);
+      break;
+    case 'Vespucio Oriente (AVO)':
+      bgColor = const Color(0xFFF5F3FF);
+      textColor = const Color(0xFF6D28D9);
+      break;
+    default:
+      bgColor = const Color(0xFFF8FAFC);
+      textColor = const Color(0xFF475569);
+  }
+
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+    decoration: BoxDecoration(
+      color: bgColor,
+      borderRadius: BorderRadius.circular(8),
+      border: Border.all(color: textColor.withValues(alpha: 0.15)),
+    ),
+    child: Text(
+      highway,
+      style: TextStyle(fontWeight: FontWeight.bold, color: textColor, fontSize: 11),
+    ),
+  );
+}
+
+Widget _buildTariffBadge(String label, String value, Color bgColor, Color textColor) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+    decoration: BoxDecoration(
+      color: bgColor,
+      borderRadius: BorderRadius.circular(8),
+      border: Border.all(color: textColor.withValues(alpha: 0.15)),
+    ),
+    child: Text(
+      '$label: \$$value',
+      style: TextStyle(fontWeight: FontWeight.bold, color: textColor, fontSize: 11),
+    ),
+  );
 }
