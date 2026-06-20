@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AdminOverview {
   const AdminOverview({
@@ -195,6 +196,28 @@ class AdminFirestoreService {
       });
       return list;
     });
+  }
+
+  Future<void> logAction({
+    required String action,
+    required String target,
+    required String details,
+  }) async {
+    final String adminEmail = FirebaseAuth.instance.currentUser?.email ?? 'admin_desconocido';
+    await _firestore.collection('auditoria').add({
+      'fecha': FieldValue.serverTimestamp(),
+      'adminEmail': adminEmail,
+      'action': action,
+      'target': target,
+      'details': details,
+    });
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> streamAuditLogs() {
+    return _firestore
+        .collection('auditoria')
+        .orderBy('fecha', descending: true)
+        .snapshots();
   }
 
   Future<int> _count(String collection) async {

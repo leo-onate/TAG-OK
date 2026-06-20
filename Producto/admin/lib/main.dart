@@ -82,6 +82,7 @@ class _AdminShellState extends State<AdminShell> {
     'Pórticos',
     'Tarifas',
     'Reportes',
+    'Auditoría',
   ];
 
   @override
@@ -91,7 +92,8 @@ class _AdminShellState extends State<AdminShell> {
       1 => UsersPage(service: _service),
       2 => PorticosPage(service: _service),
       3 => TariffsPage(service: _service),
-      _ => ReportsPage(service: _service),
+      4 => ReportsPage(service: _service),
+      _ => AuditLogPage(service: _service),
     };
 
     return Scaffold(
@@ -186,7 +188,8 @@ class _AdminShellState extends State<AdminShell> {
       1 => Icons.people_alt_outlined,
       2 => Icons.toll_outlined,
       3 => Icons.payments_outlined,
-      _ => Icons.bar_chart_outlined,
+      4 => Icons.bar_chart_outlined,
+      _ => Icons.receipt_long_outlined,
     };
   }
 }
@@ -688,6 +691,11 @@ class _UsersPageState extends State<UsersPage> {
                 'nombre_mostrar': nombreCtrl.text,
                 'limite_presupuesto_mensual': nuevoLimite,
               });
+              widget.service.logAction(
+                action: 'EDIT_USER',
+                target: nombreActual,
+                details: 'Presupuesto: \$${_formatNumber(limiteActual)} -> \$${_formatNumber(nuevoLimite)}. Nombre: $nombreActual -> ${nombreCtrl.text}.',
+              );
               Navigator.pop(context);
             },
             child: const Text('Guardar', style: TextStyle(color: Colors.white)),
@@ -701,6 +709,11 @@ class _UsersPageState extends State<UsersPage> {
     if (correo == 'Sin correo') return;
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: correo);
+      widget.service.logAction(
+        action: 'RESET_PASSWORD',
+        target: correo,
+        details: 'Se envió un correo de restablecimiento de contraseña.',
+      );
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Correo de restablecimiento enviado a $correo'), backgroundColor: Colors.green),
@@ -728,6 +741,11 @@ class _UsersPageState extends State<UsersPage> {
             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0EA5E9)),
             onPressed: () {
               FirebaseFirestore.instance.collection('usuarios').doc(docId).delete();
+              widget.service.logAction(
+                action: 'DELETE_USER',
+                target: nombre,
+                details: 'Se eliminó definitivamente el usuario y sus datos.',
+              );
               Navigator.pop(context);
             },
             child: const Text('Sí, Eliminar', style: TextStyle(color: Colors.white)),
@@ -1118,6 +1136,11 @@ class _PorticosPageState extends State<PorticosPage> {
 
               if (updates.isNotEmpty) {
                 FirebaseFirestore.instance.collection('porticos').doc(docId).update(updates);
+                widget.service.logAction(
+                  action: 'EDIT_TARIFF',
+                  target: nombre,
+                  details: 'Tarifas editadas. Base: \$$baseActual -> \$${baseCtrl.text}. Punta: \$$puntaActual -> \$${puntaCtrl.text}. Sat: \$$saturacionActual -> \$${saturacionCtrl.text}.',
+                );
               }
               Navigator.pop(context);
             },
@@ -1141,6 +1164,11 @@ class _PorticosPageState extends State<PorticosPage> {
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () {
               FirebaseFirestore.instance.collection('porticos').doc(docId).delete();
+              widget.service.logAction(
+                action: 'DELETE_PORTICO',
+                target: nombre,
+                details: 'Se eliminó el pórtico master de la base de datos.',
+              );
               Navigator.pop(context);
             },
             child: const Text('Sí, Eliminar', style: TextStyle(color: Colors.white)),
@@ -1950,6 +1978,319 @@ class _StatCard extends StatelessWidget {
               Text(label, style: const TextStyle(color: Color(0xFF64748B))),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class AuditLogPage extends StatefulWidget {
+  const AuditLogPage({super.key, required this.service});
+
+  final AdminFirestoreService service;
+
+  @override
+  State<AuditLogPage> createState() => _AuditLogPageState();
+}
+
+class _AuditLogPageState extends State<AuditLogPage> {
+  final TextEditingController _searchCtrl = TextEditingController();
+  String _searchQuery = '';
+  String _selectedActionFilter = 'Todos';
+  int _currentPage = 0;
+  int _rowsPerPage = 10;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchCtrl.addListener(() {
+      setState(() {
+        _searchQuery = _searchCtrl.text.toLowerCase().trim();
+        _currentPage = 0;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
+  bool _matchesFilters(Map<String, dynamic> data) {
+    final String adminEmail = (data['adminEmail'] ?? '').toString().toLowerCase();
+    final String target = (data['target'] ?? '').toString().toLowerCase();
+    final String details = (data['details'] ?? '').toString().toLowerCase();
+    final String action = (data['action'] ?? '').toString();
+
+    if (_searchQuery.isNotEmpty &&
+        !adminEmail.contains(_searchQuery) &&
+        !target.contains(_searchQuery) &&
+        !details.contains(_searchQuery)) {
+      return false;
+    }
+
+    if (_selectedActionFilter != 'Todos' && action != _selectedActionFilter) {
+      return false;
+    }
+
+    return true;
+  }
+
+  String _formatFecha(dynamic dateVal) {
+    if (dateVal == null) return '-';
+    if (dateVal is Timestamp) {
+      final date = dateVal.toDate();
+      final y = date.year;
+      final m = date.month.toString().padLeft(2, '0');
+      final d = date.day.toString().padLeft(2, '0');
+      final h = date.hour.toString().padLeft(2, '0');
+      final min = date.minute.toString().padLeft(2, '0');
+      return '$y-$m-$d $h:$min';
+    }
+    return dateVal.toString();
+  }
+
+  Widget _getActionBadge(String action) {
+    Color bgColor;
+    Color textColor;
+    String label;
+    switch (action) {
+      case 'EDIT_USER':
+        bgColor = const Color(0xFFE0E7FF);
+        textColor = const Color(0xFF4338CA);
+        label = 'Editar Usuario';
+        break;
+      case 'RESET_PASSWORD':
+        bgColor = const Color(0xFFFEF3C7);
+        textColor = const Color(0xFFD97706);
+        label = 'Resetear Clave';
+        break;
+      case 'DELETE_USER':
+        bgColor = const Color(0xFFFEE2E2);
+        textColor = const Color(0xFFDC2626);
+        label = 'Eliminar Usuario';
+        break;
+      case 'EDIT_TARIFF':
+        bgColor = const Color(0xFFDBEAFE);
+        textColor = const Color(0xFF1D4ED8);
+        label = 'Editar Tarifas';
+        break;
+      case 'DELETE_PORTICO':
+        bgColor = const Color(0xFFFFEDD5);
+        textColor = const Color(0xFFEA580C);
+        label = 'Eliminar Pórtico';
+        break;
+      default:
+        bgColor = const Color(0xFFF1F5F9);
+        textColor = const Color(0xFF475569);
+        label = action;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: textColor.withValues(alpha: 0.15)),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(fontWeight: FontWeight.bold, color: textColor, fontSize: 12),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _AdminPageScaffold(
+      title: 'Bitácora de Auditoría',
+      subtitle: 'Historial irreversible de cambios y acciones realizadas por administradores.',
+      child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+        stream: widget.service.streamAuditLogs(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Text('Error al leer Firestore: ${snapshot.error}');
+          }
+
+          if (!snapshot.hasData) {
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.all(32),
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+
+          final docs = snapshot.data!.docs;
+          final filteredDocs = docs.where((doc) => _matchesFilters(doc.data())).toList();
+
+          if (filteredDocs.isEmpty) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildFiltersCard(),
+                const Expanded(
+                  child: Card(
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(32),
+                        child: Text('No hay registros de auditoría que coincidan con los filtros.'),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }
+
+          final int totalPages = (filteredDocs.length / _rowsPerPage).ceil();
+          if (_currentPage >= totalPages && totalPages > 0) {
+            _currentPage = totalPages - 1;
+          }
+
+          final int startIndex = _currentPage * _rowsPerPage;
+          final int endIndex = (startIndex + _rowsPerPage) > filteredDocs.length
+              ? filteredDocs.length
+              : (startIndex + _rowsPerPage);
+          final pageDocs = filteredDocs.sublist(startIndex, endIndex);
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildFiltersCard(),
+              Expanded(
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: DataTable(
+                                columns: const [
+                                  DataColumn(label: Text('Fecha')),
+                                  DataColumn(label: Text('Administrador')),
+                                  DataColumn(label: Text('Acción')),
+                                  DataColumn(label: Text('Objetivo')),
+                                  DataColumn(label: Text('Detalles')),
+                                ],
+                                rows: pageDocs.map((doc) {
+                                  final data = doc.data();
+                                  final String fechaStr = _formatFecha(data['fecha']);
+                                  final String adminEmail = (data['adminEmail'] ?? 'Sistema').toString();
+                                  final String action = (data['action'] ?? '').toString();
+                                  final String target = (data['target'] ?? '').toString();
+                                  final String details = (data['details'] ?? '').toString();
+
+                                  return DataRow(
+                                    cells: [
+                                      DataCell(Text(fechaStr, style: const TextStyle(fontWeight: FontWeight.w500))),
+                                      DataCell(Text(adminEmail)),
+                                      DataCell(_getActionBadge(action)),
+                                      DataCell(Text(target, style: const TextStyle(fontWeight: FontWeight.bold))),
+                                      DataCell(
+                                        Container(
+                                          constraints: const BoxConstraints(maxWidth: 350),
+                                          child: Text(
+                                            details,
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 2,
+                                            style: const TextStyle(fontSize: 12, color: Color(0xFF475569)),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const Divider(),
+                        _TablePaginationControls(
+                          currentPage: _currentPage,
+                          rowsPerPage: _rowsPerPage,
+                          totalItems: filteredDocs.length,
+                          totalPages: totalPages,
+                          startIndex: startIndex,
+                          endIndex: endIndex,
+                          onPageChanged: (page) => setState(() => _currentPage = page),
+                          onRowsPerPageChanged: (rows) => setState(() {
+                            _rowsPerPage = rows;
+                            _currentPage = 0;
+                          }),
+                          itemLabel: 'registros',
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildFiltersCard() {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Expanded(
+              flex: 3,
+              child: TextField(
+                controller: _searchCtrl,
+                decoration: InputDecoration(
+                  isDense: true,
+                  labelText: 'Buscar en bitácora...',
+                  hintText: 'Buscar por admin, objetivo o detalle',
+                  prefixIcon: const Icon(Icons.search, size: 20),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              flex: 2,
+              child: DropdownButtonFormField<String>(
+                initialValue: _selectedActionFilter,
+                decoration: InputDecoration(
+                  isDense: true,
+                  labelText: 'Tipo de Acción',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                items: const [
+                  DropdownMenuItem(value: 'Todos', child: Text('Todas las acciones')),
+                  DropdownMenuItem(value: 'EDIT_USER', child: Text('Editar Usuario')),
+                  DropdownMenuItem(value: 'RESET_PASSWORD', child: Text('Restablecer Clave')),
+                  DropdownMenuItem(value: 'DELETE_USER', child: Text('Eliminar Usuario')),
+                  DropdownMenuItem(value: 'EDIT_TARIFF', child: Text('Editar Tarifas')),
+                  DropdownMenuItem(value: 'DELETE_PORTICO', child: Text('Eliminar Pórtico')),
+                ],
+                onChanged: (val) {
+                  if (val != null) {
+                    setState(() {
+                      _selectedActionFilter = val;
+                      _currentPage = 0;
+                    });
+                  }
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
