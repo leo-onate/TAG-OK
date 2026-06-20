@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Importa FirebaseAuth
 import 'package:flutter_dotenv/flutter_dotenv.dart'; // Importa dotenv
 import 'firebase_options.dart'; // El archivo que generaste recién
 import 'screens/login_screen.dart'; // Importa tu nueva pantalla
+import 'screens/home_screen.dart'; // Importa la pantalla principal
 
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Importa Riverpod
 
@@ -35,7 +37,23 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'TagOk',
-      home: const LoginScreen(), // Aquí le decimos que empiece en el Login
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          // Si todavía está revisando si hay sesión guardada
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+          // Si encontró una sesión activa, manda directo al Home
+          if (snapshot.hasData && snapshot.data != null) {
+            return const HomeScreen();
+          }
+          // Si no hay sesión, muestra el Login
+          return const LoginScreen();
+        },
+      ),
     );
   }
 }
