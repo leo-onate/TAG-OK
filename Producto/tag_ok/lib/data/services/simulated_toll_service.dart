@@ -48,8 +48,8 @@ class SimulatedTollService {
 
     final distanceKm = distanceMeters / 1000.0;
 
-    // 3. Simular pórticos interceptados
-    final tolls = _calculateTollsForRoute(polylinePoints);
+    // 3. Simular pórticos interceptados con Paso A, B y C
+    final tolls = _calculateTollsForRoute(polylinePoints, distanceMeters, durationSeconds);
 
     // 4. Sentido genérico aproximado
     String direction = "Desconocido";
@@ -65,24 +65,9 @@ class SimulatedTollService {
     }
 
     // Calcular costo total
-    // BLOQUEO TOTAL: Forzamos BASE permanentemente para cuadrar con TollGuru
-    const bool isSaturacion = false; 
-    const bool isPunta = false; 
     double totalCost = 0;
     for (var toll in tolls) {
-      double cost = toll.cost;
-      String mode = "BASE";
-      
-      if (isSaturacion && toll.costSaturacion != null) {
-        cost = toll.costSaturacion!;
-        mode = "SATURACION";
-      } else if (isPunta && toll.costPunta != null) {
-        cost = toll.costPunta!;
-        mode = "PUNTA";
-      }
-      
-      print("TAG_OK_DEBUG: Cobrando ${toll.name} - \$${cost} (Modo: $mode)");
-      totalCost += cost;
+      totalCost += toll.cost;
     }
 
     // Formatear tiempo
@@ -98,23 +83,26 @@ class SimulatedTollService {
     );
   }
 
-  List<TollData> _calculateTollsForRoute(List<LatLng> routePoints) {
-    final List<TollData> detectedTolls = [];
-    final Set<String> seenTollNames = {}; // Para evitar duplicados en la misma ruta
-    final knownTolls = TollsDatabase.santiagoTolls;
-    // Reducido a 150m para evitar captar pórticos de calles laterales.
-    // Con la deduplicación por nombre, esto debería ser muy estable.
-    final double thresholdMeters = 150.0; 
+  List<TollData> _calculateTollsForRoute(List<LatLng> routePoints, num totalDistanceMeters, num durationSeconds) {
+    if (routePoints.isEmpty) return [];
 
-    if (routePoints.isEmpty) return detectedTolls;
+    // Precalcular distancias acumuladas de la polilínea
+    List<double> cumulativeDistances = [0.0];
+    for (int i = 0; i < routePoints.length - 1; i++) {
+      double dist = _calculateDistance(routePoints[i], routePoints[i+1]);
+      cumulativeDistances.add(cumulativeDistances.last + dist);
+    }
+
+    final List<_CandidateToll> candidateTolls = [];
+    final double thresholdMeters = 150.0;
+    final knownTolls = TollsDatabase.santiagoTolls;
 
     for (var knownToll in knownTolls) {
-      bool passedThrough = false;
       LatLng? bestSnappedPoint;
       double minDistance = double.infinity;
       double? segmentBearing;
-      
-      // Comprobar la distancia desde el pórtico a cada segmento de la ruta
+      double? bestRouteDistance;
+
       for (int i = 0; i < routePoints.length - 1; i++) {
         final snapResult = _snapToSegment(
           knownToll.location, 
@@ -123,50 +111,142 @@ class SimulatedTollService {
         );
         
         if (snapResult.distance <= thresholdMeters) {
-          passedThrough = true;
           if (snapResult.distance < minDistance) {
             minDistance = snapResult.distance;
             bestSnappedPoint = snapResult.point;
             segmentBearing = _calculateBearing(routePoints[i], routePoints[i+1]);
+            double distToSnap = _calculateDistance(routePoints[i], snapResult.point);
+            bestRouteDistance = cumulativeDistances[i] + distToSnap;
           }
         }
       }
       
-      if (passedThrough && bestSnappedPoint != null) {
-        // Filtrar por sentido de marcha
-        if (knownToll.direction != null && segmentBearing != null) {
-          bool isMatch = _checkDirectionMatch(segmentBearing, knownToll.direction!);
-          if (!isMatch) {
-            continue; 
+      if (bestSnappedPoint != null && bestRouteDistance != null) {
+        candidateTolls.add(_CandidateToll(
+          toll: knownToll,
+          snappedLocation: bestSnappedPoint,
+          routeDistance: bestRouteDistance,
+          segmentBearing: segmentBearing ?? 0.0,
+        ));
+      }
+    }
+
+    // Paso A: Ordenamiento Cronológico
+    candidateTolls.sort((a, b) => a.routeDistance.compareTo(b.routeDistance));
+
+    // Paso B: Lógica de Secuencias y Filtrado de Sentido (Topológica)
+    Map<String, List<_CandidateToll>> tollsByHighway = {};
+    for (var ct in candidateTolls) {
+      if (ct.toll.highway != null) {
+        tollsByHighway.putIfAbsent(ct.toll.highway!, () => []).add(ct);
+      } else {
+        tollsByHighway.putIfAbsent('Unknown', () => []).add(ct);
+      }
+    }
+
+    List<_CandidateToll> filteredCandidates = [];
+
+    for (var entry in tollsByHighway.entries) {
+      final highwayCandidates = entry.value;
+
+      if (highwayCandidates.length < 2 || entry.key == 'Unknown') {
+        for (var ct in highwayCandidates) {
+          if (ct.toll.direction != null) {
+            bool isMatch = _checkDirectionMatch(
+              ct.segmentBearing,
+              ct.toll.direction!,
+              highway: ct.toll.highway,
+              location: ct.toll.location,
+            );
+            if (isMatch) filteredCandidates.add(ct);
+          } else {
+            filteredCandidates.add(ct);
           }
         }
-
-        // Usar el punto exacto proyectado sobre la autopista
-        final detectedToll = TollData(
-          name: knownToll.name,
-          cost: knownToll.cost,
-          costPunta: knownToll.costPunta,
-          costSaturacion: knownToll.costSaturacion,
-          direction: knownToll.direction,
-          location: bestSnappedPoint,
-        );
+      } else {
+        Map<String, int> directionCounts = {};
+        for (var ct in highwayCandidates) {
+          if (ct.toll.direction != null) {
+            directionCounts[ct.toll.direction!] = (directionCounts[ct.toll.direction!] ?? 0) + 1;
+          }
+        }
         
-        // Evitar duplicados (mismo pórtico detectado más de una vez en el trayecto)
-        if (!seenTollNames.contains(detectedToll.name)) {
-          // Si ya hay un pórtico muy cerca (<100m) con nombre similar, saltar
-          bool tooClose = detectedTolls.any((t) => 
-            _calculateDistance(t.location, detectedToll.location) < 100);
-          
-          if (!tooClose) {
-            detectedTolls.add(detectedToll);
-            seenTollNames.add(detectedToll.name);
-            print("TAG_OK_DEBUG: Detectado ${detectedToll.name} a ${minDistance.toStringAsFixed(1)}m");
+        String? dominantDirection;
+        int maxCount = 0;
+        directionCounts.forEach((dir, count) {
+          if (count > maxCount) {
+            maxCount = count;
+            dominantDirection = dir;
+          }
+        });
+
+        for (var ct in highwayCandidates) {
+          if (ct.toll.direction == dominantDirection || ct.toll.direction == null) {
+            filteredCandidates.add(ct);
           }
         }
       }
     }
 
-    return detectedTolls;
+    filteredCandidates.sort((a, b) => a.routeDistance.compareTo(b.routeDistance));
+
+    final List<TollData> finalTolls = [];
+    final Set<String> seenNames = {};
+    final startTime = DateTime.now();
+
+    for (var ct in filteredCandidates) {
+      if (!seenNames.contains(ct.toll.name)) {
+        bool tooClose = finalTolls.any((t) => 
+          _calculateDistance(t.location, ct.snappedLocation) < 100);
+        
+        if (!tooClose) {
+          // Paso C: Tarifas Dinámicas
+          double proportion = ct.routeDistance / (totalDistanceMeters > 0 ? totalDistanceMeters : 1);
+          if (proportion > 1.0) proportion = 1.0;
+          
+          DateTime eta = startTime.add(Duration(seconds: (durationSeconds * proportion).round()));
+          
+          double finalCost = ct.toll.cost;
+          String mode = "BASE";
+
+          if (_isHorarioSaturacion(eta)) {
+            if (ct.toll.costSaturacion != null) {
+              finalCost = ct.toll.costSaturacion!;
+              mode = "SATURACION";
+            } else if (ct.toll.costPunta != null) {
+              finalCost = ct.toll.costPunta!;
+              mode = "PUNTA";
+            }
+          } else if (_isHorarioPunta(eta)) {
+            if (ct.toll.costPunta != null) {
+              finalCost = ct.toll.costPunta!;
+              mode = "PUNTA";
+            }
+          }
+
+          final detectedToll = TollData(
+            name: ct.toll.name,
+            cost: finalCost,
+            costPunta: ct.toll.costPunta,
+            costSaturacion: ct.toll.costSaturacion,
+            direction: ct.toll.direction,
+            location: ct.snappedLocation,
+            highway: ct.toll.highway,
+            group: ct.toll.group,
+            sequence: ct.toll.sequence,
+            isCrossed: false,
+            crossedAt: eta,
+            appliedFareMode: mode,
+          );
+          
+          finalTolls.add(detectedToll);
+          seenNames.add(ct.toll.name);
+          print("TAG_OK_DEBUG: Peaje ${ct.toll.name} ETA: \${eta.hour}:\${eta.minute.toString().padLeft(2,'0')} - Costo: \$$finalCost ($mode)");
+        }
+      }
+    }
+
+    return finalTolls;
   }
 
   /// Calcula el punto más cercano de la ruta a la ubicación aproximada del pórtico
@@ -224,7 +304,14 @@ class SimulatedTollService {
     return bearing;
   }
 
-  bool _checkDirectionMatch(double bearing, String tollDir) {
+  bool _checkDirectionMatch(double bearing, String tollDir, {String? highway, LatLng? location}) {
+    // Para autopistas tipo anillo (como Vespucio Norte), la dirección física
+    // cambia de Este-Oeste a Norte-Sur en la zona Poniente (longitud < -70.73).
+    if (highway == "Vespucio Norte" && location != null && location.longitude < -70.73) {
+      if (tollDir == "P-O") return bearing >= 315 || bearing < 45; // Sentido Norte
+      if (tollDir == "O-P") return bearing >= 135 && bearing < 225; // Sentido Sur
+    }
+
     // Cuadrantes estrictos de 90 grados (+/- 45 del eje)
     if (tollDir == "S-N") return bearing >= 315 || bearing < 45; // Norte
     if (tollDir == "P-O") return bearing >= 45 && bearing < 135; // Oriente
@@ -252,8 +339,7 @@ class SimulatedTollService {
     return math.sqrt(dx * dx + dy * dy);
   }
 
-  bool _isHorarioPunta() {
-    final now = DateTime.now();
+  bool _isHorarioPunta(DateTime now) {
     if (now.weekday >= 1 && now.weekday <= 5) {
       if (now.hour >= 7 && now.hour < 9) return true;
       if ((now.hour == 17 && now.minute >= 30) || (now.hour >= 18 && now.hour < 20)) return true;
@@ -261,8 +347,7 @@ class SimulatedTollService {
     return false;
   }
 
-  bool _isHorarioSaturacion() {
-    final now = DateTime.now();
+  bool _isHorarioSaturacion(DateTime now) {
     if (now.weekday >= 1 && now.weekday <= 5) {
       // Definimos unas ventanas de saturación más críticas (ejemplo simulado)
       if (now.hour == 8) return true;
@@ -277,4 +362,18 @@ class _SnapResult {
   final LatLng point;
 
   _SnapResult(this.distance, this.point);
+}
+
+class _CandidateToll {
+  final TollData toll;
+  final LatLng snappedLocation;
+  final double routeDistance;
+  final double segmentBearing;
+
+  _CandidateToll({
+    required this.toll,
+    required this.snappedLocation,
+    required this.routeDistance,
+    required this.segmentBearing,
+  });
 }
