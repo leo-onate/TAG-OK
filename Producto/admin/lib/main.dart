@@ -17,7 +17,8 @@ Future<void> main() async {
 
   // Cargar variables de entorno encriptadas en memoria
   try {
-    const b64Env = "V0VCX0FQSV9LRVk9QUl6YVN5Qm1YVnZZejNsalpXRjROQ2tfMndGQ01Cc0VmTEJkZzF3DQpXRUJfQVBQX0lEPTE6MTU5MTUwNjQzNjM6d2ViOmFmZmVlNDg4NDU0YTYyZDVmYmRlNmUNCkFORFJPSURfQVBJX0tFWT1BSXphU3lEd3N5cXJpMDkyUGFhbFFzRjNDMnpueVRtTk9DaDVSSjANCkFORFJPSURfQVBQX0lEPTE6MTU5MTUwNjQzNjM6YW5kcm9pZDoyNmQ1NThmZTgyZjU5MTZjZmJkZTZlDQpJT1NfQVBJX0tFWT1BSXphU3lEcS02cGRBY0g4Z0FrT0VZT3A0SHpjWDVBQzF5cUl6eWsNCklPU19BUFBfSUQ9MToxNTkxNTA2NDM2Mzppb3M6YTg2ZDRjNGE5NTY0ZDgxM2ZiZGU2ZQ0KTUVTU0FHSU5HX1NFTkRFUl9JRD0xNTkxNTA2NDM2Mw0KUFJPSkVDVF9JRD10YWctb2sNClNUT1JBR0VfQlVDS0VUPXRhZy1vay5maXJlYmFzZXN0b3JhZ2UuYXBwDQpJT1NfQlVORExFX0lEPWNvbS5leGFtcGxlLnRhZ09rDQpNQVBCT1hfQUNDRVNTX1RPS0VOPXBrLmV5SjFJam9pYW1WemRYTmhjbUZ1WjNWcGVqSTVJaXdpWVNJNkltTnRiM0p3YlRkcU5UQTNZWGN5YzI5bGRXZDBiVGhyY1c0aWZRLkR6LTdHUFEwRlI0aGRKRjJYWHI4N0ENCkdFTUlOSV9BUElfS0VZPUFRLkFiOFJONkpDdlUxLTEyNWc3TGxJcHVGVzFDUncxdWRWbnhqRW81bEVSUmMxbDZKSnB3DQo=";
+    const b64Env =
+        "V0VCX0FQSV9LRVk9QUl6YVN5Qm1YVnZZejNsalpXRjROQ2tfMndGQ01Cc0VmTEJkZzF3DQpXRUJfQVBQX0lEPTE6MTU5MTUwNjQzNjM6d2ViOmFmZmVlNDg4NDU0YTYyZDVmYmRlNmUNCkFORFJPSURfQVBJX0tFWT1BSXphU3lEd3N5cXJpMDkyUGFhbFFzRjNDMnpueVRtTk9DaDVSSjANCkFORFJPSURfQVBQX0lEPTE6MTU5MTUwNjQzNjM6YW5kcm9pZDoyNmQ1NThmZTgyZjU5MTZjZmJkZTZlDQpJT1NfQVBJX0tFWT1BSXphU3lEcS02cGRBY0g4Z0FrT0VZT3A0SHpjWDVBQzF5cUl6eWsNCklPU19BUFBfSUQ9MToxNTkxNTA2NDM2Mzppb3M6YTg2ZDRjNGE5NTY0ZDgxM2ZiZGU2ZQ0KTUVTU0FHSU5HX1NFTkRFUl9JRD0xNTkxNTA2NDM2Mw0KUFJPSkVDVF9JRD10YWctb2sNClNUT1JBR0VfQlVDS0VUPXRhZy1vay5maXJlYmFzZXN0b3JhZ2UuYXBwDQpJT1NfQlVORExFX0lEPWNvbS5leGFtcGxlLnRhZ09rDQpNQVBCT1hfQUNDRVNTX1RPS0VOPXBrLmV5SjFJam9pYW1WemRYTmhjbUZ1WjNWcGVqSTVJaXdpWVNJNkltTnRiM0p3YlRkcU5UQTNZWGN5YzI5bGRXZDBiVGhyY1c0aWZRLkR6LTdHUFEwRlI0aGRKRjJYWHI4N0ENCkdFTUlOSV9BUElfS0VZPUFRLkFiOFJONkpDdlUxLTEyNWc3TGxJcHVGVzFDUncxdWRWbnhqRW81bEVSUmMxbDZKSnB3DQo=";
     // Decodificar Base64
     final envText = utf8.decode(base64Decode(b64Env));
     dotenv.testLoad(fileInput: envText);
@@ -25,9 +26,7 @@ Future<void> main() async {
     debugPrint('TAG_OK_ADMIN: no se pudo cargar variables en memoria');
   }
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(const TagOkAdminApp());
 }
@@ -60,7 +59,7 @@ class TagOkAdminApp extends StatelessWidget {
           ),
         ),
       ),
-       home: const AdminAuthGate(),
+      home: const AdminAuthGate(),
     );
   }
 }
@@ -98,7 +97,11 @@ class _AdminShellState extends State<AdminShell> {
 
   List<SidebarItem> _getSidebarItems(String role) {
     final String r = role.toLowerCase().trim();
-    final bool isSuper = r == 'super_admin' || r == 'super_administrador' || r == 'superadmin' || r == 'super administrador';
+    final bool isSuper =
+        r == 'super_admin' ||
+        r == 'super_administrador' ||
+        r == 'superadmin' ||
+        r == 'super administrador';
 
     final List<SidebarItem> all = [
       SidebarItem(
@@ -131,18 +134,26 @@ class _AdminShellState extends State<AdminShell> {
         icon: Icons.receipt_long_outlined,
         pageBuilder: (s) => AuditLogPage(service: s),
       ),
+      SidebarItem(
+        title: 'Admins',
+        icon: Icons.admin_panel_settings_outlined,
+        pageBuilder: (s) => AdminsManagementPage(service: s),
+      ),
     ];
 
     if (isSuper) {
       return all;
     } else {
       // Operator gets Dashboard, Pórticos, Tarifas, Reportes
-      return all.where((item) => 
-        item.title == 'Dashboard' || 
-        item.title == 'Pórticos' || 
-        item.title == 'Tarifas' || 
-        item.title == 'Reportes'
-      ).toList();
+      return all
+          .where(
+            (item) =>
+                item.title == 'Dashboard' ||
+                item.title == 'Pórticos' ||
+                item.title == 'Tarifas' ||
+                item.title == 'Reportes',
+          )
+          .toList();
     }
   }
 
@@ -151,7 +162,7 @@ class _AdminShellState extends State<AdminShell> {
     if (_selectedIndex >= _sidebarItems.length) {
       _selectedIndex = 0;
     }
-    
+
     final item = _sidebarItems[_selectedIndex];
     final Widget content = item.pageBuilder(_service);
 
@@ -202,8 +213,12 @@ class _AdminShellState extends State<AdminShell> {
                             ),
                             selected: selected,
                             selectedTileColor: const Color(0xFF1E293B),
-                            iconColor: selected ? const Color(0xFF38BDF8) : const Color(0xFFCBD5E1),
-                            textColor: selected ? Colors.white : const Color(0xFFCBD5E1),
+                            iconColor: selected
+                                ? const Color(0xFF38BDF8)
+                                : const Color(0xFFCBD5E1),
+                            textColor: selected
+                                ? Colors.white
+                                : const Color(0xFFCBD5E1),
                             leading: Icon(sidebarItem.icon),
                             title: Text(sidebarItem.title),
                             onTap: () => setState(() => _selectedIndex = index),
@@ -214,11 +229,17 @@ class _AdminShellState extends State<AdminShell> {
                   ),
                   const Divider(color: Color(0xFF1E293B)),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
                     child: _UserProfileCard(role: widget.role),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     child: ListTile(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
@@ -269,10 +290,7 @@ class _BrandBlock extends StatelessWidget {
         SizedBox(height: 6),
         Text(
           'Panel de administración web',
-          style: TextStyle(
-            color: Color(0xFF94A3B8),
-            fontSize: 13,
-          ),
+          style: TextStyle(color: Color(0xFF94A3B8), fontSize: 13),
         ),
       ],
     );
@@ -291,7 +309,11 @@ class _LogoMark extends StatelessWidget {
         color: const Color(0xFF0EA5E9).withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: const Icon(Icons.route_outlined, color: Color(0xFF38BDF8), size: 32),
+      child: const Icon(
+        Icons.route_outlined,
+        color: Color(0xFF38BDF8),
+        size: 32,
+      ),
     );
   }
 }
@@ -317,7 +339,11 @@ class _AdminHintCard extends StatelessWidget {
           SizedBox(height: 8),
           Text(
             'Este panel comparte el mismo Firestore que la app final. Usa roles para restringir edición y publicación.',
-            style: TextStyle(color: Color(0xFFCBD5E1), fontSize: 12, height: 1.4),
+            style: TextStyle(
+              color: Color(0xFFCBD5E1),
+              fontSize: 12,
+              height: 1.4,
+            ),
           ),
         ],
       ),
@@ -331,13 +357,24 @@ class _UserProfileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String email = FirebaseAuth.instance.currentUser?.email ?? 'admin@tagok.cl';
+    final String email =
+        FirebaseAuth.instance.currentUser?.email ?? 'admin@tagok.cl';
     final String r = role.toLowerCase().trim();
-    final bool isSuper = r == 'super_admin' || r == 'super_administrador' || r == 'superadmin' || r == 'super administrador';
-    
-    final String roleLabel = isSuper ? 'Super Administrador' : 'Administrador Operacional';
-    final Color badgeBg = isSuper ? const Color(0xFF0EA5E9).withValues(alpha: 0.12) : const Color(0xFFF59E0B).withValues(alpha: 0.12);
-    final Color badgeText = isSuper ? const Color(0xFF38BDF8) : const Color(0xFFFBBF24);
+    final bool isSuper =
+        r == 'super_admin' ||
+        r == 'super_administrador' ||
+        r == 'superadmin' ||
+        r == 'super administrador';
+
+    final String roleLabel = isSuper
+        ? 'Super Administrador'
+        : 'Administrador Operacional';
+    final Color badgeBg = isSuper
+        ? const Color(0xFF0EA5E9).withValues(alpha: 0.12)
+        : const Color(0xFFF59E0B).withValues(alpha: 0.12);
+    final Color badgeText = isSuper
+        ? const Color(0xFF38BDF8)
+        : const Color(0xFFFBBF24);
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -352,9 +389,9 @@ class _UserProfileCard extends StatelessWidget {
             backgroundColor: badgeBg,
             radius: 16,
             child: Icon(
-              isSuper ? Icons.admin_panel_settings : Icons.person_outline, 
-              color: badgeText, 
-              size: 18
+              isSuper ? Icons.admin_panel_settings : Icons.person_outline,
+              color: badgeText,
+              size: 18,
             ),
           ),
           const SizedBox(width: 8),
@@ -404,7 +441,8 @@ class DashboardPage extends StatelessWidget {
         final AdminOverview? overview = snapshot.data;
         return _AdminPageScaffold(
           title: 'Dashboard',
-          subtitle: 'Estado general del sistema, datos vigentes y accesos rápidos.',
+          subtitle:
+              'Estado general del sistema, datos vigentes y accesos rápidos.',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -412,10 +450,26 @@ class DashboardPage extends StatelessWidget {
                 spacing: 16,
                 runSpacing: 16,
                 children: [
-                  _StatCard(label: 'Usuarios', value: overview?.users ?? 0, icon: Icons.people_alt_outlined),
-                  _StatCard(label: 'Vehículos', value: overview?.vehicles ?? 0, icon: Icons.directions_car_outlined),
-                  _StatCard(label: 'Pórticos', value: overview?.porticos ?? 0, icon: Icons.toll_outlined),
-                  _StatCard(label: 'Tarifas', value: overview?.tariffs ?? 0, icon: Icons.payments_outlined),
+                  _StatCard(
+                    label: 'Usuarios',
+                    value: overview?.users ?? 0,
+                    icon: Icons.people_alt_outlined,
+                  ),
+                  _StatCard(
+                    label: 'Vehículos',
+                    value: overview?.vehicles ?? 0,
+                    icon: Icons.directions_car_outlined,
+                  ),
+                  _StatCard(
+                    label: 'Pórticos',
+                    value: overview?.porticos ?? 0,
+                    icon: Icons.toll_outlined,
+                  ),
+                  _StatCard(
+                    label: 'Tarifas',
+                    value: overview?.tariffs ?? 0,
+                    icon: Icons.payments_outlined,
+                  ),
                 ],
               ),
               const SizedBox(height: 24),
@@ -434,21 +488,29 @@ class DashboardPage extends StatelessWidget {
                       spacing: 12,
                       runSpacing: 12,
                       children: const [
-                        _QuickAction(label: 'Usuarios', icon: Icons.people_alt_outlined),
-                        _QuickAction(label: 'Pórticos', icon: Icons.toll_outlined),
-                        _QuickAction(label: 'Tarifas', icon: Icons.payments_outlined),
-                        _QuickAction(label: 'Reportes', icon: Icons.bar_chart_outlined),
+                        _QuickAction(
+                          label: 'Usuarios',
+                          icon: Icons.people_alt_outlined,
+                        ),
+                        _QuickAction(
+                          label: 'Pórticos',
+                          icon: Icons.toll_outlined,
+                        ),
+                        _QuickAction(
+                          label: 'Tarifas',
+                          icon: Icons.payments_outlined,
+                        ),
+                        _QuickAction(
+                          label: 'Reportes',
+                          icon: Icons.bar_chart_outlined,
+                        ),
                       ],
                     ),
                   );
 
                   if (isNarrow) {
                     return Column(
-                      children: [
-                        left,
-                        const SizedBox(height: 16),
-                        right,
-                      ],
+                      children: [left, const SizedBox(height: 16), right],
                     );
                   }
 
@@ -506,11 +568,15 @@ class _UsersPageState extends State<UsersPage> {
   bool _matchesFilters(Map<String, dynamic> data) {
     final nombre = (data['nombre_mostrar'] ?? '').toString().toLowerCase();
     final correo = (data['email'] ?? '').toString().toLowerCase();
-    if (_searchQuery.isNotEmpty && !nombre.contains(_searchQuery) && !correo.contains(_searchQuery)) {
+    if (_searchQuery.isNotEmpty &&
+        !nombre.contains(_searchQuery) &&
+        !correo.contains(_searchQuery)) {
       return false;
     }
 
-    final int presupuesto = int.tryParse(data['limite_presupuesto_mensual']?.toString() ?? '0') ?? 0;
+    final int presupuesto =
+        int.tryParse(data['limite_presupuesto_mensual']?.toString() ?? '0') ??
+        0;
     if (_selectedBudgetFilter == '> 50.000' && presupuesto <= 50000) {
       return false;
     }
@@ -525,7 +591,8 @@ class _UsersPageState extends State<UsersPage> {
   Widget build(BuildContext context) {
     return _AdminPageScaffold(
       title: 'Usuarios',
-      subtitle: 'Gestión de cuentas. (Por seguridad de Firebase, las contraseñas están encriptadas. Usa las acciones para resetearlas).',
+      subtitle:
+          'Gestión de cuentas. (Por seguridad de Firebase, las contraseñas están encriptadas. Usa las acciones para resetearlas).',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -563,9 +630,18 @@ class _UsersPageState extends State<UsersPage> {
                         ),
                       ),
                       items: const [
-                        DropdownMenuItem(value: 'Todos', child: Text('Todos los presupuestos')),
-                        DropdownMenuItem(value: '> 50.000', child: Text('> \$50.000')),
-                        DropdownMenuItem(value: '< = 50.000', child: Text('≤ \$50.000')),
+                        DropdownMenuItem(
+                          value: 'Todos',
+                          child: Text('Todos los presupuestos'),
+                        ),
+                        DropdownMenuItem(
+                          value: '> 50.000',
+                          child: Text('> \$50.000'),
+                        ),
+                        DropdownMenuItem(
+                          value: '< = 50.000',
+                          child: Text('≤ \$50.000'),
+                        ),
                       ],
                       onChanged: (val) {
                         if (val != null) {
@@ -599,26 +675,32 @@ class _UsersPageState extends State<UsersPage> {
                 }
 
                 final docs = snapshot.data!.docs;
-                final filteredDocs = docs.where((doc) => _matchesFilters(doc.data())).toList();
+                final filteredDocs = docs
+                    .where((doc) => _matchesFilters(doc.data()))
+                    .toList();
 
                 if (filteredDocs.isEmpty) {
                   return const Card(
                     child: Center(
                       child: Padding(
                         padding: EdgeInsets.all(32),
-                        child: Text('No se encontraron usuarios con los filtros aplicados.'),
+                        child: Text(
+                          'No se encontraron usuarios con los filtros aplicados.',
+                        ),
                       ),
                     ),
                   );
                 }
 
-                final int totalPages = (filteredDocs.length / _rowsPerPage).ceil();
+                final int totalPages = (filteredDocs.length / _rowsPerPage)
+                    .ceil();
                 if (_currentPage >= totalPages && totalPages > 0) {
                   _currentPage = totalPages - 1;
                 }
 
                 final int startIndex = _currentPage * _rowsPerPage;
-                final int endIndex = (startIndex + _rowsPerPage) > filteredDocs.length
+                final int endIndex =
+                    (startIndex + _rowsPerPage) > filteredDocs.length
                     ? filteredDocs.length
                     : (startIndex + _rowsPerPage);
                 final pageDocs = filteredDocs.sublist(startIndex, endIndex);
@@ -644,10 +726,23 @@ class _UsersPageState extends State<UsersPage> {
                                 rows: pageDocs.map((doc) {
                                   final Map<String, dynamic> data = doc.data();
                                   final String docId = doc.id;
-                                  final String nombre = (data['nombre_mostrar'] ?? 'Sin nombre').toString();
-                                  final String correo = (data['email'] ?? 'Sin correo').toString();
-                                  final int presupuesto = int.tryParse(data['limite_presupuesto_mensual']?.toString() ?? '0') ?? 0;
-                                  final String vehiculoPrincipal = (data['vehiculo_principal_id'] ?? 'Ninguno').toString();
+                                  final String nombre =
+                                      (data['nombre_mostrar'] ?? 'Sin nombre')
+                                          .toString();
+                                  final String correo =
+                                      (data['email'] ?? 'Sin correo')
+                                          .toString();
+                                  final int presupuesto =
+                                      int.tryParse(
+                                        data['limite_presupuesto_mensual']
+                                                ?.toString() ??
+                                            '0',
+                                      ) ??
+                                      0;
+                                  final String vehiculoPrincipal =
+                                      (data['vehiculo_principal_id'] ??
+                                              'Ninguno')
+                                          .toString();
 
                                   return DataRow(
                                     cells: [
@@ -657,19 +752,40 @@ class _UsersPageState extends State<UsersPage> {
                                           children: [
                                             CircleAvatar(
                                               radius: 18,
-                                              backgroundColor: _getColorFromName(nombre),
+                                              backgroundColor:
+                                                  _getColorFromName(nombre),
                                               child: Text(
-                                                nombre.isNotEmpty ? nombre[0].toUpperCase() : 'U',
-                                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                                                nombre.isNotEmpty
+                                                    ? nombre[0].toUpperCase()
+                                                    : 'U',
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 14,
+                                                ),
                                               ),
                                             ),
                                             const SizedBox(width: 12),
                                             Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
                                               children: [
-                                                Text(nombre, style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-                                                Text(correo, style: const TextStyle(color: Color(0xFF64748B), fontSize: 12)),
+                                                Text(
+                                                  nombre,
+                                                  style: const TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Color(0xFF0F172A),
+                                                  ),
+                                                ),
+                                                Text(
+                                                  correo,
+                                                  style: const TextStyle(
+                                                    color: Color(0xFF64748B),
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
                                               ],
                                             ),
                                           ],
@@ -677,15 +793,20 @@ class _UsersPageState extends State<UsersPage> {
                                       ),
                                       DataCell(
                                         Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 4,
+                                          ),
                                           decoration: BoxDecoration(
-                                            color: presupuesto > 50000 
+                                            color: presupuesto > 50000
                                                 ? const Color(0xFFEEF2FF)
                                                 : const Color(0xFFF1F5F9),
-                                            borderRadius: BorderRadius.circular(12),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
                                             border: Border.all(
-                                              color: presupuesto > 50000 
-                                                  ? const Color(0xFFC7D2FE) 
+                                              color: presupuesto > 50000
+                                                  ? const Color(0xFFC7D2FE)
                                                   : const Color(0xFFE2E8F0),
                                             ),
                                           ),
@@ -693,8 +814,8 @@ class _UsersPageState extends State<UsersPage> {
                                             '\$${_formatNumber(presupuesto)}',
                                             style: TextStyle(
                                               fontWeight: FontWeight.bold,
-                                              color: presupuesto > 50000 
-                                                  ? const Color(0xFF4F46E5) 
+                                              color: presupuesto > 50000
+                                                  ? const Color(0xFF4F46E5)
                                                   : const Color(0xFF475569),
                                               fontSize: 13,
                                             ),
@@ -705,11 +826,19 @@ class _UsersPageState extends State<UsersPage> {
                                         Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            const Icon(Icons.directions_car_filled_outlined, size: 16, color: Color(0xFF64748B)),
+                                            const Icon(
+                                              Icons
+                                                  .directions_car_filled_outlined,
+                                              size: 16,
+                                              color: Color(0xFF64748B),
+                                            ),
                                             const SizedBox(width: 6),
                                             Text(
                                               vehiculoPrincipal,
-                                              style: const TextStyle(color: Color(0xFF334155), fontWeight: FontWeight.w500),
+                                              style: const TextStyle(
+                                                color: Color(0xFF334155),
+                                                fontWeight: FontWeight.w500,
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -719,24 +848,48 @@ class _UsersPageState extends State<UsersPage> {
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             IconButton(
-                                              icon: const Icon(Icons.edit_outlined, color: Colors.blue, size: 20),
+                                              icon: const Icon(
+                                                Icons.edit_outlined,
+                                                color: Colors.blue,
+                                                size: 20,
+                                              ),
                                               tooltip: 'Editar Presupuesto',
                                               onPressed: () {
-                                                _mostrarDialogoEdicion(context, docId, nombre, presupuesto);
+                                                _mostrarDialogoEdicion(
+                                                  context,
+                                                  docId,
+                                                  nombre,
+                                                  presupuesto,
+                                                );
                                               },
                                             ),
                                             IconButton(
-                                              icon: const Icon(Icons.lock_reset_outlined, color: Colors.orange, size: 20),
+                                              icon: const Icon(
+                                                Icons.lock_reset_outlined,
+                                                color: Colors.orange,
+                                                size: 20,
+                                              ),
                                               tooltip: 'Restablecer Contraseña',
                                               onPressed: () {
-                                                _enviarResetPassword(context, correo);
+                                                _enviarResetPassword(
+                                                  context,
+                                                  correo,
+                                                );
                                               },
                                             ),
                                             IconButton(
-                                              icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                                              icon: const Icon(
+                                                Icons.delete_outline,
+                                                color: Colors.red,
+                                                size: 20,
+                                              ),
                                               tooltip: 'Eliminar Usuario',
                                               onPressed: () {
-                                                _mostrarDialogoEliminar(context, docId, nombre);
+                                                _mostrarDialogoEliminar(
+                                                  context,
+                                                  docId,
+                                                  nombre,
+                                                );
                                               },
                                             ),
                                           ],
@@ -757,7 +910,8 @@ class _UsersPageState extends State<UsersPage> {
                           totalPages: totalPages,
                           startIndex: startIndex,
                           endIndex: endIndex,
-                          onPageChanged: (page) => setState(() => _currentPage = page),
+                          onPageChanged: (page) =>
+                              setState(() => _currentPage = page),
                           onRowsPerPageChanged: (rows) => setState(() {
                             _rowsPerPage = rows;
                             _currentPage = 0;
@@ -776,9 +930,18 @@ class _UsersPageState extends State<UsersPage> {
     );
   }
 
-  void _mostrarDialogoEdicion(BuildContext context, String docId, String nombreActual, int limiteActual) {
-    final TextEditingController nombreCtrl = TextEditingController(text: nombreActual);
-    final TextEditingController limiteCtrl = TextEditingController(text: limiteActual.toString());
+  void _mostrarDialogoEdicion(
+    BuildContext context,
+    String docId,
+    String nombreActual,
+    int limiteActual,
+  ) {
+    final TextEditingController nombreCtrl = TextEditingController(
+      text: nombreActual,
+    );
+    final TextEditingController limiteCtrl = TextEditingController(
+      text: limiteActual.toString(),
+    );
 
     showDialog(
       context: context,
@@ -795,25 +958,36 @@ class _UsersPageState extends State<UsersPage> {
             const SizedBox(height: 12),
             TextField(
               controller: limiteCtrl,
-              decoration: const InputDecoration(labelText: 'Límite Mensual (\$)'),
+              decoration: const InputDecoration(
+                labelText: 'Límite Mensual (\$)',
+              ),
               keyboardType: TextInputType.number,
             ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0EA5E9)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF0EA5E9),
+            ),
             onPressed: () {
               final nuevoLimite = int.tryParse(limiteCtrl.text) ?? limiteActual;
-              FirebaseFirestore.instance.collection('usuarios').doc(docId).update({
-                'nombre_mostrar': nombreCtrl.text,
-                'limite_presupuesto_mensual': nuevoLimite,
-              });
+              FirebaseFirestore.instance
+                  .collection('usuarios')
+                  .doc(docId)
+                  .update({
+                    'nombre_mostrar': nombreCtrl.text,
+                    'limite_presupuesto_mensual': nuevoLimite,
+                  });
               widget.service.logAction(
                 action: 'EDIT_USER',
                 target: nombreActual,
-                details: 'Presupuesto: \$${_formatNumber(limiteActual)} -> \$${_formatNumber(nuevoLimite)}. Nombre: $nombreActual -> ${nombreCtrl.text}.',
+                details:
+                    'Presupuesto: \$${_formatNumber(limiteActual)} -> \$${_formatNumber(nuevoLimite)}. Nombre: $nombreActual -> ${nombreCtrl.text}.',
               );
               Navigator.pop(context);
             },
@@ -835,31 +1009,51 @@ class _UsersPageState extends State<UsersPage> {
       );
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Correo de restablecimiento enviado a $correo'), backgroundColor: Colors.green),
+          SnackBar(
+            content: Text('Correo de restablecimiento enviado a $correo'),
+            backgroundColor: Colors.green,
+          ),
         );
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al enviar correo: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Error al enviar correo: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
   }
 
-  void _mostrarDialogoEliminar(BuildContext context, String docId, String nombre) {
+  void _mostrarDialogoEliminar(
+    BuildContext context,
+    String docId,
+    String nombre,
+  ) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Colors.white,
         title: const Text('Eliminar Usuario'),
-        content: Text('¿Estás seguro que deseas eliminar el registro y los datos de $nombre? Esta acción es irreversible.'),
+        content: Text(
+          '¿Estás seguro que deseas eliminar el registro y los datos de $nombre? Esta acción es irreversible.',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0EA5E9)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF0EA5E9),
+            ),
             onPressed: () {
-              FirebaseFirestore.instance.collection('usuarios').doc(docId).delete();
+              FirebaseFirestore.instance
+                  .collection('usuarios')
+                  .doc(docId)
+                  .delete();
               widget.service.logAction(
                 action: 'DELETE_USER',
                 target: nombre,
@@ -867,7 +1061,10 @@ class _UsersPageState extends State<UsersPage> {
               );
               Navigator.pop(context);
             },
-            child: const Text('Sí, Eliminar', style: TextStyle(color: Colors.white)),
+            child: const Text(
+              'Sí, Eliminar',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -910,22 +1107,27 @@ class _PorticosPageState extends State<PorticosPage> {
   }
 
   bool _matchesFilters(Map<String, dynamic> rawData) {
-    final Map<String, dynamic> data = (rawData.containsKey('datos') && rawData['datos'] is Map)
+    final Map<String, dynamic> data =
+        (rawData.containsKey('datos') && rawData['datos'] is Map)
         ? Map<String, dynamic>.from(rawData['datos'])
         : rawData;
 
-    final nombre = (data['nombre'] ?? data['autopista'] ?? '').toString().toLowerCase();
+    final nombre = (data['nombre'] ?? data['autopista'] ?? '')
+        .toString()
+        .toLowerCase();
     if (_searchQuery.isNotEmpty && !nombre.contains(_searchQuery)) {
       return false;
     }
 
     final autopista = (data['autopista'] ?? '').toString();
-    if (_selectedHighwayFilter != 'Todas' && autopista != _selectedHighwayFilter) {
+    if (_selectedHighwayFilter != 'Todas' &&
+        autopista != _selectedHighwayFilter) {
       return false;
     }
 
     final sentido = (data['sentido'] ?? '').toString();
-    if (_selectedDirectionFilter != 'Todos' && sentido != _selectedDirectionFilter) {
+    if (_selectedDirectionFilter != 'Todos' &&
+        sentido != _selectedDirectionFilter) {
       return false;
     }
 
@@ -936,7 +1138,8 @@ class _PorticosPageState extends State<PorticosPage> {
   Widget build(BuildContext context) {
     return _AdminPageScaffold(
       title: 'Pórticos',
-      subtitle: 'Catálogo operativo compartido con la app final. Administra las tarifas aquí.',
+      subtitle:
+          'Catálogo operativo compartido con la app final. Administra las tarifas aquí.',
       child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: widget.service.streamPorticos(),
         builder: (context, snapshot) {
@@ -958,7 +1161,8 @@ class _PorticosPageState extends State<PorticosPage> {
           final Set<String> highwaysSet = {};
           for (var doc in docs) {
             final rawData = doc.data();
-            final data = (rawData.containsKey('datos') && rawData['datos'] is Map)
+            final data =
+                (rawData.containsKey('datos') && rawData['datos'] is Map)
                 ? Map<String, dynamic>.from(rawData['datos'])
                 : rawData;
             final String h = (data['autopista'] ?? '').toString();
@@ -968,11 +1172,14 @@ class _PorticosPageState extends State<PorticosPage> {
           }
           final List<String> uniqueHighways = highwaysSet.toList()..sort();
 
-          if (_selectedHighwayFilter != 'Todas' && !highwaysSet.contains(_selectedHighwayFilter)) {
+          if (_selectedHighwayFilter != 'Todas' &&
+              !highwaysSet.contains(_selectedHighwayFilter)) {
             _selectedHighwayFilter = 'Todas';
           }
 
-          final filteredDocs = docs.where((doc) => _matchesFilters(doc.data())).toList();
+          final filteredDocs = docs
+              .where((doc) => _matchesFilters(doc.data()))
+              .toList();
 
           final int totalPages = (filteredDocs.length / _rowsPerPage).ceil();
           if (_currentPage >= totalPages && totalPages > 0) {
@@ -991,7 +1198,10 @@ class _PorticosPageState extends State<PorticosPage> {
               Card(
                 margin: const EdgeInsets.only(bottom: 16),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   child: Row(
                     children: [
                       Expanded(
@@ -1022,8 +1232,13 @@ class _PorticosPageState extends State<PorticosPage> {
                             ),
                           ),
                           items: [
-                            const DropdownMenuItem(value: 'Todas', child: Text('Todas las autopistas')),
-                            ...uniqueHighways.map((h) => DropdownMenuItem(value: h, child: Text(h))),
+                            const DropdownMenuItem(
+                              value: 'Todas',
+                              child: Text('Todas las autopistas'),
+                            ),
+                            ...uniqueHighways.map(
+                              (h) => DropdownMenuItem(value: h, child: Text(h)),
+                            ),
                           ],
                           onChanged: (val) {
                             if (val != null) {
@@ -1048,7 +1263,10 @@ class _PorticosPageState extends State<PorticosPage> {
                             ),
                           ),
                           items: const [
-                            DropdownMenuItem(value: 'Todos', child: Text('Todos')),
+                            DropdownMenuItem(
+                              value: 'Todos',
+                              child: Text('Todos'),
+                            ),
                             DropdownMenuItem(value: 'N-S', child: Text('N-S')),
                             DropdownMenuItem(value: 'S-N', child: Text('S-N')),
                             DropdownMenuItem(value: 'O-P', child: Text('O-P')),
@@ -1074,7 +1292,9 @@ class _PorticosPageState extends State<PorticosPage> {
                         child: Center(
                           child: Padding(
                             padding: EdgeInsets.all(32),
-                            child: Text('No se encontraron pórticos con los filtros aplicados.'),
+                            child: Text(
+                              'No se encontraron pórticos con los filtros aplicados.',
+                            ),
                           ),
                         ),
                       )
@@ -1095,73 +1315,212 @@ class _PorticosPageState extends State<PorticosPage> {
                                         DataColumn(label: Text('Sentido')),
                                         DataColumn(label: Text('Tarifa Base')),
                                         DataColumn(label: Text('Tarifa Punta')),
-                                        DataColumn(label: Text('Tarifa Saturación')),
+                                        DataColumn(
+                                          label: Text('Tarifa Saturación'),
+                                        ),
                                         DataColumn(label: Text('Acciones')),
                                       ],
                                       rows: pageDocs.map((doc) {
-                                        final Map<String, dynamic> rawData = doc.data();
+                                        final Map<String, dynamic> rawData = doc
+                                            .data();
                                         final String docId = doc.id;
-                                        
-                                        final bool isNested = rawData.containsKey('datos') && rawData['datos'] is Map;
-                                        final Map<String, dynamic> data = isNested
-                                            ? Map<String, dynamic>.from(rawData['datos'])
+
+                                        final bool isNested =
+                                            rawData.containsKey('datos') &&
+                                            rawData['datos'] is Map;
+                                        final Map<String, dynamic> data =
+                                            isNested
+                                            ? Map<String, dynamic>.from(
+                                                rawData['datos'],
+                                              )
                                             : rawData;
 
-                                        final String nombre = (data['nombre'] ?? data['autopista'] ?? 'Sin nombre').toString();
-                                        final String autopista = (data['autopista'] ?? '').toString();
-                                        final String sentido = (data['sentido'] ?? '-').toString();
-                                        final String base = (data['tarifa_base'] ?? data['costo'] ?? data['Tarifa_Base'] ?? data['Tarifa Base'] ?? '0').toString();
-                                        final String punta = (data['tarifa_punta'] ?? data['costoPunta'] ?? data['Tarifa_Punta'] ?? data['Tarifa Punta'] ?? '0').toString();
-                                        final String saturacion = (data['tarifa_saturacion'] ?? data['costoSaturacion'] ?? data['Tarifa_Saturacion'] ?? data['Tarifa Saturacion'] ?? '0').toString();
+                                        final String nombre =
+                                            (data['nombre'] ??
+                                                    data['autopista'] ??
+                                                    'Sin nombre')
+                                                .toString();
+                                        final String autopista =
+                                            (data['autopista'] ?? '')
+                                                .toString();
+                                        final String sentido =
+                                            (data['sentido'] ?? '-').toString();
+                                        final String base =
+                                            (data['tarifa_base'] ??
+                                                    data['costo'] ??
+                                                    data['Tarifa_Base'] ??
+                                                    data['Tarifa Base'] ??
+                                                    '0')
+                                                .toString();
+                                        final String punta =
+                                            (data['tarifa_punta'] ??
+                                                    data['costoPunta'] ??
+                                                    data['Tarifa_Punta'] ??
+                                                    data['Tarifa Punta'] ??
+                                                    '0')
+                                                .toString();
+                                        final String saturacion =
+                                            (data['tarifa_saturacion'] ??
+                                                    data['costoSaturacion'] ??
+                                                    data['Tarifa_Saturacion'] ??
+                                                    data['Tarifa Saturacion'] ??
+                                                    '0')
+                                                .toString();
 
-                                        final String lat = (data['lat'] ?? (data['location'] is Map ? data['location']['lat'] : '') ?? (data['ubicacion'] is GeoPoint ? (data['ubicacion'] as GeoPoint).latitude : '') ?? '').toString();
-                                        final String lng = (data['lng'] ?? (data['location'] is Map ? data['location']['lng'] : '') ?? (data['ubicacion'] is GeoPoint ? (data['ubicacion'] as GeoPoint).longitude : '') ?? '').toString();
-                                        final String grupo = (data['grupo'] ?? data['group'] ?? '').toString();
-                                        final String secuencia = (data['secuencia'] ?? data['sequence'] ?? '').toString();
+                                        final String lat =
+                                            (data['lat'] ??
+                                                    (data['location'] is Map
+                                                        ? data['location']['lat']
+                                                        : '') ??
+                                                    (data['ubicacion']
+                                                            is GeoPoint
+                                                        ? (data['ubicacion']
+                                                                  as GeoPoint)
+                                                              .latitude
+                                                        : '') ??
+                                                    '')
+                                                .toString();
+                                        final String lng =
+                                            (data['lng'] ??
+                                                    (data['location'] is Map
+                                                        ? data['location']['lng']
+                                                        : '') ??
+                                                    (data['ubicacion']
+                                                            is GeoPoint
+                                                        ? (data['ubicacion']
+                                                                  as GeoPoint)
+                                                              .longitude
+                                                        : '') ??
+                                                    '')
+                                                .toString();
+                                        final String grupo =
+                                            (data['grupo'] ??
+                                                    data['group'] ??
+                                                    '')
+                                                .toString();
+                                        final String secuencia =
+                                            (data['secuencia'] ??
+                                                    data['sequence'] ??
+                                                    '')
+                                                .toString();
 
                                         return DataRow(
                                           cells: [
                                             DataCell(
                                               Padding(
-                                                padding: const EdgeInsets.symmetric(vertical: 6),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      vertical: 6,
+                                                    ),
                                                 child: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
                                                   children: [
-                                                    Text(nombre, style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                                                    Text(
+                                                      nombre,
+                                                      style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Color(
+                                                          0xFF0F172A,
+                                                        ),
+                                                      ),
+                                                    ),
                                                     const SizedBox(height: 4),
                                                     Wrap(
                                                       spacing: 4,
                                                       runSpacing: 4,
-                                                      crossAxisAlignment: WrapCrossAlignment.center,
+                                                      crossAxisAlignment:
+                                                          WrapCrossAlignment
+                                                              .center,
                                                       children: [
-                                                        _getHighwayBadge(autopista),
+                                                        _getHighwayBadge(
+                                                          autopista,
+                                                        ),
                                                         if (grupo.isNotEmpty)
                                                           Container(
-                                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                                            padding:
+                                                                const EdgeInsets.symmetric(
+                                                                  horizontal: 6,
+                                                                  vertical: 2,
+                                                                ),
                                                             decoration: BoxDecoration(
-                                                              color: const Color(0xFFF1F5F9),
-                                                              borderRadius: BorderRadius.circular(6),
+                                                              color:
+                                                                  const Color(
+                                                                    0xFFF1F5F9,
+                                                                  ),
+                                                              borderRadius:
+                                                                  BorderRadius.circular(
+                                                                    6,
+                                                                  ),
                                                             ),
-                                                            child: Text(grupo, style: const TextStyle(fontSize: 10, color: Color(0xFF64748B), fontWeight: FontWeight.bold)),
+                                                            child: Text(
+                                                              grupo,
+                                                              style: const TextStyle(
+                                                                fontSize: 10,
+                                                                color: Color(
+                                                                  0xFF64748B,
+                                                                ),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                              ),
+                                                            ),
                                                           ),
-                                                        if (secuencia.isNotEmpty)
+                                                        if (secuencia
+                                                            .isNotEmpty)
                                                           Container(
-                                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                                            padding:
+                                                                const EdgeInsets.symmetric(
+                                                                  horizontal: 6,
+                                                                  vertical: 2,
+                                                                ),
                                                             decoration: BoxDecoration(
-                                                              color: const Color(0xFFF8FAFC),
-                                                              border: Border.all(color: const Color(0xFFE2E8F0)),
-                                                              borderRadius: BorderRadius.circular(6),
+                                                              color:
+                                                                  const Color(
+                                                                    0xFFF8FAFC,
+                                                                  ),
+                                                              border: Border.all(
+                                                                color:
+                                                                    const Color(
+                                                                      0xFFE2E8F0,
+                                                                    ),
+                                                              ),
+                                                              borderRadius:
+                                                                  BorderRadius.circular(
+                                                                    6,
+                                                                  ),
                                                             ),
-                                                            child: Text('Seq: $secuencia', style: const TextStyle(fontSize: 10, color: Color(0xFF64748B), fontWeight: FontWeight.bold)),
+                                                            child: Text(
+                                                              'Seq: $secuencia',
+                                                              style: const TextStyle(
+                                                                fontSize: 10,
+                                                                color: Color(
+                                                                  0xFF64748B,
+                                                                ),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                              ),
+                                                            ),
                                                           ),
                                                       ],
                                                     ),
-                                                    if (lat.isNotEmpty && lng.isNotEmpty) ...[
+                                                    if (lat.isNotEmpty &&
+                                                        lng.isNotEmpty) ...[
                                                       const SizedBox(height: 4),
                                                       Text(
                                                         '$lat, $lng',
-                                                        style: const TextStyle(fontSize: 10, color: Color(0xFF94A3B8), fontFamily: 'monospace'),
+                                                        style: const TextStyle(
+                                                          fontSize: 10,
+                                                          color: Color(
+                                                            0xFF94A3B8,
+                                                          ),
+                                                          fontFamily:
+                                                              'monospace',
+                                                        ),
                                                       ),
                                                     ],
                                                   ],
@@ -1170,26 +1529,77 @@ class _PorticosPageState extends State<PorticosPage> {
                                             ),
                                             DataCell(
                                               Container(
-                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 4,
+                                                    ),
                                                 decoration: BoxDecoration(
-                                                  color: const Color(0xFFF1F5F9),
-                                                  borderRadius: BorderRadius.circular(8),
+                                                  color: const Color(
+                                                    0xFFF1F5F9,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
                                                 ),
                                                 child: Text(
                                                   sentido,
-                                                  style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF475569), fontSize: 12),
+                                                  style: const TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Color(0xFF475569),
+                                                    fontSize: 12,
+                                                  ),
                                                 ),
                                               ),
                                             ),
-                                            DataCell(_buildTariffBadge('Base', _formatNumber(double.tryParse(base)?.round() ?? 0), const Color(0xFFEFF6FF), const Color(0xFF1D4ED8))),
-                                            DataCell(_buildTariffBadge('Punta', _formatNumber(double.tryParse(punta)?.round() ?? 0), const Color(0xFFFFF7ED), const Color(0xFFC2410C))),
-                                            DataCell(_buildTariffBadge('Sat.', _formatNumber(double.tryParse(saturacion)?.round() ?? 0), const Color(0xFFFFF1F2), const Color(0xFFBE123C))),
+                                            DataCell(
+                                              _buildTariffBadge(
+                                                'Base',
+                                                _formatNumber(
+                                                  double.tryParse(
+                                                        base,
+                                                      )?.round() ??
+                                                      0,
+                                                ),
+                                                const Color(0xFFEFF6FF),
+                                                const Color(0xFF1D4ED8),
+                                              ),
+                                            ),
+                                            DataCell(
+                                              _buildTariffBadge(
+                                                'Punta',
+                                                _formatNumber(
+                                                  double.tryParse(
+                                                        punta,
+                                                      )?.round() ??
+                                                      0,
+                                                ),
+                                                const Color(0xFFFFF7ED),
+                                                const Color(0xFFC2410C),
+                                              ),
+                                            ),
+                                            DataCell(
+                                              _buildTariffBadge(
+                                                'Sat.',
+                                                _formatNumber(
+                                                  double.tryParse(
+                                                        saturacion,
+                                                      )?.round() ??
+                                                      0,
+                                                ),
+                                                const Color(0xFFFFF1F2),
+                                                const Color(0xFFBE123C),
+                                              ),
+                                            ),
                                             DataCell(
                                               Row(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   IconButton(
-                                                    icon: const Icon(Icons.edit_outlined, color: Colors.blue, size: 20),
+                                                    icon: const Icon(
+                                                      Icons.edit_outlined,
+                                                      color: Colors.blue,
+                                                      size: 20,
+                                                    ),
                                                     tooltip: 'Editar Pórtico',
                                                     onPressed: () {
                                                       _mostrarDialogoEdicion(
@@ -1201,10 +1611,18 @@ class _PorticosPageState extends State<PorticosPage> {
                                                     },
                                                   ),
                                                   IconButton(
-                                                    icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                                                    icon: const Icon(
+                                                      Icons.delete_outline,
+                                                      color: Colors.red,
+                                                      size: 20,
+                                                    ),
                                                     tooltip: 'Eliminar Pórtico',
                                                     onPressed: () {
-                                                      _mostrarDialogoEliminar(context, docId, nombre);
+                                                      _mostrarDialogoEliminar(
+                                                        context,
+                                                        docId,
+                                                        nombre,
+                                                      );
                                                     },
                                                   ),
                                                 ],
@@ -1225,7 +1643,8 @@ class _PorticosPageState extends State<PorticosPage> {
                                 totalPages: totalPages,
                                 startIndex: startIndex,
                                 endIndex: endIndex,
-                                onPageChanged: (page) => setState(() => _currentPage = page),
+                                onPageChanged: (page) =>
+                                    setState(() => _currentPage = page),
                                 onRowsPerPageChanged: (rows) => setState(() {
                                   _rowsPerPage = rows;
                                   _currentPage = 0;
@@ -1254,27 +1673,81 @@ class _PorticosPageState extends State<PorticosPage> {
         ? Map<String, dynamic>.from(rawData['datos'] ?? {})
         : rawData;
 
-    final String nombreActual = (data['nombre'] ?? data['autopista'] ?? 'Sin nombre').toString();
+    final String nombreActual =
+        (data['nombre'] ?? data['autopista'] ?? 'Sin nombre').toString();
     final String autopistaActual = (data['autopista'] ?? '').toString();
     final String sentidoActual = (data['sentido'] ?? '').toString();
-    final String baseActual = (data['tarifa_base'] ?? data['costo'] ?? data['cost'] ?? data['Tarifa_Base'] ?? data['Tarifa Base'] ?? '0').toString();
-    final String puntaActual = (data['tarifa_punta'] ?? data['costoPunta'] ?? data['Tarifa_Punta'] ?? data['Tarifa Punta'] ?? '0').toString();
-    final String saturacionActual = (data['tarifa_saturacion'] ?? data['costoSaturacion'] ?? data['Tarifa_Saturacion'] ?? data['Tarifa Saturacion'] ?? '0').toString();
+    final String baseActual =
+        (data['tarifa_base'] ??
+                data['costo'] ??
+                data['cost'] ??
+                data['Tarifa_Base'] ??
+                data['Tarifa Base'] ??
+                '0')
+            .toString();
+    final String puntaActual =
+        (data['tarifa_punta'] ??
+                data['costoPunta'] ??
+                data['Tarifa_Punta'] ??
+                data['Tarifa Punta'] ??
+                '0')
+            .toString();
+    final String saturacionActual =
+        (data['tarifa_saturacion'] ??
+                data['costoSaturacion'] ??
+                data['Tarifa_Saturacion'] ??
+                data['Tarifa Saturacion'] ??
+                '0')
+            .toString();
 
-    final String latActual = (data['lat'] ?? (data['location'] is Map ? data['location']['lat'] : '') ?? (data['ubicacion'] is GeoPoint ? (data['ubicacion'] as GeoPoint).latitude : '') ?? '').toString();
-    final String lngActual = (data['lng'] ?? (data['location'] is Map ? data['location']['lng'] : '') ?? (data['ubicacion'] is GeoPoint ? (data['ubicacion'] as GeoPoint).longitude : '') ?? '').toString();
-    final String grupoActual = (data['grupo'] ?? data['group'] ?? '').toString();
-    final String secuenciaActual = (data['secuencia'] ?? data['sequence'] ?? '').toString();
+    final String latActual =
+        (data['lat'] ??
+                (data['location'] is Map ? data['location']['lat'] : '') ??
+                (data['ubicacion'] is GeoPoint
+                    ? (data['ubicacion'] as GeoPoint).latitude
+                    : '') ??
+                '')
+            .toString();
+    final String lngActual =
+        (data['lng'] ??
+                (data['location'] is Map ? data['location']['lng'] : '') ??
+                (data['ubicacion'] is GeoPoint
+                    ? (data['ubicacion'] as GeoPoint).longitude
+                    : '') ??
+                '')
+            .toString();
+    final String grupoActual = (data['grupo'] ?? data['group'] ?? '')
+        .toString();
+    final String secuenciaActual = (data['secuencia'] ?? data['sequence'] ?? '')
+        .toString();
 
-    final TextEditingController nombreCtrl = TextEditingController(text: nombreActual);
-    final TextEditingController autopistaCtrl = TextEditingController(text: autopistaActual);
-    final TextEditingController baseCtrl = TextEditingController(text: baseActual);
-    final TextEditingController puntaCtrl = TextEditingController(text: puntaActual);
-    final TextEditingController saturacionCtrl = TextEditingController(text: saturacionActual);
-    final TextEditingController latCtrl = TextEditingController(text: latActual);
-    final TextEditingController lngCtrl = TextEditingController(text: lngActual);
-    final TextEditingController grupoCtrl = TextEditingController(text: grupoActual);
-    final TextEditingController secuenciaCtrl = TextEditingController(text: secuenciaActual);
+    final TextEditingController nombreCtrl = TextEditingController(
+      text: nombreActual,
+    );
+    final TextEditingController autopistaCtrl = TextEditingController(
+      text: autopistaActual,
+    );
+    final TextEditingController baseCtrl = TextEditingController(
+      text: baseActual,
+    );
+    final TextEditingController puntaCtrl = TextEditingController(
+      text: puntaActual,
+    );
+    final TextEditingController saturacionCtrl = TextEditingController(
+      text: saturacionActual,
+    );
+    final TextEditingController latCtrl = TextEditingController(
+      text: latActual,
+    );
+    final TextEditingController lngCtrl = TextEditingController(
+      text: lngActual,
+    );
+    final TextEditingController grupoCtrl = TextEditingController(
+      text: grupoActual,
+    );
+    final TextEditingController secuenciaCtrl = TextEditingController(
+      text: secuenciaActual,
+    );
     String selectedSentido = sentidoActual;
 
     showDialog(
@@ -1287,11 +1760,20 @@ class _PorticosPageState extends State<PorticosPage> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Identificación', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF64748B))),
+              const Text(
+                'Identificación',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  color: Color(0xFF64748B),
+                ),
+              ),
               const SizedBox(height: 8),
               TextField(
                 controller: nombreCtrl,
-                decoration: const InputDecoration(labelText: 'Nombre del Pórtico'),
+                decoration: const InputDecoration(
+                  labelText: 'Nombre del Pórtico',
+                ),
               ),
               const SizedBox(height: 12),
               TextField(
@@ -1300,8 +1782,13 @@ class _PorticosPageState extends State<PorticosPage> {
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
-                initialValue: ['N-S', 'S-N', 'O-P', 'P-O'].contains(selectedSentido) ? selectedSentido : null,
-                decoration: const InputDecoration(labelText: 'Sentido de Circulación'),
+                initialValue:
+                    ['N-S', 'S-N', 'O-P', 'P-O'].contains(selectedSentido)
+                    ? selectedSentido
+                    : null,
+                decoration: const InputDecoration(
+                  labelText: 'Sentido de Circulación',
+                ),
                 items: const [
                   DropdownMenuItem(value: 'N-S', child: Text('N-S')),
                   DropdownMenuItem(value: 'S-N', child: Text('S-N')),
@@ -1315,66 +1802,122 @@ class _PorticosPageState extends State<PorticosPage> {
                 },
               ),
               const Divider(height: 32),
-              const Text('Ubicación Geográfica', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF64748B))),
+              const Text(
+                'Ubicación Geográfica',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  color: Color(0xFF64748B),
+                ),
+              ),
               const SizedBox(height: 8),
               TextField(
                 controller: latCtrl,
                 decoration: const InputDecoration(labelText: 'Latitud'),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: lngCtrl,
                 decoration: const InputDecoration(labelText: 'Longitud'),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
               ),
               const Divider(height: 32),
-              const Text('Clasificación Operativa', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF64748B))),
+              const Text(
+                'Clasificación Operativa',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  color: Color(0xFF64748B),
+                ),
+              ),
               const SizedBox(height: 8),
               TextField(
                 controller: grupoCtrl,
-                decoration: const InputDecoration(labelText: 'Grupo / Concesión'),
+                decoration: const InputDecoration(
+                  labelText: 'Grupo / Concesión',
+                ),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: secuenciaCtrl,
-                decoration: const InputDecoration(labelText: 'Secuencia (Orden)'),
+                decoration: const InputDecoration(
+                  labelText: 'Secuencia (Orden)',
+                ),
                 keyboardType: TextInputType.number,
               ),
               const Divider(height: 32),
-              const Text('Tarifas Especiales', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF64748B))),
+              const Text(
+                'Tarifas Especiales',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  color: Color(0xFF64748B),
+                ),
+              ),
               const SizedBox(height: 8),
               TextField(
                 controller: baseCtrl,
-                decoration: const InputDecoration(labelText: 'Tarifa Base (\$)'),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(
+                  labelText: 'Tarifa Base (\$)',
+                ),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: puntaCtrl,
-                decoration: const InputDecoration(labelText: 'Tarifa Punta (\$)'),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(
+                  labelText: 'Tarifa Punta (\$)',
+                ),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: saturacionCtrl,
-                decoration: const InputDecoration(labelText: 'Tarifa Saturación (\$)'),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(
+                  labelText: 'Tarifa Saturación (\$)',
+                ),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
               ),
             ],
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0EA5E9)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF0EA5E9),
+            ),
             onPressed: () {
-              final double? nBase = double.tryParse(baseCtrl.text.replaceAll(',', '.'));
-              final double? nPunta = double.tryParse(puntaCtrl.text.replaceAll(',', '.'));
-              final double? nSaturacion = double.tryParse(saturacionCtrl.text.replaceAll(',', '.'));
+              final double? nBase = double.tryParse(
+                baseCtrl.text.replaceAll(',', '.'),
+              );
+              final double? nPunta = double.tryParse(
+                puntaCtrl.text.replaceAll(',', '.'),
+              );
+              final double? nSaturacion = double.tryParse(
+                saturacionCtrl.text.replaceAll(',', '.'),
+              );
 
-              final double? nLat = double.tryParse(latCtrl.text.replaceAll(',', '.'));
-              final double? nLng = double.tryParse(lngCtrl.text.replaceAll(',', '.'));
+              final double? nLat = double.tryParse(
+                latCtrl.text.replaceAll(',', '.'),
+              );
+              final double? nLng = double.tryParse(
+                lngCtrl.text.replaceAll(',', '.'),
+              );
 
               final String newNombre = nombreCtrl.text.trim();
               final String newAutopista = autopistaCtrl.text.trim();
@@ -1383,14 +1926,19 @@ class _PorticosPageState extends State<PorticosPage> {
               final int? newSecuencia = int.tryParse(secuenciaCtrl.text.trim());
 
               final Map<String, dynamic> updates = {};
-              
+
               // 1. Coordinates update strategy
               if (nLat != null && nLng != null) {
-                if (data.containsKey('ubicacion') || data['ubicacion'] is GeoPoint) {
-                  updates[isNested ? 'datos.ubicacion' : 'ubicacion'] = GeoPoint(nLat, nLng);
-                } else if (data.containsKey('location') || data['location'] is Map) {
-                  updates[isNested ? 'datos.location.lat' : 'location.lat'] = nLat;
-                  updates[isNested ? 'datos.location.lng' : 'location.lng'] = nLng;
+                if (data.containsKey('ubicacion') ||
+                    data['ubicacion'] is GeoPoint) {
+                  updates[isNested ? 'datos.ubicacion' : 'ubicacion'] =
+                      GeoPoint(nLat, nLng);
+                } else if (data.containsKey('location') ||
+                    data['location'] is Map) {
+                  updates[isNested ? 'datos.location.lat' : 'location.lat'] =
+                      nLat;
+                  updates[isNested ? 'datos.location.lng' : 'location.lng'] =
+                      nLng;
                 } else {
                   updates[isNested ? 'datos.lat' : 'lat'] = nLat;
                   updates[isNested ? 'datos.lng' : 'lng'] = nLng;
@@ -1398,17 +1946,41 @@ class _PorticosPageState extends State<PorticosPage> {
               }
 
               // 2. Fares update strategy
-              final String baseKey = isNested 
-                  ? (Map<String, dynamic>.from(rawData['datos'] ?? {}).containsKey('costo') ? 'datos.costo' : (Map<String, dynamic>.from(rawData['datos'] ?? {}).containsKey('cost') ? 'datos.cost' : 'datos.tarifa_base'))
-                  : (rawData.containsKey('costo') ? 'costo' : (rawData.containsKey('cost') ? 'cost' : 'tarifa_base'));
+              final String baseKey = isNested
+                  ? (Map<String, dynamic>.from(
+                          rawData['datos'] ?? {},
+                        ).containsKey('costo')
+                        ? 'datos.costo'
+                        : (Map<String, dynamic>.from(
+                                rawData['datos'] ?? {},
+                              ).containsKey('cost')
+                              ? 'datos.cost'
+                              : 'datos.tarifa_base'))
+                  : (rawData.containsKey('costo')
+                        ? 'costo'
+                        : (rawData.containsKey('cost')
+                              ? 'cost'
+                              : 'tarifa_base'));
 
-              final String puntaKey = isNested 
-                  ? (Map<String, dynamic>.from(rawData['datos'] ?? {}).containsKey('costoPunta') ? 'datos.costoPunta' : 'datos.tarifa_punta')
-                  : (rawData.containsKey('costoPunta') ? 'costoPunta' : 'tarifa_punta');
+              final String puntaKey = isNested
+                  ? (Map<String, dynamic>.from(
+                          rawData['datos'] ?? {},
+                        ).containsKey('costoPunta')
+                        ? 'datos.costoPunta'
+                        : 'datos.tarifa_punta')
+                  : (rawData.containsKey('costoPunta')
+                        ? 'costoPunta'
+                        : 'tarifa_punta');
 
-              final String satKey = isNested 
-                  ? (Map<String, dynamic>.from(rawData['datos'] ?? {}).containsKey('costoSaturacion') ? 'datos.costoSaturacion' : 'datos.tarifa_saturacion')
-                  : (rawData.containsKey('costoSaturacion') ? 'costoSaturacion' : 'tarifa_saturacion');
+              final String satKey = isNested
+                  ? (Map<String, dynamic>.from(
+                          rawData['datos'] ?? {},
+                        ).containsKey('costoSaturacion')
+                        ? 'datos.costoSaturacion'
+                        : 'datos.tarifa_saturacion')
+                  : (rawData.containsKey('costoSaturacion')
+                        ? 'costoSaturacion'
+                        : 'tarifa_saturacion');
 
               if (nBase != null) updates[baseKey] = nBase;
               if (nPunta != null) updates[puntaKey] = nPunta;
@@ -1416,21 +1988,41 @@ class _PorticosPageState extends State<PorticosPage> {
 
               // 3. Identification and classification keys
               final String nombreKey = isNested ? 'datos.nombre' : 'nombre';
-              final String autopistaKey = isNested 
-                  ? (Map<String, dynamic>.from(rawData['datos'] ?? {}).containsKey('highway') ? 'datos.highway' : 'datos.autopista')
+              final String autopistaKey = isNested
+                  ? (Map<String, dynamic>.from(
+                          rawData['datos'] ?? {},
+                        ).containsKey('highway')
+                        ? 'datos.highway'
+                        : 'datos.autopista')
                   : (rawData.containsKey('highway') ? 'highway' : 'autopista');
 
-              final String sentidoKey = isNested 
-                  ? (Map<String, dynamic>.from(rawData['datos'] ?? {}).containsKey('direction') ? 'datos.direction' : 'datos.sentido')
-                  : (rawData.containsKey('direction') ? 'direction' : 'sentido');
+              final String sentidoKey = isNested
+                  ? (Map<String, dynamic>.from(
+                          rawData['datos'] ?? {},
+                        ).containsKey('direction')
+                        ? 'datos.direction'
+                        : 'datos.sentido')
+                  : (rawData.containsKey('direction')
+                        ? 'direction'
+                        : 'sentido');
 
               final String grupoKey = isNested
-                  ? (Map<String, dynamic>.from(rawData['datos'] ?? {}).containsKey('group') ? 'datos.group' : 'datos.grupo')
+                  ? (Map<String, dynamic>.from(
+                          rawData['datos'] ?? {},
+                        ).containsKey('group')
+                        ? 'datos.group'
+                        : 'datos.grupo')
                   : (rawData.containsKey('group') ? 'group' : 'grupo');
 
               final String secuenciaKey = isNested
-                  ? (Map<String, dynamic>.from(rawData['datos'] ?? {}).containsKey('sequence') ? 'datos.sequence' : 'datos.secuencia')
-                  : (rawData.containsKey('sequence') ? 'sequence' : 'secuencia');
+                  ? (Map<String, dynamic>.from(
+                          rawData['datos'] ?? {},
+                        ).containsKey('sequence')
+                        ? 'datos.sequence'
+                        : 'datos.secuencia')
+                  : (rawData.containsKey('sequence')
+                        ? 'sequence'
+                        : 'secuencia');
 
               updates[nombreKey] = newNombre;
               updates[autopistaKey] = newAutopista;
@@ -1440,20 +2032,40 @@ class _PorticosPageState extends State<PorticosPage> {
 
               final StringBuffer logDetails = StringBuffer();
               logDetails.write('Edición de pórtico.');
-              if (nombreActual != newNombre) logDetails.write(' Nombre: $nombreActual -> $newNombre.');
-              if (autopistaActual != newAutopista) logDetails.write(' Autopista: $autopistaActual -> $newAutopista.');
-              if (sentidoActual != newSentido) logDetails.write(' Sentido: $sentidoActual -> $newSentido.');
+              if (nombreActual != newNombre)
+                logDetails.write(' Nombre: $nombreActual -> $newNombre.');
+              if (autopistaActual != newAutopista)
+                logDetails.write(
+                  ' Autopista: $autopistaActual -> $newAutopista.',
+                );
+              if (sentidoActual != newSentido)
+                logDetails.write(' Sentido: $sentidoActual -> $newSentido.');
               if (latActual != latCtrl.text || lngActual != lngCtrl.text) {
-                logDetails.write(' Ubicación: $latActual, $lngActual -> ${latCtrl.text}, ${lngCtrl.text}.');
+                logDetails.write(
+                  ' Ubicación: $latActual, $lngActual -> ${latCtrl.text}, ${lngCtrl.text}.',
+                );
               }
-              if (grupoActual != newGrupo) logDetails.write(' Grupo: $grupoActual -> $newGrupo.');
-              if (secuenciaActual != secuenciaCtrl.text) logDetails.write(' Secuencia: $secuenciaActual -> ${secuenciaCtrl.text}.');
-              
-              logDetails.write(' Tarifa Base: \$$baseActual -> \$${baseCtrl.text}.');
-              logDetails.write(' Tarifa Punta: \$$puntaActual -> \$${puntaCtrl.text}.');
-              logDetails.write(' Tarifa Sat.: \$$saturacionActual -> \$${saturacionCtrl.text}.');
+              if (grupoActual != newGrupo)
+                logDetails.write(' Grupo: $grupoActual -> $newGrupo.');
+              if (secuenciaActual != secuenciaCtrl.text)
+                logDetails.write(
+                  ' Secuencia: $secuenciaActual -> ${secuenciaCtrl.text}.',
+                );
 
-              FirebaseFirestore.instance.collection('porticos').doc(docId).update(updates);
+              logDetails.write(
+                ' Tarifa Base: \$$baseActual -> \$${baseCtrl.text}.',
+              );
+              logDetails.write(
+                ' Tarifa Punta: \$$puntaActual -> \$${puntaCtrl.text}.',
+              );
+              logDetails.write(
+                ' Tarifa Sat.: \$$saturacionActual -> \$${saturacionCtrl.text}.',
+              );
+
+              FirebaseFirestore.instance
+                  .collection('porticos')
+                  .doc(docId)
+                  .update(updates);
 
               widget.service.logAction(
                 action: 'EDIT_TARIFF',
@@ -1470,19 +2082,31 @@ class _PorticosPageState extends State<PorticosPage> {
     );
   }
 
-  void _mostrarDialogoEliminar(BuildContext context, String docId, String nombre) {
+  void _mostrarDialogoEliminar(
+    BuildContext context,
+    String docId,
+    String nombre,
+  ) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Colors.white,
         title: const Text('Eliminar Pórtico'),
-        content: Text('¿Estás seguro que deseas eliminar el pórtico "$nombre"? Esta acción es irreversible.'),
+        content: Text(
+          '¿Estás seguro que deseas eliminar el pórtico "$nombre"? Esta acción es irreversible.',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () {
-              FirebaseFirestore.instance.collection('porticos').doc(docId).delete();
+              FirebaseFirestore.instance
+                  .collection('porticos')
+                  .doc(docId)
+                  .delete();
               widget.service.logAction(
                 action: 'DELETE_PORTICO',
                 target: nombre,
@@ -1490,7 +2114,10 @@ class _PorticosPageState extends State<PorticosPage> {
               );
               Navigator.pop(context);
             },
-            child: const Text('Sí, Eliminar', style: TextStyle(color: Colors.white)),
+            child: const Text(
+              'Sí, Eliminar',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -1521,11 +2148,16 @@ class TariffsPage extends StatelessWidget {
     return str;
   }
 
-  void _mostrarDetalleViaje(BuildContext context, Map<String, dynamic> tripData) {
+  void _mostrarDetalleViaje(
+    BuildContext context,
+    Map<String, dynamic> tripData,
+  ) {
     final List<dynamic> tollsList = tripData['tolls'] as List<dynamic>? ?? [];
-    final String vehiculo = (tripData['vehicleName'] ?? 'Desconocido').toString();
+    final String vehiculo = (tripData['vehicleName'] ?? 'Desconocido')
+        .toString();
     final String fecha = _formatFecha(tripData['date']);
-    final int totalCost = int.tryParse(tripData['totalCost']?.toString() ?? '0') ?? 0;
+    final int totalCost =
+        int.tryParse(tripData['totalCost']?.toString() ?? '0') ?? 0;
 
     showDialog(
       context: context,
@@ -1534,12 +2166,19 @@ class TariffsPage extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
-            const Icon(Icons.route_outlined, color: Color(0xFF0EA5E9), size: 24),
+            const Icon(
+              Icons.route_outlined,
+              color: Color(0xFF0EA5E9),
+              size: 24,
+            ),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
                 'Detalle de Peajes - $vehiculo',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
               ),
             ),
           ],
@@ -1550,16 +2189,29 @@ class TariffsPage extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Fecha: $fecha', style: const TextStyle(color: Color(0xFF64748B), fontWeight: FontWeight.w500)),
+              Text(
+                'Fecha: $fecha',
+                style: const TextStyle(
+                  color: Color(0xFF64748B),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
               const SizedBox(height: 4),
               Text(
                 'Costo Total: \$${_formatNumber(totalCost)}',
-                style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0F172A), fontSize: 16),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF0F172A),
+                  fontSize: 16,
+                ),
               ),
               const Divider(height: 24),
               const Text(
                 'Pórticos Cruzados:',
-                style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF475569)),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF475569),
+                ),
               ),
               const SizedBox(height: 12),
               if (tollsList.isEmpty)
@@ -1567,7 +2219,10 @@ class TariffsPage extends StatelessWidget {
                   padding: EdgeInsets.symmetric(vertical: 16),
                   child: Text(
                     'No hay pórticos registrados en este viaje.',
-                    style: TextStyle(fontStyle: FontStyle.italic, color: Color(0xFF94A3B8)),
+                    style: TextStyle(
+                      fontStyle: FontStyle.italic,
+                      color: Color(0xFF94A3B8),
+                    ),
                   ),
                 )
               else
@@ -1578,8 +2233,10 @@ class TariffsPage extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final toll = tollsList[index];
                       if (toll is! Map) return const SizedBox();
-                      final String name = (toll['name'] ?? 'Pórtico').toString();
-                      final int cost = int.tryParse(toll['cost']?.toString() ?? '0') ?? 0;
+                      final String name = (toll['name'] ?? 'Pórtico')
+                          .toString();
+                      final int cost =
+                          int.tryParse(toll['cost']?.toString() ?? '0') ?? 0;
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 6),
                         child: Row(
@@ -1588,18 +2245,28 @@ class TariffsPage extends StatelessWidget {
                             Expanded(
                               child: Text(
                                 name,
-                                style: const TextStyle(color: Color(0xFF334155), fontWeight: FontWeight.w500),
+                                style: const TextStyle(
+                                  color: Color(0xFF334155),
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
                                 color: const Color(0xFFF1F5F9),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
                                 '\$${_formatNumber(cost)}',
-                                style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0F172A), fontSize: 12),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF0F172A),
+                                  fontSize: 12,
+                                ),
                               ),
                             ),
                           ],
@@ -1614,7 +2281,13 @@ class TariffsPage extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cerrar', style: TextStyle(color: Color(0xFF0EA5E9), fontWeight: FontWeight.bold)),
+            child: const Text(
+              'Cerrar',
+              style: TextStyle(
+                color: Color(0xFF0EA5E9),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
@@ -1625,29 +2298,47 @@ class TariffsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return _AdminPageScaffold(
       title: 'Tarifas y Viajes de Usuarios',
-      subtitle: 'Historial de cobros y viajes de los usuarios registrado por GPS.',
+      subtitle:
+          'Historial de cobros y viajes de los usuarios registrado por GPS.',
       child: _FirestoreListTable(
         stream: service.streamUserTrips(),
         emptyMessage: 'No hay viajes registrados aún.',
         itemLabel: 'viajes',
-        columns: const ['Vehículo', 'Fecha', 'Distancia', 'Duración', 'Cobro Total', 'Acciones'],
+        columns: const [
+          'Vehículo',
+          'Fecha',
+          'Distancia',
+          'Duración',
+          'Cobro Total',
+          'Acciones',
+        ],
         rowBuilder: (doc) {
           final Map<String, dynamic> data = doc.data();
-          final String vehiculo = (data['vehicleName'] ?? 'Desconocido').toString();
+          final String vehiculo = (data['vehicleName'] ?? 'Desconocido')
+              .toString();
           final String fecha = _formatFecha(data['date']);
-          final double distance = double.tryParse(data['distanceKm']?.toString() ?? '0') ?? 0.0;
+          final double distance =
+              double.tryParse(data['distanceKm']?.toString() ?? '0') ?? 0.0;
           final String duracion = (data['duration'] ?? '-').toString();
-          final int totalCost = int.tryParse(data['totalCost']?.toString() ?? '0') ?? 0;
+          final int totalCost =
+              int.tryParse(data['totalCost']?.toString() ?? '0') ?? 0;
 
           return [
             DataCell(
               Row(
                 children: [
-                  const Icon(Icons.directions_car_filled_outlined, size: 18, color: Color(0xFF0EA5E9)),
+                  const Icon(
+                    Icons.directions_car_filled_outlined,
+                    size: 18,
+                    color: Color(0xFF0EA5E9),
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     vehiculo,
-                    style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF0F172A),
+                    ),
                   ),
                 ],
               ),
@@ -1655,7 +2346,10 @@ class TariffsPage extends StatelessWidget {
             DataCell(
               Text(
                 fecha,
-                style: const TextStyle(color: Color(0xFF475569), fontWeight: FontWeight.w500),
+                style: const TextStyle(
+                  color: Color(0xFF475569),
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
             DataCell(
@@ -1668,11 +2362,19 @@ class TariffsPage extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.linear_scale_rounded, size: 14, color: Color(0xFF64748B)),
+                    const Icon(
+                      Icons.linear_scale_rounded,
+                      size: 14,
+                      color: Color(0xFF64748B),
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       '${distance.toStringAsFixed(1)} km',
-                      style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF475569), fontSize: 12),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF475569),
+                        fontSize: 12,
+                      ),
                     ),
                   ],
                 ),
@@ -1682,15 +2384,25 @@ class TariffsPage extends StatelessWidget {
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.access_time_rounded, size: 14, color: Color(0xFF64748B)),
+                  const Icon(
+                    Icons.access_time_rounded,
+                    size: 14,
+                    color: Color(0xFF64748B),
+                  ),
                   const SizedBox(width: 4),
-                  Text(duracion, style: const TextStyle(color: Color(0xFF334155))),
+                  Text(
+                    duracion,
+                    style: const TextStyle(color: Color(0xFF334155)),
+                  ),
                 ],
               ),
             ),
             DataCell(
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFECFDF5),
                   borderRadius: BorderRadius.circular(12),
@@ -1710,13 +2422,16 @@ class TariffsPage extends StatelessWidget {
               Builder(
                 builder: (context) {
                   return IconButton(
-                    icon: const Icon(Icons.info_outline_rounded, color: Color(0xFF0EA5E9)),
+                    icon: const Icon(
+                      Icons.info_outline_rounded,
+                      color: Color(0xFF0EA5E9),
+                    ),
                     tooltip: 'Ver Detalle de Peajes',
                     onPressed: () {
                       _mostrarDetalleViaje(context, data);
                     },
                   );
-                }
+                },
               ),
             ),
           ];
@@ -1769,26 +2484,32 @@ class _ReportsPageState extends State<ReportsPage> {
     try {
       final StringBuffer csvBuffer = StringBuffer();
       csvBuffer.write('\uFEFF');
-      
+
       csvBuffer.writeln('REPORTE GENERAL DE MÉTRICAS Y ESTADÍSTICAS - TAG OK');
       csvBuffer.writeln('Fecha de Generación: ${DateTime.now().toLocal()}');
       csvBuffer.writeln();
-      
+
       csvBuffer.writeln('MÉTRICA,VALOR');
       csvBuffer.writeln('Total Usuarios,${metrics.totalUsers}');
       csvBuffer.writeln('Total Vehículos,${metrics.totalVehicles}');
       csvBuffer.writeln('Total Viajes,${metrics.totalTrips}');
-      csvBuffer.writeln('Costo Total Peajes (\$),${metrics.totalTollCost.toStringAsFixed(0)}');
-      csvBuffer.writeln('Costo Promedio por Viaje (\$),${metrics.averageCostPerTrip.toStringAsFixed(0)}');
+      csvBuffer.writeln(
+        'Costo Total Peajes (\$),${metrics.totalTollCost.toStringAsFixed(0)}',
+      );
+      csvBuffer.writeln(
+        'Costo Promedio por Viaje (\$),${metrics.averageCostPerTrip.toStringAsFixed(0)}',
+      );
       csvBuffer.writeln();
-      
+
       csvBuffer.writeln('DISTRIBUCIÓN POR AUTOPISTA');
       csvBuffer.writeln('Autopista,Costo Total (\$),Porcentaje (%)');
-      
+
       final double total = metrics.totalTollCost;
       metrics.costByHighway.forEach((highway, cost) {
         final double pct = total > 0 ? (cost / total) * 100 : 0.0;
-        csvBuffer.writeln('$highway,${cost.toStringAsFixed(0)},${pct.toStringAsFixed(2)}%');
+        csvBuffer.writeln(
+          '$highway,${cost.toStringAsFixed(0)},${pct.toStringAsFixed(2)}%',
+        );
       });
 
       saveFile(csvBuffer.toString(), 'reporte_tag_ok.csv');
@@ -1844,7 +2565,8 @@ class _ReportsPageState extends State<ReportsPage> {
   Widget build(BuildContext context) {
     return _AdminPageScaffold(
       title: 'Reportes y Estadísticas',
-      subtitle: 'Monitoreo consolidado de ingresos por peaje, uso de vías y descargas de informes.',
+      subtitle:
+          'Monitoreo consolidado de ingresos por peaje, uso de vías y descargas de informes.',
       child: FutureBuilder<ReportMetrics>(
         future: _metricsFuture,
         builder: (context, snapshot) {
@@ -1862,7 +2584,11 @@ class _ReportsPageState extends State<ReportsPage> {
                         SizedBox(width: 8),
                         Text(
                           'Error al cargar reportes',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red,
+                          ),
                         ),
                       ],
                     ),
@@ -1890,7 +2616,10 @@ class _ReportsPageState extends State<ReportsPage> {
                 children: [
                   CircularProgressIndicator(),
                   SizedBox(height: 16),
-                  Text('Cargando y consolidando métricas desde Firestore...', style: TextStyle(color: Color(0xFF64748B))),
+                  Text(
+                    'Cargando y consolidando métricas desde Firestore...',
+                    style: TextStyle(color: Color(0xFF64748B)),
+                  ),
                 ],
               ),
             );
@@ -1922,7 +2651,10 @@ class _ReportsPageState extends State<ReportsPage> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF0EA5E9),
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 16,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -1932,7 +2664,10 @@ class _ReportsPageState extends State<ReportsPage> {
                       icon: const Icon(Icons.download_rounded, size: 20),
                       label: const Text(
                         'Exportar Resumen a CSV',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
                       ),
                     ),
                     IconButton.filledTonal(
@@ -1953,35 +2688,50 @@ class _ReportsPageState extends State<ReportsPage> {
                       value: metrics.totalUsers.toString(),
                       icon: Icons.people_outline_rounded,
                       iconColor: const Color(0xFF0EA5E9),
-                      gradientColors: const [Color(0xFF0EA5E9), Color(0xFF38BDF8)],
+                      gradientColors: const [
+                        Color(0xFF0EA5E9),
+                        Color(0xFF38BDF8),
+                      ],
                     ),
                     _ReportStatCard(
                       title: 'Vehículos',
                       value: metrics.totalVehicles.toString(),
                       icon: Icons.directions_car_outlined,
                       iconColor: const Color(0xFF10B981),
-                      gradientColors: const [Color(0xFF10B981), Color(0xFF34D399)],
+                      gradientColors: const [
+                        Color(0xFF10B981),
+                        Color(0xFF34D399),
+                      ],
                     ),
                     _ReportStatCard(
                       title: 'Total Viajes',
                       value: metrics.totalTrips.toString(),
                       icon: Icons.route_outlined,
                       iconColor: const Color(0xFFF59E0B),
-                      gradientColors: const [Color(0xFFF59E0B), Color(0xFFFBBF24)],
+                      gradientColors: const [
+                        Color(0xFFF59E0B),
+                        Color(0xFFFBBF24),
+                      ],
                     ),
                     _ReportStatCard(
                       title: 'Total Peajes',
                       value: _formatCurrency(metrics.totalTollCost),
                       icon: Icons.monetization_on_outlined,
                       iconColor: const Color(0xFF8B5CF6),
-                      gradientColors: const [Color(0xFF8B5CF6), Color(0xFFA78BFA)],
+                      gradientColors: const [
+                        Color(0xFF8B5CF6),
+                        Color(0xFFA78BFA),
+                      ],
                     ),
                     _ReportStatCard(
                       title: 'Promedio por Viaje',
                       value: _formatCurrency(metrics.averageCostPerTrip),
                       icon: Icons.analytics_outlined,
                       iconColor: const Color(0xFFEC4899),
-                      gradientColors: const [Color(0xFFEC4899), Color(0xFFF472B6)],
+                      gradientColors: const [
+                        Color(0xFFEC4899),
+                        Color(0xFFF472B6),
+                      ],
                     ),
                   ],
                 ),
@@ -1990,7 +2740,7 @@ class _ReportsPageState extends State<ReportsPage> {
                 LayoutBuilder(
                   builder: (context, constraints) {
                     final bool isNarrow = constraints.maxWidth < 900;
-                    
+
                     final Widget chartWidget = Card(
                       child: Padding(
                         padding: const EdgeInsets.all(24),
@@ -1999,27 +2749,42 @@ class _ReportsPageState extends State<ReportsPage> {
                           children: [
                             const Text(
                               'Distribución de Costos por Autopista',
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF0F172A),
+                              ),
                             ),
                             const SizedBox(height: 24),
                             ...sortedHighways.map((entry) {
-                              final double pct = metrics.totalTollCost > 0 ? (entry.value / metrics.totalTollCost) : 0.0;
-                              final List<Color> colors = _getGradientForHighway(entry.key);
+                              final double pct = metrics.totalTollCost > 0
+                                  ? (entry.value / metrics.totalTollCost)
+                                  : 0.0;
+                              final List<Color> colors = _getGradientForHighway(
+                                entry.key,
+                              );
                               return Padding(
                                 padding: const EdgeInsets.only(bottom: 20),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
                                           entry.key,
-                                          style: const TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF334155)),
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            color: Color(0xFF334155),
+                                          ),
                                         ),
                                         Text(
                                           '${_formatCurrency(entry.value)} (${(pct * 100).toStringAsFixed(1)}%)',
-                                          style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Color(0xFF0F172A),
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -2041,10 +2806,14 @@ class _ReportsPageState extends State<ReportsPage> {
                                               begin: Alignment.centerLeft,
                                               end: Alignment.centerRight,
                                             ),
-                                            borderRadius: BorderRadius.circular(6),
+                                            borderRadius: BorderRadius.circular(
+                                              6,
+                                            ),
                                             boxShadow: [
                                               BoxShadow(
-                                                color: colors[0].withValues(alpha: 0.2),
+                                                color: colors[0].withValues(
+                                                  alpha: 0.2,
+                                                ),
                                                 blurRadius: 4,
                                                 offset: const Offset(0, 1),
                                               ),
@@ -2070,7 +2839,11 @@ class _ReportsPageState extends State<ReportsPage> {
                           children: [
                             const Text(
                               'Resumen Tabular de Ingresos',
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF0F172A),
+                              ),
                             ),
                             const SizedBox(height: 16),
                             Table(
@@ -2080,40 +2853,93 @@ class _ReportsPageState extends State<ReportsPage> {
                                 2: FlexColumnWidth(1),
                               },
                               border: const TableBorder(
-                                horizontalInside: BorderSide(color: Color(0xFFE2E8F0), width: 1),
+                                horizontalInside: BorderSide(
+                                  color: Color(0xFFE2E8F0),
+                                  width: 1,
+                                ),
                               ),
                               children: [
                                 const TableRow(
                                   children: [
                                     Padding(
-                                      padding: EdgeInsets.symmetric(vertical: 12),
-                                      child: Text('Autopista', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF64748B))),
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 12,
+                                      ),
+                                      child: Text(
+                                        'Autopista',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xFF64748B),
+                                        ),
+                                      ),
                                     ),
                                     Padding(
-                                      padding: EdgeInsets.symmetric(vertical: 12),
-                                      child: Text('Gasto', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF64748B))),
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 12,
+                                      ),
+                                      child: Text(
+                                        'Gasto',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xFF64748B),
+                                        ),
+                                      ),
                                     ),
                                     Padding(
-                                      padding: EdgeInsets.symmetric(vertical: 12),
-                                      child: Text('Porcentaje', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF64748B))),
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 12,
+                                      ),
+                                      child: Text(
+                                        'Porcentaje',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xFF64748B),
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 ),
                                 ...sortedHighways.map((entry) {
-                                  final double pct = metrics.totalTollCost > 0 ? (entry.value / metrics.totalTollCost) * 100 : 0.0;
+                                  final double pct = metrics.totalTollCost > 0
+                                      ? (entry.value / metrics.totalTollCost) *
+                                            100
+                                      : 0.0;
                                   return TableRow(
                                     children: [
                                       Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 12),
-                                        child: Text(entry.key, style: const TextStyle(color: Color(0xFF334155), fontWeight: FontWeight.w500)),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 12,
+                                        ),
+                                        child: Text(
+                                          entry.key,
+                                          style: const TextStyle(
+                                            color: Color(0xFF334155),
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
                                       ),
                                       Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 12),
-                                        child: Text(_formatCurrency(entry.value), style: const TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.bold)),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 12,
+                                        ),
+                                        child: Text(
+                                          _formatCurrency(entry.value),
+                                          style: const TextStyle(
+                                            color: Color(0xFF0F172A),
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
                                       ),
                                       Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 12),
-                                        child: Text('${pct.toStringAsFixed(1)}%', style: const TextStyle(color: Color(0xFF64748B))),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 12,
+                                        ),
+                                        child: Text(
+                                          '${pct.toStringAsFixed(1)}%',
+                                          style: const TextStyle(
+                                            color: Color(0xFF64748B),
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   );
@@ -2238,7 +3064,11 @@ class _ReportStatCard extends StatelessWidget {
 }
 
 class _AdminPageScaffold extends StatelessWidget {
-  const _AdminPageScaffold({required this.title, required this.subtitle, required this.child});
+  const _AdminPageScaffold({
+    required this.title,
+    required this.subtitle,
+    required this.child,
+  });
 
   final String title;
   final String subtitle;
@@ -2254,7 +3084,11 @@ class _AdminPageScaffold extends StatelessWidget {
           children: [
             Text(
               title,
-              style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w800, letterSpacing: -0.8),
+              style: const TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.8,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -2271,7 +3105,11 @@ class _AdminPageScaffold extends StatelessWidget {
 }
 
 class _StatCard extends StatelessWidget {
-  const _StatCard({required this.label, required this.value, required this.icon});
+  const _StatCard({
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
 
   final String label;
   final int value;
@@ -2291,12 +3129,736 @@ class _StatCard extends StatelessWidget {
               const SizedBox(height: 18),
               Text(
                 value.toString(),
-                style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w800),
+                style: const TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
               const SizedBox(height: 6),
               Text(label, style: const TextStyle(color: Color(0xFF64748B))),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class AdminsManagementPage extends StatefulWidget {
+  const AdminsManagementPage({super.key, required this.service});
+
+  final AdminFirestoreService service;
+
+  @override
+  State<AdminsManagementPage> createState() => _AdminsManagementPageState();
+}
+
+class _AdminsManagementPageState extends State<AdminsManagementPage> {
+  final TextEditingController _searchCtrl = TextEditingController();
+  String _searchQuery = '';
+  String _selectedRoleFilter = 'Todos';
+  int _currentPage = 0;
+  int _rowsPerPage = 10;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchCtrl.addListener(() {
+      setState(() {
+        _searchQuery = _searchCtrl.text.toLowerCase().trim();
+        _currentPage = 0;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
+  bool _matchesFilters(Map<String, dynamic> data) {
+    final String email = (data['email'] ?? '').toString().toLowerCase();
+    final String role = (data['rol'] ?? data['role'] ?? 'operador').toString().toLowerCase();
+
+    if (_searchQuery.isNotEmpty && !email.contains(_searchQuery)) {
+      return false;
+    }
+
+    if (_selectedRoleFilter != 'Todos') {
+      if (_selectedRoleFilter == 'super_admin' &&
+          role != 'super_admin' &&
+          role != 'super_administrador' &&
+          role != 'superadmin' &&
+          role != 'super administrador') {
+        return false;
+      }
+      if (_selectedRoleFilter == 'operador' &&
+          role != 'operador' &&
+          role != 'operario' &&
+          role != 'operator') {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  Widget _getRoleBadge(String role) {
+    final String r = role.toLowerCase().trim();
+    final bool isSuper =
+        r == 'super_admin' ||
+        r == 'super_administrador' ||
+        r == 'superadmin' ||
+        r == 'super administrador';
+
+    final Color bgColor = isSuper
+        ? const Color(0xFFE0F2FE)
+        : const Color(0xFFFEF3C7);
+    final Color textColor = isSuper
+        ? const Color(0xFF0369A1)
+        : const Color(0xFFD97706);
+    final String label = isSuper ? 'Super Administrador' : 'Administrador Operacional';
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: textColor.withValues(alpha: 0.15)),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: textColor,
+          fontSize: 12,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _createAdminAccount(String email, String password, String role) async {
+    FirebaseApp? tempApp;
+    try {
+      final String tempAppName = 'creator_app_${DateTime.now().millisecondsSinceEpoch}';
+      tempApp = await Firebase.initializeApp(
+        name: tempAppName,
+        options: Firebase.app().options,
+      );
+
+      final FirebaseAuth tempAuth = FirebaseAuth.instanceFor(app: tempApp);
+      final UserCredential creds = await tempAuth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      final String uid = creds.user!.uid;
+
+      await FirebaseFirestore.instance.collection('administradores').doc(uid).set({
+        'email': email,
+        'rol': role,
+        'fecha_creacion': FieldValue.serverTimestamp(),
+      });
+
+      await widget.service.logAction(
+        action: 'CREATE_ADMIN',
+        target: email,
+        details: 'Admin creado exitosamente. UID: $uid. Rol: $role.',
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Administrador $email creado correctamente.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al crear administrador: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (tempApp != null) {
+        await tempApp.delete();
+      }
+    }
+  }
+
+  Future<void> _changeAdminRole(String docId, String email, String newRole) async {
+    try {
+      await widget.service.updateAdminRole(docId, newRole);
+      await widget.service.logAction(
+        action: 'EDIT_ADMIN_ROLE',
+        target: email,
+        details: 'Rol modificado a: $newRole',
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Rol de $email actualizado a $newRole.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al cambiar rol: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _revokeAdminAccess(String docId, String email) async {
+    try {
+      await widget.service.deleteAdmin(docId);
+      await widget.service.logAction(
+        action: 'DELETE_ADMIN',
+        target: email,
+        details: 'Acceso revocado (eliminado de Firestore)',
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Acceso para $email revocado correctamente.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al revocar acceso: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _resetAdminPassword(String email) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      await widget.service.logAction(
+        action: 'RESET_ADMIN_PASSWORD',
+        target: email,
+        details: 'Enviado enlace de recuperación de contraseña',
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Enlace para restablecer contraseña enviado a $email.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al enviar restablecimiento de contraseña: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  void _showAddAdminDialog() {
+    final formKey = GlobalKey<FormState>();
+    final emailCtrl = TextEditingController();
+    final passCtrl = TextEditingController();
+    String selectedRole = 'operador';
+    bool isSaving = false;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('Agregar Nuevo Administrador'),
+              content: SizedBox(
+                width: 400,
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        controller: emailCtrl,
+                        decoration: const InputDecoration(
+                          labelText: 'Correo Electrónico',
+                          prefixIcon: Icon(Icons.email_outlined),
+                        ),
+                        keyboardType: TextInputType.emailAddress,
+                        enabled: !isSaving,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'El correo es requerido';
+                          }
+                          if (!RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(value.trim())) {
+                            return 'Ingrese un correo electrónico válido';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: passCtrl,
+                        decoration: const InputDecoration(
+                          labelText: 'Contraseña',
+                          prefixIcon: Icon(Icons.lock_outline),
+                        ),
+                        obscureText: true,
+                        enabled: !isSaving,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'La contraseña es requerida';
+                          }
+                          if (value.length < 6) {
+                            return 'Mínimo 6 caracteres';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      DropdownButtonFormField<String>(
+                        initialValue: selectedRole,
+                        decoration: const InputDecoration(
+                          labelText: 'Rol del Administrador',
+                          prefixIcon: Icon(Icons.admin_panel_settings_outlined),
+                        ),
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'super_admin',
+                            child: Text('Super Administrador'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'operador',
+                            child: Text('Administrador Operacional (Operador)'),
+                          ),
+                        ],
+                        onChanged: isSaving
+                            ? null
+                            : (val) {
+                                if (val != null) {
+                                  setDialogState(() {
+                                    selectedRole = val;
+                                  });
+                                }
+                              },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isSaving ? null : () => Navigator.of(ctx).pop(),
+                  child: const Text('Cancelar'),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0EA5E9),
+                  ),
+                  onPressed: isSaving
+                      ? null
+                      : () async {
+                          if (formKey.currentState!.validate()) {
+                            setDialogState(() {
+                              isSaving = true;
+                            });
+                            await _createAdminAccount(
+                              emailCtrl.text.trim(),
+                              passCtrl.text,
+                              selectedRole,
+                            );
+                            if (context.mounted) {
+                              Navigator.of(ctx).pop();
+                            }
+                          }
+                        },
+                  child: isSaving
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Text('Crear', style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showEditRoleDialog(QueryDocumentSnapshot<Map<String, dynamic>> doc) {
+    final data = doc.data();
+    final String email = (data['email'] ?? '').toString();
+    final String currentRole = (data['rol'] ?? data['role'] ?? 'operador').toString();
+    String selectedRole = currentRole == 'super_admin' ? 'super_admin' : 'operador';
+    bool isSaving = false;
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: Text('Editar Rol de $email'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButtonFormField<String>(
+                    initialValue: selectedRole,
+                    decoration: const InputDecoration(
+                      labelText: 'Rol',
+                    ),
+                    items: const [
+                      DropdownMenuItem(
+                        value: 'super_admin',
+                        child: Text('Super Administrador'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'operador',
+                        child: Text('Administrador Operacional (Operador)'),
+                      ),
+                    ],
+                    onChanged: isSaving
+                        ? null
+                        : (val) {
+                            if (val != null) {
+                              setDialogState(() {
+                                selectedRole = val;
+                              });
+                            }
+                          },
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isSaving ? null : () => Navigator.of(ctx).pop(),
+                  child: const Text('Cancelar'),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0EA5E9),
+                  ),
+                  onPressed: isSaving
+                      ? null
+                      : () async {
+                          setDialogState(() {
+                            isSaving = true;
+                          });
+                          await _changeAdminRole(doc.id, email, selectedRole);
+                          if (context.mounted) {
+                            Navigator.of(ctx).pop();
+                          }
+                        },
+                  child: const Text('Guardar', style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showDeleteConfirmDialog(QueryDocumentSnapshot<Map<String, dynamic>> doc) {
+    final data = doc.data();
+    final String email = (data['email'] ?? '').toString();
+    bool isSaving = false;
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('Confirmar Revocación'),
+              content: Text(
+                '¿Está seguro de que desea revocar el acceso de administrador para $email? '
+                'Esta acción le impedirá el ingreso al panel inmediatamente.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isSaving ? null : () => Navigator.of(ctx).pop(),
+                  child: const Text('Cancelar'),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFEF4444),
+                  ),
+                  onPressed: isSaving
+                      ? null
+                      : () async {
+                          setDialogState(() {
+                            isSaving = true;
+                          });
+                          await _revokeAdminAccess(doc.id, email);
+                          if (context.mounted) {
+                            Navigator.of(ctx).pop();
+                          }
+                        },
+                  child: const Text('Revocar Acceso', style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final String currentAdminEmail = FirebaseAuth.instance.currentUser?.email ?? '';
+
+    return _AdminPageScaffold(
+      title: 'Gestión de Administradores',
+      subtitle: 'Administra los roles y accesos al panel backoffice de TAG OK.',
+      child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+        stream: widget.service.streamAdministradores(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Text('Error al leer Firestore: ${snapshot.error}');
+          }
+
+          if (!snapshot.hasData) {
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.all(32),
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+
+          final docs = snapshot.data!.docs;
+          final filteredDocs = docs
+              .where((doc) => _matchesFilters(doc.data()))
+              .toList();
+
+          if (filteredDocs.isEmpty) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildFiltersCard(),
+                const Expanded(
+                  child: Card(
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(32),
+                        child: Text(
+                          'No hay administradores registrados que coincidan con los filtros.',
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }
+
+          final int totalPages = (filteredDocs.length / _rowsPerPage).ceil();
+          if (_currentPage >= totalPages && totalPages > 0) {
+            _currentPage = totalPages - 1;
+          }
+
+          final int startIndex = _currentPage * _rowsPerPage;
+          final int endIndex = (startIndex + _rowsPerPage) > filteredDocs.length
+              ? filteredDocs.length
+              : (startIndex + _rowsPerPage);
+          final pageDocs = filteredDocs.sublist(startIndex, endIndex);
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildFiltersCard(),
+              Expanded(
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: DataTable(
+                                columns: const [
+                                  DataColumn(label: Text('Email')),
+                                  DataColumn(label: Text('Rol')),
+                                  DataColumn(label: Text('Acciones')),
+                                ],
+                                rows: pageDocs.map((doc) {
+                                  final data = doc.data();
+                                  final String email = (data['email'] ?? '').toString();
+                                  final String role = (data['rol'] ?? data['role'] ?? 'operador').toString();
+                                  final bool isCurrentUser = email.toLowerCase() == currentAdminEmail.toLowerCase();
+
+                                  return DataRow(
+                                    cells: [
+                                      DataCell(
+                                        Text(
+                                          email,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(_getRoleBadge(role)),
+                                      DataCell(
+                                        Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            IconButton(
+                                              icon: const Icon(Icons.edit_outlined, color: Colors.blue),
+                                              tooltip: isCurrentUser ? 'No puedes cambiar tu propio rol' : 'Cambiar Rol',
+                                              onPressed: isCurrentUser ? null : () => _showEditRoleDialog(doc),
+                                            ),
+                                            IconButton(
+                                              icon: const Icon(Icons.lock_reset, color: Colors.amber),
+                                              tooltip: 'Restablecer Contraseña',
+                                              onPressed: () => _resetAdminPassword(email),
+                                            ),
+                                            IconButton(
+                                              icon: const Icon(Icons.delete_outline, color: Colors.red),
+                                              tooltip: isCurrentUser ? 'No puedes revocar tu propio acceso' : 'Revocar Acceso',
+                                              onPressed: isCurrentUser ? null : () => _showDeleteConfirmDialog(doc),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const Divider(),
+                        _TablePaginationControls(
+                          currentPage: _currentPage,
+                          rowsPerPage: _rowsPerPage,
+                          totalItems: filteredDocs.length,
+                          totalPages: totalPages,
+                          startIndex: startIndex,
+                          endIndex: endIndex,
+                          onPageChanged: (page) =>
+                              setState(() => _currentPage = page),
+                          onRowsPerPageChanged: (rows) => setState(() {
+                            _rowsPerPage = rows;
+                            _currentPage = 0;
+                          }),
+                          itemLabel: 'administradores',
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildFiltersCard() {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Expanded(
+              flex: 3,
+              child: TextField(
+                controller: _searchCtrl,
+                decoration: InputDecoration(
+                  isDense: true,
+                  labelText: 'Buscar Administrador...',
+                  hintText: 'Buscar por correo electrónico',
+                  prefixIcon: const Icon(Icons.search, size: 20),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              flex: 2,
+              child: DropdownButtonFormField<String>(
+                initialValue: _selectedRoleFilter,
+                decoration: InputDecoration(
+                  isDense: true,
+                  labelText: 'Filtrar por Rol',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                items: const [
+                  DropdownMenuItem(
+                    value: 'Todos',
+                    child: Text('Todos los roles'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'super_admin',
+                    child: Text('Super Administrador'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'operador',
+                    child: Text('Administrador Operacional'),
+                  ),
+                ],
+                onChanged: (val) {
+                  if (val != null) {
+                    setState(() {
+                      _selectedRoleFilter = val;
+                      _currentPage = 0;
+                    });
+                  }
+                },
+              ),
+            ),
+            const SizedBox(width: 16),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF0EA5E9),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              onPressed: _showAddAdminDialog,
+              icon: const Icon(Icons.add, color: Colors.white),
+              label: const Text('Agregar Admin', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            ),
+          ],
         ),
       ),
     );
@@ -2337,7 +3899,9 @@ class _AuditLogPageState extends State<AuditLogPage> {
   }
 
   bool _matchesFilters(Map<String, dynamic> data) {
-    final String adminEmail = (data['adminEmail'] ?? '').toString().toLowerCase();
+    final String adminEmail = (data['adminEmail'] ?? '')
+        .toString()
+        .toLowerCase();
     final String target = (data['target'] ?? '').toString().toLowerCase();
     final String details = (data['details'] ?? '').toString().toLowerCase();
     final String action = (data['action'] ?? '').toString();
@@ -2415,7 +3979,11 @@ class _AuditLogPageState extends State<AuditLogPage> {
       ),
       child: Text(
         label,
-        style: TextStyle(fontWeight: FontWeight.bold, color: textColor, fontSize: 12),
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: textColor,
+          fontSize: 12,
+        ),
       ),
     );
   }
@@ -2424,7 +3992,8 @@ class _AuditLogPageState extends State<AuditLogPage> {
   Widget build(BuildContext context) {
     return _AdminPageScaffold(
       title: 'Bitácora de Auditoría',
-      subtitle: 'Historial irreversible de cambios y acciones realizadas por administradores.',
+      subtitle:
+          'Historial irreversible de cambios y acciones realizadas por administradores.',
       child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: widget.service.streamAuditLogs(),
         builder: (context, snapshot) {
@@ -2442,7 +4011,9 @@ class _AuditLogPageState extends State<AuditLogPage> {
           }
 
           final docs = snapshot.data!.docs;
-          final filteredDocs = docs.where((doc) => _matchesFilters(doc.data())).toList();
+          final filteredDocs = docs
+              .where((doc) => _matchesFilters(doc.data()))
+              .toList();
 
           if (filteredDocs.isEmpty) {
             return Column(
@@ -2454,7 +4025,9 @@ class _AuditLogPageState extends State<AuditLogPage> {
                     child: Center(
                       child: Padding(
                         padding: EdgeInsets.all(32),
-                        child: Text('No hay registros de auditoría que coincidan con los filtros.'),
+                        child: Text(
+                          'No hay registros de auditoría que coincidan con los filtros.',
+                        ),
                       ),
                     ),
                   ),
@@ -2500,26 +4073,52 @@ class _AuditLogPageState extends State<AuditLogPage> {
                                 ],
                                 rows: pageDocs.map((doc) {
                                   final data = doc.data();
-                                  final String fechaStr = _formatFecha(data['fecha']);
-                                  final String adminEmail = (data['adminEmail'] ?? 'Sistema').toString();
-                                  final String action = (data['action'] ?? '').toString();
-                                  final String target = (data['target'] ?? '').toString();
-                                  final String details = (data['details'] ?? '').toString();
+                                  final String fechaStr = _formatFecha(
+                                    data['fecha'],
+                                  );
+                                  final String adminEmail =
+                                      (data['adminEmail'] ?? 'Sistema')
+                                          .toString();
+                                  final String action = (data['action'] ?? '')
+                                      .toString();
+                                  final String target = (data['target'] ?? '')
+                                      .toString();
+                                  final String details = (data['details'] ?? '')
+                                      .toString();
 
                                   return DataRow(
                                     cells: [
-                                      DataCell(Text(fechaStr, style: const TextStyle(fontWeight: FontWeight.w500))),
+                                      DataCell(
+                                        Text(
+                                          fechaStr,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
                                       DataCell(Text(adminEmail)),
                                       DataCell(_getActionBadge(action)),
-                                      DataCell(Text(target, style: const TextStyle(fontWeight: FontWeight.bold))),
+                                      DataCell(
+                                        Text(
+                                          target,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
                                       DataCell(
                                         Container(
-                                          constraints: const BoxConstraints(maxWidth: 350),
+                                          constraints: const BoxConstraints(
+                                            maxWidth: 350,
+                                          ),
                                           child: Text(
                                             details,
                                             overflow: TextOverflow.ellipsis,
                                             maxLines: 2,
-                                            style: const TextStyle(fontSize: 12, color: Color(0xFF475569)),
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                              color: Color(0xFF475569),
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -2538,7 +4137,8 @@ class _AuditLogPageState extends State<AuditLogPage> {
                           totalPages: totalPages,
                           startIndex: startIndex,
                           endIndex: endIndex,
-                          onPageChanged: (page) => setState(() => _currentPage = page),
+                          onPageChanged: (page) =>
+                              setState(() => _currentPage = page),
                           onRowsPerPageChanged: (rows) => setState(() {
                             _rowsPerPage = rows;
                             _currentPage = 0;
@@ -2592,12 +4192,30 @@ class _AuditLogPageState extends State<AuditLogPage> {
                   ),
                 ),
                 items: const [
-                  DropdownMenuItem(value: 'Todos', child: Text('Todas las acciones')),
-                  DropdownMenuItem(value: 'EDIT_USER', child: Text('Editar Usuario')),
-                  DropdownMenuItem(value: 'RESET_PASSWORD', child: Text('Restablecer Clave')),
-                  DropdownMenuItem(value: 'DELETE_USER', child: Text('Eliminar Usuario')),
-                  DropdownMenuItem(value: 'EDIT_TARIFF', child: Text('Editar Tarifas')),
-                  DropdownMenuItem(value: 'DELETE_PORTICO', child: Text('Eliminar Pórtico')),
+                  DropdownMenuItem(
+                    value: 'Todos',
+                    child: Text('Todas las acciones'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'EDIT_USER',
+                    child: Text('Editar Usuario'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'RESET_PASSWORD',
+                    child: Text('Restablecer Clave'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'DELETE_USER',
+                    child: Text('Eliminar Usuario'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'EDIT_TARIFF',
+                    child: Text('Editar Tarifas'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'DELETE_PORTICO',
+                    child: Text('Eliminar Pórtico'),
+                  ),
                 ],
                 onChanged: (val) {
                   if (val != null) {
@@ -2630,7 +4248,10 @@ class _InfoCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+            Text(
+              title,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+            ),
             const SizedBox(height: 16),
             child,
           ],
@@ -2654,8 +4275,7 @@ class _QuickAction extends StatelessWidget {
       label: Text(label),
     );
   }
-} 
-
+}
 
 class _TablePaginationControls extends StatelessWidget {
   const _TablePaginationControls({
@@ -2689,11 +4309,18 @@ class _TablePaginationControls extends StatelessWidget {
         children: [
           Text(
             'Mostrando ${totalItems == 0 ? 0 : startIndex + 1} - $endIndex de $totalItems $itemLabel',
-            style: const TextStyle(color: Color(0xFF64748B), fontSize: 13, fontWeight: FontWeight.w500),
+            style: const TextStyle(
+              color: Color(0xFF64748B),
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
           ),
           Row(
             children: [
-              const Text('Filas por página: ', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
+              const Text(
+                'Filas por página: ',
+                style: TextStyle(color: Color(0xFF64748B), fontSize: 13),
+              ),
               const SizedBox(width: 8),
               DropdownButton<int>(
                 value: rowsPerPage,
@@ -2718,23 +4345,33 @@ class _TablePaginationControls extends StatelessWidget {
               ),
               IconButton(
                 icon: const Icon(Icons.chevron_left_rounded),
-                onPressed: currentPage > 0 ? () => onPageChanged(currentPage - 1) : null,
+                onPressed: currentPage > 0
+                    ? () => onPageChanged(currentPage - 1)
+                    : null,
                 tooltip: 'Página anterior',
               ),
               const SizedBox(width: 8),
               Text(
                 'Pág. ${currentPage + 1} de ${totalPages == 0 ? 1 : totalPages}',
-                style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0F172A), fontSize: 13),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF0F172A),
+                  fontSize: 13,
+                ),
               ),
               const SizedBox(width: 8),
               IconButton(
                 icon: const Icon(Icons.chevron_right_rounded),
-                onPressed: currentPage < totalPages - 1 ? () => onPageChanged(currentPage + 1) : null,
+                onPressed: currentPage < totalPages - 1
+                    ? () => onPageChanged(currentPage + 1)
+                    : null,
                 tooltip: 'Siguiente página',
               ),
               IconButton(
                 icon: const Icon(Icons.last_page_rounded),
-                onPressed: currentPage < totalPages - 1 ? () => onPageChanged(totalPages - 1) : null,
+                onPressed: currentPage < totalPages - 1
+                    ? () => onPageChanged(totalPages - 1)
+                    : null,
                 tooltip: 'Última página',
               ),
             ],
@@ -2757,7 +4394,8 @@ class _FirestoreListTable extends StatefulWidget {
   final Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>> stream;
   final String emptyMessage;
   final List<String> columns;
-  final List<DataCell> Function(QueryDocumentSnapshot<Map<String, dynamic>>) rowBuilder;
+  final List<DataCell> Function(QueryDocumentSnapshot<Map<String, dynamic>>)
+  rowBuilder;
   final String itemLabel;
 
   @override
@@ -2789,7 +4427,8 @@ class _FirestoreListTableState extends State<_FirestoreListTable> {
               );
             }
 
-            final List<QueryDocumentSnapshot<Map<String, dynamic>>> docs = snapshot.data!;
+            final List<QueryDocumentSnapshot<Map<String, dynamic>>> docs =
+                snapshot.data!;
             if (docs.isEmpty) {
               return Center(
                 child: Padding(
@@ -2819,7 +4458,12 @@ class _FirestoreListTableState extends State<_FirestoreListTable> {
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: DataTable(
-                        columns: widget.columns.map((String column) => DataColumn(label: Text(column))).toList(),
+                        columns: widget.columns
+                            .map(
+                              (String column) =>
+                                  DataColumn(label: Text(column)),
+                            )
+                            .toList(),
                         rows: pageDocs.map((doc) {
                           return DataRow(cells: widget.rowBuilder(doc));
                         }).toList(),
@@ -2916,12 +4560,21 @@ Widget _getHighwayBadge(String highway) {
     ),
     child: Text(
       highway,
-      style: TextStyle(fontWeight: FontWeight.bold, color: textColor, fontSize: 11),
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        color: textColor,
+        fontSize: 11,
+      ),
     ),
   );
 }
 
-Widget _buildTariffBadge(String label, String value, Color bgColor, Color textColor) {
+Widget _buildTariffBadge(
+  String label,
+  String value,
+  Color bgColor,
+  Color textColor,
+) {
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
     decoration: BoxDecoration(
@@ -2931,7 +4584,11 @@ Widget _buildTariffBadge(String label, String value, Color bgColor, Color textCo
     ),
     child: Text(
       '$label: \$$value',
-      style: TextStyle(fontWeight: FontWeight.bold, color: textColor, fontSize: 11),
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        color: textColor,
+        fontSize: 11,
+      ),
     ),
   );
 }

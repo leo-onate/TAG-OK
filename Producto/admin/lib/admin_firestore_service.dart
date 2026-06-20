@@ -37,7 +37,7 @@ class ReportMetrics {
 
 class AdminFirestoreService {
   AdminFirestoreService({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   final FirebaseFirestore _firestore;
 
@@ -46,7 +46,9 @@ class AdminFirestoreService {
     if (name.contains('autopista de conexión') || name.contains('conexión')) {
       return 'Conexión / Otras';
     }
-    if (name.startsWith('pa') || name.contains('autopista central') || name.contains('ruta 5')) {
+    if (name.startsWith('pa') ||
+        name.contains('autopista central') ||
+        name.contains('ruta 5')) {
       return 'Autopista Central';
     }
     if (name.contains('costanera') ||
@@ -125,26 +127,31 @@ class AdminFirestoreService {
 
     for (var doc in tripsSnapshot.docs) {
       final data = doc.data();
-      final double tripCost = double.tryParse(data['totalCost']?.toString() ?? '0') ?? 0.0;
+      final double tripCost =
+          double.tryParse(data['totalCost']?.toString() ?? '0') ?? 0.0;
       totalTollCost += tripCost;
 
       final List<dynamic> tollsList = data['tolls'] as List<dynamic>? ?? [];
       for (var tollRaw in tollsList) {
         if (tollRaw is Map) {
           final String tollName = (tollRaw['name'] ?? '').toString();
-          final double tollCost = double.tryParse(tollRaw['cost']?.toString() ?? '0') ?? 0.0;
+          final double tollCost =
+              double.tryParse(tollRaw['cost']?.toString() ?? '0') ?? 0.0;
           final String highway = _classifyHighway(tollName);
 
           if (costByHighway.containsKey(highway)) {
             costByHighway[highway] = costByHighway[highway]! + tollCost;
           } else {
-            costByHighway['Conexión / Otras'] = costByHighway['Conexión / Otras']! + tollCost;
+            costByHighway['Conexión / Otras'] =
+                costByHighway['Conexión / Otras']! + tollCost;
           }
         }
       }
     }
 
-    final double averageCostPerTrip = totalTrips > 0 ? (totalTollCost / totalTrips) : 0.0;
+    final double averageCostPerTrip = totalTrips > 0
+        ? (totalTollCost / totalTrips)
+        : 0.0;
 
     return ReportMetrics(
       totalUsers: totalUsers,
@@ -183,12 +190,17 @@ class AdminFirestoreService {
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> streamTariffs() {
-    return _firestore.collection('tarifas').orderBy('fecha_actualizacion', descending: true).snapshots();
+    return _firestore
+        .collection('tarifas')
+        .orderBy('fecha_actualizacion', descending: true)
+        .snapshots();
   }
 
   Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>> streamUserTrips() {
     return _firestore.collectionGroup('trips').snapshots().map((snapshot) {
-      final list = List<QueryDocumentSnapshot<Map<String, dynamic>>>.from(snapshot.docs);
+      final list = List<QueryDocumentSnapshot<Map<String, dynamic>>>.from(
+        snapshot.docs,
+      );
       list.sort((a, b) {
         final aDate = a.data()['date']?.toString() ?? '';
         final bDate = b.data()['date']?.toString() ?? '';
@@ -203,7 +215,8 @@ class AdminFirestoreService {
     required String target,
     required String details,
   }) async {
-    final String adminEmail = FirebaseAuth.instance.currentUser?.email ?? 'admin_desconocido';
+    final String adminEmail =
+        FirebaseAuth.instance.currentUser?.email ?? 'admin_desconocido';
     await _firestore.collection('auditoria').add({
       'fecha': FieldValue.serverTimestamp(),
       'adminEmail': adminEmail,
@@ -218,6 +231,20 @@ class AdminFirestoreService {
         .collection('auditoria')
         .orderBy('fecha', descending: true)
         .snapshots();
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> streamAdministradores() {
+    return _firestore.collection('administradores').snapshots();
+  }
+
+  Future<void> updateAdminRole(String docId, String role) async {
+    await _firestore.collection('administradores').doc(docId).update({
+      'rol': role,
+    });
+  }
+
+  Future<void> deleteAdmin(String docId) async {
+    await _firestore.collection('administradores').doc(docId).delete();
   }
 
   Future<int> _count(String collection) async {
