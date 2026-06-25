@@ -857,21 +857,21 @@ class _DashboardPageState extends State<DashboardPage> {
                           if (constraints.maxWidth < 900) {
                             return Column(
                               children: [
-                                SizedBox(height: 220, child: card1),
+                                SizedBox(height: 230, child: card1),
                                 const SizedBox(height: 16),
-                                SizedBox(height: 220, child: card2),
+                                SizedBox(height: 230, child: card2),
                                 const SizedBox(height: 16),
-                                SizedBox(height: 220, child: card3),
+                                SizedBox(height: 230, child: card3),
                               ],
                             );
                           }
                           return Row(
                             children: [
-                              Expanded(child: SizedBox(height: 220, child: card1)),
+                              Expanded(child: SizedBox(height: 230, child: card1)),
                               const SizedBox(width: 16),
-                              Expanded(child: SizedBox(height: 220, child: card2)),
+                              Expanded(child: SizedBox(height: 230, child: card2)),
                               const SizedBox(width: 16),
-                              Expanded(child: SizedBox(height: 220, child: card3)),
+                              Expanded(child: SizedBox(height: 230, child: card3)),
                             ],
                           );
                         },
@@ -1384,7 +1384,7 @@ class BarChart extends StatelessWidget {
     }).toList();
 
     final int maxCount = counts.fold(0, (max, val) => val > max ? val : max);
-    final double chartHeight = 110.0;
+    final double chartHeight = 95.0;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -2284,6 +2284,8 @@ class _PorticosPageState extends State<PorticosPage> {
                                   child: SingleChildScrollView(
                                     scrollDirection: Axis.horizontal,
                                     child: DataTable(
+                                      dataRowMinHeight: 60,
+                                      dataRowMaxHeight: 85,
                                       columns: const [
                                         DataColumn(label: Text('Pórtico')),
                                         DataColumn(label: Text('Sentido')),
