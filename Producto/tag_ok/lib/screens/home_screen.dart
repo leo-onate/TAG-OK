@@ -12,6 +12,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'route_setup_screen.dart';
 import 'profile_screen.dart';
 import 'vehiculos_screen.dart';
@@ -55,17 +57,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   // Notificaciones y Ciclo de vida
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   AppLifecycleState _appLifecycleState = AppLifecycleState.resumed;
+  Future<void>? _locationInitializationFuture;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _initializePermissions();
-    _loadNavigationState();
+    _initApp();
     // Verificar si el usuario tiene vehículos al iniciar
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkVehiclesAndAlert();
     });
+  }
+
+  Future<void> _initApp() async {
+    await _initializePermissions();
+    await _loadNavigationState();
   }
 
   Future<void> _initializePermissions() async {
@@ -144,6 +151,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             _passedPolyline = [];
           });
           WakelockPlus.enable();
+          _determinePosition();
           
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (_currentPosition != null) {
@@ -179,60 +187,163 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   /// Pide permisos e inicia el seguimiento en tiempo real
   Future<void> _determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    // Verifica si el GPS está activado
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      debugPrint('El servicio de ubicación está deshabilitado.');
-      return;
+    // Evitar ejecuciones simultáneas esperando a la inicialización en curso
+    if (_locationInitializationFuture != null) {
+      await _locationInitializationFuture;
     }
 
-    // Verifica permisos
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        debugPrint('Permisos de ubicación denegados.');
+    final Completer<void> completer = Completer<void>();
+    _locationInitializationFuture = completer.future;
+
+    try {
+      bool serviceEnabled;
+      LocationPermission permission;
+
+      // Cancelar la suscripción previa si existe para evitar duplicados y fugas de memoria
+      if (_positionStreamSubscription != null) {
+        await _positionStreamSubscription!.cancel();
+        _positionStreamSubscription = null;
+        debugPrint('TAG_OK_GPS: Suscripción GPS previa cancelada.');
+      }
+
+      // Verifica si el GPS está activado
+      serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        debugPrint('El servicio de ubicación está deshabilitado.');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Por favor, activa el GPS / ubicación en tu celular.'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
         return;
       }
-    }
-    
-    if (permission == LocationPermission.deniedForever) {
-      debugPrint('Permisos de ubicación denegados permanentemente.');
-      return;
-    }
 
-    // Si tenemos permiso, nos suscribimos a los cambios de ubicación
-    const LocationSettings locationSettings = LocationSettings(
-      accuracy: LocationAccuracy.high,
-      distanceFilter: 5, // Notificar solo si se mueve 5 metros
-    );
-
-    _positionStreamSubscription = Geolocator.getPositionStream(locationSettings: locationSettings).listen(
-      (Position position) {
-        setState(() {
-          _currentPosition = LatLng(position.latitude, position.longitude);
-          _currentSpeedKmH = position.speed > 0 ? position.speed * 3.6 : 0.0;
-        });
-        
-        // Si estamos navegando, el mapa sigue al usuario automáticamente y recorta la ruta recorrida
-        if (_isNavigating && _currentPosition != null) {
-          if (_isFollowingUser) {
-            _mapController.move(_currentPosition!, 17.0);
+      // Verifica permisos
+      permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          debugPrint('Permisos de ubicación denegados.');
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Para usar la app, debes permitir el acceso a la ubicación.'),
+                backgroundColor: Colors.redAccent,
+              ),
+            );
           }
-          _updateRemainingPolyline(_currentPosition!);
-          _checkTollCrossings(_currentPosition!);
-        }
-
-        // Si es la primera vez que obtenemos la ubicación, centramos el mapa ahí
-        if (_currentPosition != null && !_hasCenteredMapInitially) {
-          _centerOnUser();
-          _hasCenteredMapInitially = true;
+          return;
         }
       }
-    );
+      
+      if (permission == LocationPermission.deniedForever) {
+        debugPrint('Permisos de ubicación denegados permanentemente.');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Permisos bloqueados en el sistema. Habilítalos en los Ajustes del celular.'),
+              backgroundColor: Colors.redAccent,
+            ),
+          );
+        }
+        return;
+      }
+
+      // Obtener ubicación inicial para despertar el GPS del celular y actualizar de inmediato
+      try {
+        final Position initialPos = await Geolocator.getCurrentPosition(
+          locationSettings: AndroidSettings(
+            accuracy: LocationAccuracy.high,
+            timeLimit: const Duration(seconds: 5),
+          ),
+        );
+        if (mounted) {
+          setState(() {
+            _currentPosition = LatLng(initialPos.latitude, initialPos.longitude);
+          });
+          _centerOnUser();
+        }
+      } catch (e) {
+        debugPrint('TAG_OK_GPS: Error al obtener ubicación inicial (getCurrentPosition): $e');
+      }
+
+      // Si tenemos permiso, nos suscribimos a los cambios de ubicación
+      final LocationSettings locationSettings;
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        if (_isNavigating) {
+          // En navegación: usar Foreground Service para recibir ubicación en segundo plano
+          locationSettings = AndroidSettings(
+            accuracy: LocationAccuracy.high,
+            distanceFilter: 0, // En 0 para actualizaciones constantes en movimiento
+            forceLocationManager: false,
+            intervalDuration: const Duration(seconds: 2), // Cada 2 segundos para máxima precisión
+            foregroundNotificationConfig: const ForegroundNotificationConfig(
+              notificationText: "TAG-OK está monitoreando los pórticos en tu ruta.",
+              notificationTitle: "Monitoreo de ruta activo",
+              enableWakeLock: true,
+            ),
+          );
+        } else {
+          // En reposo (viendo mapa): ubicación estándar sin servicio persistente en primer plano
+          locationSettings = AndroidSettings(
+            accuracy: LocationAccuracy.high,
+            distanceFilter: 0, // En 0 para que actualice rápido apenas se mueva el usuario
+            forceLocationManager: false,
+            intervalDuration: const Duration(seconds: 3),
+          );
+        }
+      } else if (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS) {
+        locationSettings = AppleSettings(
+          accuracy: LocationAccuracy.high,
+          distanceFilter: 0,
+          activityType: ActivityType.fitness,
+          pauseLocationUpdatesAutomatically: false,
+          showBackgroundLocationIndicator: _isNavigating,
+        );
+      } else {
+        locationSettings = const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          distanceFilter: 0,
+        );
+      }
+
+      _positionStreamSubscription = Geolocator.getPositionStream(locationSettings: locationSettings).listen(
+        (Position position) {
+          if (!mounted) return;
+          setState(() {
+            _currentPosition = LatLng(position.latitude, position.longitude);
+            _currentSpeedKmH = position.speed > 0 ? position.speed * 3.6 : 0.0;
+          });
+          
+          // Si estamos navegando, el mapa sigue al usuario automáticamente y recorta la ruta recorrida
+          if (_isNavigating && _currentPosition != null) {
+            if (_isFollowingUser) {
+              _mapController.move(_currentPosition!, 17.0);
+            }
+            _updateRemainingPolyline(_currentPosition!);
+            _checkTollCrossings(_currentPosition!);
+          }
+
+          // Si es la primera vez que obtenemos la ubicación, centramos el mapa ahí
+          if (_currentPosition != null && !_hasCenteredMapInitially) {
+            _centerOnUser();
+            _hasCenteredMapInitially = true;
+          }
+        },
+        onError: (error) {
+          debugPrint('TAG_OK_GPS: Error en el flujo de ubicación: $error');
+        },
+      );
+      debugPrint('TAG_OK_GPS: Nuevo flujo de ubicación iniciado. Navegación activa: $_isNavigating');
+    } catch (e) {
+      debugPrint('TAG_OK_GPS: Error al inicializar el flujo de ubicación: $e');
+    } finally {
+      completer.complete();
+      _locationInitializationFuture = null;
+    }
   }
 
   bool _hasCenteredMapInitially = false;
@@ -324,7 +435,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     for (var toll in _currentRoute!.tolls) {
       if (!toll.isCrossed) {
         double dist = _calculateDistance(userLocation, toll.location);
-        if (dist <= 60.0) { // Radio reducido a 60m (Aprox. 1 cuadra)
+        if (dist <= 45.0) { // Radio optimizado a 45m
           setState(() {
             toll.isCrossed = true;
             toll.crossedAt = DateTime.now();
@@ -332,7 +443,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           _saveNavigationState(); // Guardar estado de peaje cruzado
           
           // Feedback al usuario
-          HapticFeedback.heavyImpact();
+          HapticFeedback.vibrate();
           
           // Siempre disparar la notificación para reproducir el sonido (tanto abierta como en 2do plano)
           _showLocalNotification(toll);
@@ -358,19 +469,21 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _showLocalNotification(TollData toll) async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+    final AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      'toll_crossings_sound', // Nuevo canal para que Android reconozca el sonido personalizado
+      'toll_crossings_sound_v2', // Canal v2 para forzar recreación con vibración y sonido en el dispositivo
       'Cobros de Peaje',
       channelDescription: 'Notificaciones cuando cruzas un peaje',
       importance: Importance.max,
       priority: Priority.high,
       playSound: true,
-      sound: RawResourceAndroidNotificationSound('peaje'), // peaje.wav en android/app/src/main/res/raw/
+      sound: const RawResourceAndroidNotificationSound('peaje'), // peaje.mp3 en android/app/src/main/res/raw/
+      enableVibration: true,
+      vibrationPattern: Int64List.fromList([0, 1000, 500, 1000]), // Patrón de vibración: espera, vibra, espera, vibra
       ticker: 'ticker',
       icon: '@mipmap/ic_launcher',
     );
-    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+    final NotificationDetails platformChannelSpecifics = NotificationDetails(
       android: androidPlatformChannelSpecifics,
     );
     
@@ -435,6 +548,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               
               WakelockPlus.enable();
               _saveNavigationState();
+              _determinePosition();
               
               if (_currentPosition != null) {
                 _mapController.move(_currentPosition!, 17.0);
@@ -730,6 +844,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           });
                           WakelockPlus.enable();
                           _saveNavigationState();
+                          _determinePosition();
                         } else {
                           _confirmVehicleAndStart(context);
                         }
@@ -771,6 +886,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 WakelockPlus.disable();
                               }
                               _saveNavigationState();
+                              _determinePosition();
                             },
                             child: Container(
                               height: 48,
@@ -841,6 +957,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               });
                               WakelockPlus.disable();
                               _saveNavigationState(); // Limpia la caché
+                              _determinePosition();
                               _centerOnUser();
                             },
                             child: Container(
@@ -934,6 +1051,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         _hasStartedTrip = true;
       });
       WakelockPlus.enable();
+      _determinePosition();
       _mapController.move(_currentPosition ?? _currentRoute!.polyline.first, 17.0);
       return;
     }
@@ -998,6 +1116,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               });
               WakelockPlus.enable();
               _saveNavigationState();
+              _determinePosition();
               _mapController.move(_currentPosition ?? _currentRoute!.polyline.first, 17.0);
             },
             child: const Text("SÍ, COMENZAR", style: TextStyle(color: Colors.white)),
@@ -1036,6 +1155,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     _isNavigating = true;
                   });
                   _saveNavigationState();
+                  _determinePosition();
                   Navigator.pop(context);
                   _mapController.move(_currentPosition ?? _currentRoute!.polyline.first, 17.0);
                 },

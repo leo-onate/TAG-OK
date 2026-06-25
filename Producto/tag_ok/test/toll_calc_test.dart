@@ -8,7 +8,7 @@ import 'dart:io';
 void main() {
   test('Validar Base de Datos de Pórticos', () {
     final tolls = TollsDatabase.santiagoTolls;
-    expect(tolls.length, 104);
+    expect(tolls.length, 106);
     
     final p3 = tolls.firstWhere((t) => t.name == "P3 Puente Lo Saldes - Vivaceta" && t.direction == "O-P");
     expect(p3.cost, 719.04);

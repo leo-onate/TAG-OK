@@ -1147,5 +1147,15 @@ class TollsDatabase {
       group: "Anillo",
       sequence: 17,
     ),
+    TollData(
+      name: "Pórtico de Prueba Local 1",
+      location: const LatLng(-33.284191, -70.884612),
+      cost: 500.0,
+    ),
+    TollData(
+      name: "Pórtico de Prueba Local 2",
+      location: const LatLng(-33.285001, -70.885878),
+      cost: 500.0,
+    ),
   ];
 }
