@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../presentation/providers/auth_provider.dart';
-import 'home_screen.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -80,11 +79,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             content: Text(next.error!),
             backgroundColor: Colors.redAccent,
           ),
-        );
-      } else if (next.isSuccess) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
         );
       }
     });

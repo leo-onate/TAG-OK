@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'login_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -240,17 +239,6 @@ class ProfileScreen extends StatelessWidget {
                   onPressed: () async {
                     // Cerrar sesión real en Firebase
                     await FirebaseAuth.instance.signOut();
-
-                    // Volver a la pantalla de inicio de sesión eliminando el historial
-                    if (context.mounted) {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginScreen(),
-                        ),
-                        (route) => false,
-                      );
-                    }
                   },
                   icon: const Icon(Icons.logout, color: Colors.white),
                   label: const Text(
