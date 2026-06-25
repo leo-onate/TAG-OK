@@ -52,6 +52,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   double _currentSpeedKmH = 0.0; // Velocidad actual
   Map<String, dynamic>? _selectedVehicle; // Vehículo para el viaje actual
 
+  // Variables para Interpolación Inercial (Dead Reckoning)
+  Timer? _inertialTimer;
+  DateTime? _lastGpsUpdateTime;
+  bool _isGpsWeak = false;
+
   // Notificaciones y Ciclo de vida
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   AppLifecycleState _appLifecycleState = AppLifecycleState.resumed;
@@ -71,12 +76,83 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Future<void> _initializePermissions() async {
     await _initNotifications();
     await _determinePosition();
+    _startInertialTimer();
+  }
+
+  void _startInertialTimer() {
+    _inertialTimer?.cancel();
+    _inertialTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!_isNavigating || _lastGpsUpdateTime == null || _currentPosition == null) return;
+      
+      final secondsSinceLastUpdate = DateTime.now().difference(_lastGpsUpdateTime!).inSeconds;
+      if (secondsSinceLastUpdate > 3) {
+        // Si la velocidad era casi 0 (ej: detenido en un semáforo o probando en el PC)
+        // NO simulamos avance ni mostramos alerta de GPS débil, porque simplemente no nos estamos moviendo.
+        if (_currentSpeedKmH < 5.0) {
+          if (_isGpsWeak) {
+            setState(() { _isGpsWeak = false; });
+          }
+          return;
+        }
+
+        if (!_isGpsWeak) {
+          setState(() {
+            _isGpsWeak = true;
+          });
+        }
+        
+        // Distancia a mover en 1 segundo = velocidad / 3.6 (m/s)
+        double distanceMeters = _currentSpeedKmH / 3.6;
+        _simulateMovement(distanceMeters);
+      } else {
+        if (_isGpsWeak) {
+          setState(() {
+            _isGpsWeak = false;
+          });
+        }
+      }
+    });
+  }
+
+  void _simulateMovement(double distanceMeters) {
+    if (_remainingPolyline.isEmpty) return;
+    
+    LatLng current = _currentPosition!;
+    double remainingDist = distanceMeters;
+    
+    while (remainingDist > 0 && _remainingPolyline.isNotEmpty) {
+      LatLng nextPoint = _remainingPolyline.first;
+      double distToNext = _calculateDistance(current, nextPoint);
+      
+      if (distToNext > remainingDist) {
+        double fraction = remainingDist / distToNext;
+        double lat = current.latitude + (nextPoint.latitude - current.latitude) * fraction;
+        double lng = current.longitude + (nextPoint.longitude - current.longitude) * fraction;
+        current = LatLng(lat, lng);
+        remainingDist = 0;
+      } else {
+        current = nextPoint;
+        remainingDist -= distToNext;
+        _passedPolyline.add(nextPoint);
+        _remainingPolyline.removeAt(0);
+      }
+    }
+    
+    setState(() {
+      _currentPosition = current;
+    });
+    
+    if (_isFollowingUser) {
+      _mapController.move(_currentPosition!, 17.0);
+    }
+    _checkTollCrossings(_currentPosition!);
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _positionStreamSubscription?.cancel();
+    _inertialTimer?.cancel();
     WakelockPlus.disable();
     _mapController.dispose();
     super.dispose();
@@ -215,6 +291,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         setState(() {
           _currentPosition = LatLng(position.latitude, position.longitude);
           _currentSpeedKmH = position.speed > 0 ? position.speed * 3.6 : 0.0;
+          _lastGpsUpdateTime = DateTime.now();
+          if (_isGpsWeak) _isGpsWeak = false;
         });
         
         // Si estamos navegando, el mapa sigue al usuario automáticamente y recorta la ruta recorrida
@@ -428,12 +506,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 _passedPolyline = [];
                 _selectedVehicle = vehicleMap;
                 
-                // Iniciar el viaje automáticamente al regresar
-                _isNavigating = true;
-                _hasStartedTrip = true;
+                // NO Iniciar el viaje automáticamente, solo cargar la ruta
+                _isNavigating = false;
+                _hasStartedTrip = false;
               });
               
-              WakelockPlus.enable();
+              WakelockPlus.disable();
               _saveNavigationState();
               
               if (_currentPosition != null) {
@@ -748,7 +826,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           children: [
                             Icon(_hasStartedTrip ? Icons.play_arrow : Icons.navigation, color: Colors.white, size: 20),
                             const SizedBox(width: 8),
-                            Text(_hasStartedTrip ? 'CONTINUAR VIAJE' : 'IR AHORA', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                            Text(_hasStartedTrip ? 'CONTINUAR VIAJE' : 'INICIAR VIAJE', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                           ],
                         ),
                       ),
@@ -885,23 +963,52 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
         ),
         
-        // 4. Velocímetro
+        // 4. Velocímetro y Banner de GPS Débil
         if (_isNavigating)
           Positioned(
             bottom: 250,
             right: 16,
-            child: Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: navBgColor.withValues(alpha: 0.9),
-                shape: BoxShape.circle,
-                border: Border.all(color: primaryColor.withValues(alpha: 0.5), width: 2),
-                boxShadow: [
-                  BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 4)),
-                ],
-              ),
-              child: Column(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                if (_isGpsWeak)
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.shade800.withValues(alpha: 0.9),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 4, offset: const Offset(0, 2)),
+                      ],
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.satellite_alt, color: Colors.white, size: 14),
+                        SizedBox(width: 4),
+                        Text(
+                          'Simulando avance',
+                          style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: _isGpsWeak ? Colors.orange.shade900.withValues(alpha: 0.9) : navBgColor.withValues(alpha: 0.9),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: _isGpsWeak ? Colors.orange : primaryColor.withValues(alpha: 0.5), 
+                      width: 2
+                    ),
+                    boxShadow: [
+                      BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 4)),
+                    ],
+                  ),
+                  child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
@@ -913,7 +1020,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     style: TextStyle(color: Color(0xFF94A3B8), fontSize: 10, height: 1.1),
                   ),
                 ],
-              ),
+                  ),
+                ),
+              ],
             ),
           ),
       ],
@@ -922,6 +1031,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   // Diseño del punto azul con sombra/halo
   Future<void> _confirmVehicleAndStart(BuildContext context) async {
+    // Si ya seleccionó el vehículo en RouteSetupScreen, iniciar de inmediato
+    if (_selectedVehicle != null) {
+      setState(() {
+        _isNavigating = true;
+        _hasStartedTrip = true;
+      });
+      WakelockPlus.enable();
+      if (_currentPosition != null) {
+        _mapController.move(_currentPosition!, 17.0);
+      }
+      return;
+    }
+
     final historyService = HistoryService();
     final principal = await historyService.getPrincipalVehicleInfo();
     
