@@ -60,13 +60,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _initNotifications();
-    _determinePosition();
+    _initializePermissions();
     _loadNavigationState();
     // Verificar si el usuario tiene vehículos al iniciar
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkVehiclesAndAlert();
     });
+  }
+
+  Future<void> _initializePermissions() async {
+    await _initNotifications();
+    await _determinePosition();
   }
 
   @override
