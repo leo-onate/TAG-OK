@@ -182,6 +182,7 @@ class _AdminShellState extends State<AdminShell> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const _WindowControls(),
                   const Padding(
                     padding: EdgeInsets.all(24),
                     child: _BrandBlock(),
@@ -262,6 +263,47 @@ class _AdminShellState extends State<AdminShell> {
             ),
           ),
           Expanded(child: content),
+        ],
+      ),
+    );
+  }
+}
+
+class _WindowControls extends StatelessWidget {
+  const _WindowControls();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 24, top: 16),
+      child: Row(
+        children: [
+          Container(
+            width: 12,
+            height: 12,
+            decoration: BoxDecoration(
+              color: Color(0xFFEF4444),
+              shape: BoxShape.circle,
+            ),
+          ),
+          SizedBox(width: 8),
+          Container(
+            width: 12,
+            height: 12,
+            decoration: BoxDecoration(
+              color: Color(0xFFF59E0B),
+              shape: BoxShape.circle,
+            ),
+          ),
+          SizedBox(width: 8),
+          Container(
+            width: 12,
+            height: 12,
+            decoration: BoxDecoration(
+              color: Color(0xFF10B981),
+              shape: BoxShape.circle,
+            ),
+          ),
         ],
       ),
     );
@@ -428,106 +470,1038 @@ class _UserProfileCard extends StatelessWidget {
   }
 }
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key, required this.service});
 
   final AdminFirestoreService service;
 
   @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  int _activeTabIndex = 0;
+  final List<String> _tabs = ['Resumen', 'Analíticas', 'Historial'];
+
+  String _formatFecha(dynamic dateVal) {
+    if (dateVal == null) return '-';
+    if (dateVal is Timestamp) {
+      final date = dateVal.toDate();
+      final y = date.year;
+      final m = date.month.toString().padLeft(2, '0');
+      final d = date.day.toString().padLeft(2, '0');
+      final h = date.hour.toString().padLeft(2, '0');
+      final min = date.minute.toString().padLeft(2, '0');
+      return '$y-$m-$d $h:$min';
+    }
+    if (dateVal is String) {
+      return dateVal.length >= 16 ? dateVal.substring(0, 16) : dateVal;
+    }
+    return dateVal.toString();
+  }
+
+  DateTime? parseTripDate(dynamic dateVal) {
+    if (dateVal == null) return null;
+    if (dateVal is Timestamp) {
+      return dateVal.toDate();
+    }
+    if (dateVal is String) {
+      return DateTime.tryParse(dateVal);
+    }
+    return null;
+  }
+
+  String _classifyHighway(String tollName) {
+    final name = tollName.toLowerCase();
+    if (name.contains('autopista de conexión') || name.contains('conexión')) {
+      return 'Conexión / Otras';
+    }
+    if (name.startsWith('pa') ||
+        name.contains('autopista central') ||
+        name.contains('ruta 5')) {
+      return 'Autopista Central';
+    }
+    if (name.contains('costanera') ||
+        name.contains('vivaceta') ||
+        name.contains('lo saldes') ||
+        name.contains('la dehesa') ||
+        name.contains('estoril') ||
+        name.contains('padre arteaga') ||
+        name.contains('tranqueras') ||
+        name.contains('carrascal') ||
+        name.contains('padre hurtado') ||
+        name.startsWith('ev ') ||
+        name.startsWith('sv ')) {
+      return 'Costanera Norte';
+    }
+    if (name.contains('avo') ||
+        name.contains('kennedy') ||
+        name.contains('p101') ||
+        name.contains('p102') ||
+        name.contains('vespucio oriente')) {
+      return 'Vespucio Oriente (AVO)';
+    }
+    if (name.contains('vespucio norte') ||
+        name.contains('guanaco') ||
+        name.contains('el salto') ||
+        name.contains('lo boza') ||
+        name.contains('recabal') ||
+        name.contains('enea') ||
+        name.contains('p14') ||
+        name.contains('p13') ||
+        name.contains('p12') ||
+        name.contains('p15')) {
+      return 'Vespucio Norte';
+    }
+    if (name.contains('vespucio sur') ||
+        name.contains('pvs') ||
+        name.contains('velásquez') ||
+        name.contains('velasquez') ||
+        name.contains('gran avenida') ||
+        name.contains('santa rosa') ||
+        name.contains('vicuña mackenna') ||
+        name.contains('alderete') ||
+        name.contains('2a transversal') ||
+        name.contains('los mares') ||
+        name.contains('coronel') ||
+        name.contains('camino a melipilla')) {
+      return 'Vespucio Sur';
+    }
+    if (name.contains('ruta 68')) {
+      return 'Conexión / Otras';
+    }
+    if (name.contains('ruta 78') || name.contains('autopista del sol')) {
+      return 'Conexión / Otras';
+    }
+    return 'Conexión / Otras';
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return FutureBuilder<AdminOverview>(
-      future: service.fetchOverview(),
-      builder: (context, snapshot) {
-        final AdminOverview? overview = snapshot.data;
-        return _AdminPageScaffold(
-          title: 'Dashboard',
-          subtitle:
-              'Estado general del sistema, datos vigentes y accesos rápidos.',
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Wrap(
-                spacing: 16,
-                runSpacing: 16,
-                children: [
-                  _StatCard(
-                    label: 'Usuarios',
-                    value: overview?.users ?? 0,
-                    icon: Icons.people_alt_outlined,
-                  ),
-                  _StatCard(
-                    label: 'Vehículos',
-                    value: overview?.vehicles ?? 0,
-                    icon: Icons.directions_car_outlined,
-                  ),
-                  _StatCard(
-                    label: 'Pórticos',
-                    value: overview?.porticos ?? 0,
-                    icon: Icons.toll_outlined,
-                  ),
-                  _StatCard(
-                    label: 'Tarifas',
-                    value: overview?.tariffs ?? 0,
-                    icon: Icons.payments_outlined,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final bool isNarrow = constraints.maxWidth < 1000;
-                  final Widget left = _InfoCard(
-                    title: 'Alertas y actividad reciente',
-                    child: const Text(
-                      'Este módulo quedará conectado a bitácora, alertas y cambios publicados.\n\nPróximo paso sugerido: mostrar últimos cambios en pórticos y tarifas.',
+    return StreamBuilder<List<QueryDocumentSnapshot<Map<String, dynamic>>>>(
+      stream: widget.service.streamUserTrips(),
+      builder: (context, tripsSnapshot) {
+        return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+          stream: widget.service.streamUsers(),
+          builder: (context, usersSnapshot) {
+            if (tripsSnapshot.hasError) {
+              return Scaffold(
+                body: Center(child: Text('Error en viajes: ${tripsSnapshot.error}')),
+              );
+            }
+            if (usersSnapshot.hasError) {
+              return Scaffold(
+                body: Center(child: Text('Error en usuarios: ${usersSnapshot.error}')),
+              );
+            }
+
+            if (tripsSnapshot.connectionState == ConnectionState.waiting ||
+                usersSnapshot.connectionState == ConnectionState.waiting) {
+              return const Scaffold(
+                body: Center(child: CircularProgressIndicator()),
+              );
+            }
+
+            final trips = tripsSnapshot.data ?? [];
+            final usersDocs = usersSnapshot.data?.docs ?? [];
+
+            double totalTollCost = 0.0;
+            final Map<String, double> costByHighway = {
+              'Autopista Central': 0.0,
+              'Costanera Norte': 0.0,
+              'Vespucio Norte': 0.0,
+              'Vespucio Sur': 0.0,
+              'Vespucio Oriente (AVO)': 0.0,
+              'Conexión / Otras': 0.0,
+            };
+
+            for (var doc in trips) {
+              final data = doc.data();
+              final double tripCost = double.tryParse(data['totalCost']?.toString() ?? '0') ?? 0.0;
+              totalTollCost += tripCost;
+
+              final List<dynamic> tollsList = data['tolls'] as List<dynamic>? ?? [];
+              for (var tollRaw in tollsList) {
+                if (tollRaw is Map) {
+                  final String tollName = (tollRaw['name'] ?? '').toString();
+                  final double tollCost = double.tryParse(tollRaw['cost']?.toString() ?? '0') ?? 0.0;
+                  final String highway = _classifyHighway(tollName);
+
+                  if (costByHighway.containsKey(highway)) {
+                    costByHighway[highway] = costByHighway[highway]! + tollCost;
+                  } else {
+                    costByHighway['Conexión / Otras'] = costByHighway['Conexión / Otras']! + tollCost;
+                  }
+                }
+              }
+            }
+
+            final Map<String, int> dailyCounts = {};
+            final List<DateTime> last7Days = List.generate(7, (i) => DateTime.now().subtract(Duration(days: 6 - i)));
+            for (var day in last7Days) {
+              final key = "${day.year}-${day.month.toString().padLeft(2, '0')}-${day.day.toString().padLeft(2, '0')}";
+              dailyCounts[key] = 0;
+            }
+            for (var doc in trips) {
+              final date = parseTripDate(doc.data()['date']);
+              if (date != null) {
+                final key = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+                if (dailyCounts.containsKey(key)) {
+                  dailyCounts[key] = dailyCounts[key]! + 1;
+                }
+              }
+            }
+
+            final String adminEmail = FirebaseAuth.instance.currentUser?.email ?? 'admin@tagok.cl';
+
+            Widget contentWidget;
+            if (_activeTabIndex == 1) {
+              contentWidget = FutureBuilder<AdminOverview>(
+                future: widget.service.fetchOverview(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  final overview = snapshot.data;
+                  return SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 16),
+                      child: Wrap(
+                        spacing: 24,
+                        runSpacing: 24,
+                        children: [
+                          _StatCard(
+                            label: 'Usuarios Registrados',
+                            value: overview?.users ?? 0,
+                            icon: Icons.people_alt_outlined,
+                          ),
+                          _StatCard(
+                            label: 'Vehículos Asociados',
+                            value: overview?.vehicles ?? 0,
+                            icon: Icons.directions_car_outlined,
+                          ),
+                          _StatCard(
+                            label: 'Pórticos Activos',
+                            value: overview?.porticos ?? 0,
+                            icon: Icons.toll_outlined,
+                          ),
+                          _StatCard(
+                            label: 'Tarifas Vigentes',
+                            value: overview?.tariffs ?? 0,
+                            icon: Icons.payments_outlined,
+                          ),
+                        ],
+                      ),
                     ),
                   );
-                  final Widget right = _InfoCard(
-                    title: 'Accesos rápidos',
-                    child: Wrap(
-                      spacing: 12,
-                      runSpacing: 12,
-                      children: const [
-                        _QuickAction(
-                          label: 'Usuarios',
-                          icon: Icons.people_alt_outlined,
+                },
+              );
+            } else if (_activeTabIndex == 2) {
+              contentWidget = Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Historial de Peajes Cobrados (Tiempo Real)',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF0F172A),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Expanded(
+                              child: ListView.builder(
+                                itemCount: trips.length,
+                                itemBuilder: (context, index) {
+                                  final tripDoc = trips[index];
+                                  final data = tripDoc.data();
+                                  final String vehiculo = (data['vehicleName'] ?? 'Desconocido').toString();
+                                  final String fecha = _formatFecha(data['date']);
+                                  final int totalCost = int.tryParse(data['totalCost']?.toString() ?? '0') ?? 0;
+
+                                  final List<dynamic> tollsList = data['tolls'] as List<dynamic>? ?? [];
+                                  String highway = 'Otras';
+                                  if (tollsList.isNotEmpty && tollsList[0] is Map) {
+                                    highway = _classifyHighway((tollsList[0]['name'] ?? '').toString());
+                                  }
+
+                                  return Card(
+                                    margin: const EdgeInsets.symmetric(vertical: 6),
+                                    color: const Color(0xFFF8FAFC),
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      side: const BorderSide(color: Color(0xFFE2E8F0)),
+                                    ),
+                                    child: ListTile(
+                                      leading: const CircleAvatar(
+                                        backgroundColor: Color(0xFFE0F2FE),
+                                        child: Icon(Icons.directions_car_outlined, color: Color(0xFF0284C7)),
+                                      ),
+                                      title: Text(vehiculo, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                      subtitle: Text('$highway • $fecha'),
+                                      trailing: Text(
+                                        '\$$totalCost',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xFF065F46),
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
                         ),
-                        _QuickAction(
-                          label: 'Pórticos',
-                          icon: Icons.toll_outlined,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            } else {
+              final Widget card1 = Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Viajes Recientes por Día',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF475569),
                         ),
-                        _QuickAction(
-                          label: 'Tarifas',
-                          icon: Icons.payments_outlined,
+                      ),
+                      const SizedBox(height: 16),
+                      Expanded(
+                        child: BarChart(
+                          dailyCounts: dailyCounts,
+                          last7Days: last7Days,
                         ),
-                        _QuickAction(
-                          label: 'Reportes',
-                          icon: Icons.bar_chart_outlined,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+
+              final Widget card2 = Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Distribución de Costos por Autopista',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF475569),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Expanded(
+                        child: DonutChart(
+                          costByHighway: costByHighway,
+                          totalCost: totalTollCost,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+
+              final Widget card3 = Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Uso y Distribución de Cobros',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF475569),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Expanded(
+                        child: HighwayProgressBars(
+                          costByHighway: costByHighway,
+                          totalCost: totalTollCost,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+
+              contentWidget = Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 16),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          if (constraints.maxWidth < 900) {
+                            return Column(
+                              children: [
+                                SizedBox(height: 230, child: card1),
+                                const SizedBox(height: 16),
+                                SizedBox(height: 230, child: card2),
+                                const SizedBox(height: 16),
+                                SizedBox(height: 230, child: card3),
+                              ],
+                            );
+                          }
+                          return Row(
+                            children: [
+                              Expanded(child: SizedBox(height: 230, child: card1)),
+                              const SizedBox(width: 16),
+                              Expanded(child: SizedBox(height: 230, child: card2)),
+                              const SizedBox(width: 16),
+                              Expanded(child: SizedBox(height: 230, child: card3)),
+                            ],
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final Widget left = Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Tránsitos Recientes',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF0F172A),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: const NeverScrollableScrollPhysics(),
+                                    itemCount: trips.length > 5 ? 5 : trips.length,
+                                    itemBuilder: (context, index) {
+                                      final tripDoc = trips[index];
+                                      final data = tripDoc.data();
+                                      final String vehiculo = (data['vehicleName'] ?? 'Desconocido').toString();
+                                      final String fecha = _formatFecha(data['date']);
+                                      final int totalCost = int.tryParse(data['totalCost']?.toString() ?? '0') ?? 0;
+
+                                      final List<dynamic> tollsList = data['tolls'] as List<dynamic>? ?? [];
+                                      String highway = 'Otras';
+                                      if (tollsList.isNotEmpty && tollsList[0] is Map) {
+                                        highway = _classifyHighway((tollsList[0]['name'] ?? '').toString());
+                                      }
+
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 8),
+                                        child: Row(
+                                          children: [
+                                            const CircleAvatar(
+                                              radius: 16,
+                                              backgroundColor: Color(0xFFE0F2FE),
+                                              child: Icon(Icons.directions_car_outlined, size: 16, color: Color(0xFF0284C7)),
+                                            ),
+                                            const SizedBox(width: 12),
+                                            Expanded(
+                                              flex: 2,
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    vehiculo,
+                                                    style: const TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 13,
+                                                      color: Color(0xFF334155),
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    fecha,
+                                                    style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Expanded(
+                                              flex: 2,
+                                              child: Text(
+                                                highway,
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Color(0xFF475569),
+                                                ),
+                                              ),
+                                            ),
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                              decoration: BoxDecoration(
+                                                color: const Color(0xFFECFDF5),
+                                                borderRadius: BorderRadius.circular(12),
+                                                border: Border.all(color: const Color(0xFFA7F3D0)),
+                                              ),
+                                              child: Text(
+                                                '\$$totalCost',
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Color(0xFF065F46),
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                              decoration: BoxDecoration(
+                                                color: const Color(0xFFEFF6FF),
+                                                borderRadius: BorderRadius.circular(8),
+                                              ),
+                                              child: const Text(
+                                                'Procesado',
+                                                style: TextStyle(
+                                                  color: Color(0xFF2563EB),
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+
+                          final Widget right = Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Usuarios Recientes',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF0F172A),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: const NeverScrollableScrollPhysics(),
+                                    itemCount: usersDocs.length > 5 ? 5 : usersDocs.length,
+                                    itemBuilder: (context, index) {
+                                      final userDoc = usersDocs[index];
+                                      final data = userDoc.data();
+                                      final String email = (data['email'] ?? 'Usuario sin correo').toString();
+                                      final String nombre = (data['nombre'] ?? data['name'] ?? 'Usuario de TAG OK').toString();
+                                      final String initial = email.isNotEmpty ? email[0].toUpperCase() : 'U';
+
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 8),
+                                        child: Row(
+                                          children: [
+                                            CircleAvatar(
+                                              radius: 16,
+                                              backgroundColor: const Color(0xFFF1F5F9),
+                                              child: Text(
+                                                initial,
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Color(0xFF475569),
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 12),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    nombre,
+                                                    style: const TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 13,
+                                                      color: Color(0xFF334155),
+                                                    ),
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                  Text(
+                                                    email,
+                                                    style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            const Icon(Icons.chevron_right, size: 16, color: Color(0xFF94A3B8)),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+
+                          if (constraints.maxWidth < 1000) {
+                            return Column(
+                              children: [left, const SizedBox(height: 16), right],
+                            );
+                          }
+
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(flex: 3, child: left),
+                              const SizedBox(width: 16),
+                              Expanded(flex: 2, child: right),
+                            ],
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Dashboard',
+                              style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: -0.8,
+                                color: Color(0xFF0F172A),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: List.generate(_tabs.length, (index) {
+                                final isSelected = _activeTabIndex == index;
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 24),
+                                  child: InkWell(
+                                    onTap: () => setState(() => _activeTabIndex = index),
+                                    hoverColor: Colors.transparent,
+                                    splashColor: Colors.transparent,
+                                    highlightColor: Colors.transparent,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          _tabs[index],
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                                            color: isSelected ? const Color(0xFF0F172A) : const Color(0xFF64748B),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Container(
+                                          width: 24,
+                                          height: 2,
+                                          color: isSelected ? const Color(0xFF2563EB) : Colors.transparent,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: const Color(0xFFE2E8F0)),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.shield_outlined, size: 14, color: Color(0xFF64748B)),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    adminEmail,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF475569),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            const CircleAvatar(
+                              backgroundColor: Color(0xFFF1F5F9),
+                              child: Icon(Icons.person_outline_rounded, color: Color(0xFF475569)),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  );
+                    const SizedBox(height: 8),
+                    if (_activeTabIndex == 2)
+                      Expanded(child: contentWidget)
+                    else
+                      contentWidget,
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
 
-                  if (isNarrow) {
-                    return Column(
-                      children: [left, const SizedBox(height: 16), right],
-                    );
-                  }
+class DonutChartPainter extends CustomPainter {
+  final List<double> values;
+  final List<Color> colors;
 
-                  return Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(child: left),
-                      const SizedBox(width: 16),
-                      Expanded(child: right),
-                    ],
-                  );
-                },
+  DonutChartPainter({required this.values, required this.colors});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final double total = values.fold(0.0, (acc, val) => acc + val);
+    final center = Offset(size.width / 2, size.height / 2);
+    final double radius = size.width / 2 - 12;
+
+    if (total == 0) {
+      final Paint paint = Paint()
+        ..color = const Color(0xFFE2E8F0)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 14
+        ..strokeCap = StrokeCap.round;
+      canvas.drawCircle(center, radius, paint);
+      return;
+    }
+
+    double startAngle = -3.14159 / 2;
+    for (int i = 0; i < values.length; i++) {
+      if (values[i] == 0) continue;
+      final sweepAngle = (values[i] / total) * 2 * 3.14159;
+      final Paint paint = Paint()
+        ..color = colors[i]
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 14
+        ..strokeCap = StrokeCap.round;
+
+      canvas.drawArc(
+        Rect.fromCircle(center: center, radius: radius),
+        startAngle,
+        sweepAngle - 0.05,
+        false,
+        paint,
+      );
+      startAngle += sweepAngle;
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+
+class DonutChart extends StatelessWidget {
+  final Map<String, double> costByHighway;
+  final double totalCost;
+
+  const DonutChart({
+    super.key,
+    required this.costByHighway,
+    required this.totalCost,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final List<String> highways = costByHighway.keys.toList();
+    final List<double> values = costByHighway.values.toList();
+
+    final List<Color> colors = [
+      const Color(0xFF2563EB),
+      const Color(0xFF10B981),
+      const Color(0xFFF59E0B),
+      const Color(0xFFEC4899),
+      const Color(0xFF8B5CF6),
+      const Color(0xFF64748B),
+    ];
+
+    return Row(
+      children: [
+        SizedBox(
+          width: 120,
+          height: 120,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: CustomPaint(
+                  painter: DonutChartPainter(
+                    values: values,
+                    colors: colors,
+                  ),
+                ),
+              ),
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Total Peajes',
+                      style: TextStyle(
+                        fontSize: 9,
+                        color: Color(0xFF64748B),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '\$${totalCost.round()}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF0F172A),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: List.generate(highways.length, (index) {
+              if (index >= colors.length) return const SizedBox.shrink();
+              final double cost = values[index];
+              final double pct = totalCost > 0 ? (cost / totalCost) * 100 : 0.0;
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 2),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 6,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: colors[index],
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        highways[index],
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF475569),
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${pct.toStringAsFixed(1)}%',
+                      style: const TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF0F172A),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class BarChart extends StatelessWidget {
+  final Map<String, int> dailyCounts;
+  final List<DateTime> last7Days;
+
+  const BarChart({
+    super.key,
+    required this.dailyCounts,
+    required this.last7Days,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final List<String> weekdays = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+    final List<int> counts = last7Days.map((day) {
+      final key = "${day.year}-${day.month.toString().padLeft(2, '0')}-${day.day.toString().padLeft(2, '0')}";
+      return dailyCounts[key] ?? 0;
+    }).toList();
+
+    final int maxCount = counts.fold(0, (max, val) => val > max ? val : max);
+    final double chartHeight = 95.0;
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: List.generate(7, (index) {
+        final day = last7Days[index];
+        final count = counts[index];
+        final String dayLabel = weekdays[day.weekday % 7];
+        final double barHeight = maxCount > 0 ? (count / maxCount) * chartHeight : 0.0;
+
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Text(
+              count.toString(),
+              style: const TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF2563EB),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Container(
+              width: 14,
+              height: barHeight > 4 ? barHeight : 4.0,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF3B82F6), Color(0xFF2563EB)],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              dayLabel,
+              style: const TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF64748B),
+              ),
+            ),
+          ],
+        );
+      }),
+    );
+  }
+}
+
+class HighwayProgressBars extends StatelessWidget {
+  final Map<String, double> costByHighway;
+  final double totalCost;
+
+  const HighwayProgressBars({
+    super.key,
+    required this.costByHighway,
+    required this.totalCost,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final sorted = costByHighway.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    final displayList = sorted.take(4).toList();
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(displayList.length, (index) {
+        final entry = displayList[index];
+        final double cost = entry.value;
+        final double pct = totalCost > 0 ? (cost / totalCost) : 0.0;
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      entry.key,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF475569),
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  Text(
+                    '\$${cost.round()} (${(pct * 100).toStringAsFixed(1)}%)',
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF0F172A),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  value: pct,
+                  backgroundColor: const Color(0xFFF1F5F9),
+                  color: const Color(0xFF2563EB),
+                  minHeight: 6,
+                ),
               ),
             ],
           ),
         );
-      },
+      }),
     );
   }
 }
@@ -1310,6 +2284,8 @@ class _PorticosPageState extends State<PorticosPage> {
                                   child: SingleChildScrollView(
                                     scrollDirection: Axis.horizontal,
                                     child: DataTable(
+                                      dataRowMinHeight: 60,
+                                      dataRowMaxHeight: 85,
                                       columns: const [
                                         DataColumn(label: Text('Pórtico')),
                                         DataColumn(label: Text('Sentido')),
@@ -4234,48 +5210,6 @@ class _AuditLogPageState extends State<AuditLogPage> {
   }
 }
 
-class _InfoCard extends StatelessWidget {
-  const _InfoCard({required this.title, required this.child});
-
-  final String title;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 16),
-            child,
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _QuickAction extends StatelessWidget {
-  const _QuickAction({required this.label, required this.icon});
-
-  final String label;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return OutlinedButton.icon(
-      onPressed: () {},
-      icon: Icon(icon),
-      label: Text(label),
-    );
-  }
-}
 
 class _TablePaginationControls extends StatelessWidget {
   const _TablePaginationControls({
