@@ -262,7 +262,7 @@ class _RouteSetupScreenState extends State<RouteSetupScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Iniciar viaje',
+                            'Ver ruta',
                             style: TextStyle(
                               color: textMain,
                               fontSize: 18,
